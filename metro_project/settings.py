@@ -124,11 +124,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-# STATIC_URL = 'static/'
-# Archivos estáticos para Railway
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]  # si tienes carpeta global
+# ---------------------------
+# Archivos estáticos
+# ---------------------------
+STATIC_URL = '/static/'
+
+# En desarrollo: busca archivos estáticos en cada app
+STATICFILES_DIRS = [
+    BASE_DIR / "accounts" / "static",
+]
+
+# En producción (Railway): collectstatic los pone aquí
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
 
 
 
