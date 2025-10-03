@@ -1,0 +1,347 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>App - Panel de Inicio</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f1f3f5;
+        --card: #fff;
+        --muted: #6c757d;
+        --accent: #0d6efd;
+        --sidebar-bg: #ffffff;
+        --sidebar-width: 260px;
+        --sidebar-collapsed-width: 72px;
+      }
+      [data-theme="dark"] {
+        --bg: #071025;
+        --card: #091426;
+        --muted: #9aa7bd;
+        --accent: #4dabf7;
+        --sidebar-bg: #071526;
+      }
+      body {
+        background: var(--bg);
+        color: var(--muted);
+        height: 100vh;
+      }
+      .app-shell {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .sidebar {
+        width: var(--sidebar-width);
+        min-width: var(--sidebar-width);
+        background: var(--sidebar-bg);
+        transition: width 0.25s ease, background 0.3s ease;
+        border-right: 1px solid rgba(0, 0, 0, 0.06);
+        display: flex;
+        flex-direction: column;
+      }
+      .sidebar.collapsed {
+        width: var(--sidebar-collapsed-width);
+        min-width: var(--sidebar-collapsed-width);
+      }
+      .sidebar .brand {
+        padding: 18px;
+        font-weight: 700;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .sidebar .nav-section {
+        flex: 1;
+        overflow: auto;
+        padding: 8px;
+      }
+      .sidebar .nav-item {
+        border-radius: 8px;
+        margin: 6px 4px;
+      }
+      .sidebar .nav-link {
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px;
+        text-decoration: none;
+        cursor: pointer;
+        border-radius: 6px;
+      }
+      .sidebar .nav-link .icon {
+        width: 28px;
+        text-align: center;
+        font-size: 1.2rem;
+      }
+      .sidebar .nav-link.active {
+        background: linear-gradient(
+          90deg,
+          rgba(13, 110, 253, 0.12),
+          transparent
+        );
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .sidebar .parent-link.active-parent {
+        background: rgba(13, 110, 253, 0.08);
+      }
+      .sidebar .sublist {
+        padding-left: 38px;
+        display: none;
+      }
+      .sidebar.collapsed .text-label {
+        display: none;
+      }
+      .content {
+        flex: 1;
+        padding: 18px;
+        overflow: auto;
+      }
+      .topbar {
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 0 12px;
+        background: transparent;
+      }
+      .collapse-btn-container {
+        padding: 12px;
+        text-align: center;
+      }
+      .breadcrumb {
+        --bs-breadcrumb-divider: ">";
+      }
+      .view-card {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 18px;
+        color: inherit;
+        box-shadow: 0 4px 20px rgba(2, 6, 23, 0.06);
+      }
+      .sidebar.collapsed {
+        box-shadow: inset 4px 0 0 rgba(13, 110, 253, 0.06);
+      }
+      @media (max-width: 760px) {
+        .sidebar {
+          position: fixed;
+          z-index: 1050;
+          transform: translateX(-100%);
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+      }
+    </style>
+  </head>
+  <body data-theme="light">
+    <div class="app-shell">
+      <!-- Sidebar -->
+      <aside id="sidebar" class="sidebar">
+        <div class="brand">
+          <div
+            class="brand-logo badge bg-primary text-white rounded-pill"
+            style="
+              width: 36px;
+              height: 36px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            "
+          >
+            <i class="bi bi-bootstrap"></i>
+          </div>
+          <div class="brand-text">
+            <div>Moto Shop</div>
+            <small class="text-muted">Panel</small>
+          </div>
+        </div>
+        <div class="nav-section">
+          <!-- Parent: Clientes -->
+          <div class="nav-item">
+            <a class="nav-link parent-link" data-parent="clientes">
+              <span class="icon"><i class="bi bi-people-fill"></i></span>
+              <span class="text-label">Clientes</span>
+            </a>
+            <div class="sublist" data-parent="clientes">
+              <a href="clientes-gestion.html" class="nav-link child-link"
+                >Gestión</a
+              >
+              <a href="clientes-reportes.html" class="nav-link child-link"
+                >Reportes</a
+              >
+            </div>
+          </div>
+
+          <!-- Parent: Vehículos -->
+          <div class="nav-item">
+            <a
+              class="nav-link parent-link active-parent"
+              data-parent="vehiculos"
+            >
+              <span class="icon"><i class="bi bi-car-front-fill"></i></span>
+              <span class="text-label">Vehículos</span>
+            </a>
+            <div class="sublist" data-parent="vehiculos">
+              <a
+                href="vehiculos-gestion.html"
+                class="nav-link child-link active"
+                >Gestión</a
+              >
+              <a href="vehiculos-reportes.html" class="nav-link child-link"
+                >Reportes</a
+              >
+            </div>
+          </div>
+
+          <!-- Parent: Almacén -->
+          <div class="nav-item">
+            <a class="nav-link parent-link" data-parent="almacen">
+              <span class="icon"><i class="bi bi-box-seam"></i></span>
+              <span class="text-label">Almacén</span>
+            </a>
+            <div class="sublist" data-parent="almacen">
+              <a href="/almacen-gestion" class="nav-link child-link">Gestión</a>
+              <a href="almacen-ventas.html" class="nav-link child-link"
+                >Ventas</a
+              >
+              <a href="almacen-reportes.html" class="nav-link child-link"
+                >Reportes</a
+              >
+            </div>
+          </div>
+
+          <!-- Parent: Taller -->
+          <div class="nav-item">
+            <a class="nav-link parent-link" data-parent="taller">
+              <span class="icon"><i class="bi bi-tools"></i></span>
+              <span class="text-label">Taller</span>
+            </a>
+            <div class="sublist" data-parent="taller">
+              <a href="taller-servicios.html" class="nav-link child-link"
+                >Servicios</a
+              >
+              <a href="taller-reportes.html" class="nav-link child-link"
+                >Reportes</a
+              >
+            </div>
+          </div>
+
+          <!-- Parent: Arrendamientos -->
+          <div class="nav-item">
+            <a class="nav-link parent-link" data-parent="arrendamientos">
+              <span class="icon"><i class="bi bi-building"></i></span>
+              <span class="text-label">Arrendamientos</span>
+            </a>
+            <div class="sublist" data-parent="arrendamientos">
+              <a href="arrendamientos-cobros.html" class="nav-link child-link"
+                >Lista de Cobros</a
+              >
+              <a
+                href="arrendamientos-contratos.html"
+                class="nav-link child-link"
+                >Contratos</a
+              >
+              <a href="arrendamientos-reportes.html" class="nav-link child-link"
+                >Reportes</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="collapse-btn-container">
+          <button
+            id="collapseSidebarBtn"
+            class="btn btn-sm btn-outline-secondary"
+            title="Colapsar sidebar"
+          >
+            <i class="bi bi-arrow-left-right"></i>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <main class="content">
+        <div class="topbar">
+          <h4 class="mb-0">Inicio</h4>
+
+          <!-- Botón de logout -->
+          <form
+            id="logoutForm"
+            action="{% url 'logout' %}"
+            method="post"
+            class="mb-0"
+          >
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-danger">
+              <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+            </button>
+          </form>
+        </div>
+
+        <div class="view-card mt-3">
+          <h3 class="fw-bold">Bienvenido al panel de inicio</h3>
+          <p class="text-muted">
+            Selecciona una sección del sidebar para navegar a su página
+            correspondiente.
+          </p>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const body = document.body;
+      const sidebar = document.getElementById("sidebar");
+      const collapseBtn = document.getElementById("collapseSidebarBtn");
+
+      // restore theme & collapse
+      body.setAttribute(
+        "data-theme",
+        localStorage.getItem("mf_theme") || "light"
+      );
+      if (localStorage.getItem("mf_sidebar_collapsed") === "true")
+        sidebar.classList.add("collapsed");
+
+      collapseBtn.addEventListener("click", () => {
+        const collapsed = sidebar.classList.toggle("collapsed");
+        localStorage.setItem("mf_sidebar_collapsed", collapsed);
+      });
+
+      // toggle sublist tipo acordeón
+      document.querySelectorAll(".parent-link").forEach((parent) => {
+        parent.addEventListener("click", (e) => {
+          e.preventDefault();
+          const pid = parent.dataset.parent;
+          const sub = document.querySelector(
+            '.sublist[data-parent="' + pid + '"]'
+          );
+          const isOpen = sub.style.display === "block";
+          document
+            .querySelectorAll(".sublist")
+            .forEach((sl) => (sl.style.display = "none"));
+          document
+            .querySelectorAll(".parent-link")
+            .forEach((pl) => pl.classList.remove("active-parent"));
+          if (!isOpen) {
+            sub.style.display = "block";
+            parent.classList.add("active-parent");
+          }
+        });
+      });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
