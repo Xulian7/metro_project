@@ -156,5 +156,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "inseguro_dev_key")
 
 # Redirección después del logout
+# settings.py
+LOGIN_REDIRECT_URL = '/'          # o '/home/' si tu home tiene nombre 'home'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 STATIC_URL = '/static/'
