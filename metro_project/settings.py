@@ -28,6 +28,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+# settings.py
+CSRF_TRUSTED_ORIGINS = [
+    "https://metroproject-production.up.railway.app",
+]
+
+
 
 # Application definition
 
