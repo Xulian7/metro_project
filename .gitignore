@@ -19,7 +19,7 @@ poetry.lock
 *.pyc
 db.sqlite3
 media/
-staticfiles/
+
 
 # --- IDEs / Editores ---
 .vscode/
