@@ -29,8 +29,8 @@
         <div class="col-md-3">
             <select name="tipo_mov" class="form-select">
                 <option value="">Todos</option>
-                <option value="ingreso" {% if tipo_mov=="ingreso" %}selected{% endif %}>Ingresos</option>
-                <option value="salida" {% if tipo_mov=="salida" %}selected{% endif %}>Salidas</option>
+                <option value="ingreso" {% if tipo_mov == "ingreso" %}selected{% endif %}>Ingresos</option>
+                <option value="salida" {% if tipo_mov == "salida" %}selected{% endif %}>Salidas</option>
             </select>
         </div>
         <div class="col-md-12 mt-2">
@@ -132,13 +132,15 @@
                     <tr>
                         <td>{{ m.get_tipo_display }}</td>
                         <td>{{ m.cantidad }}</td>
-                        <td>{{ m.proveedor }}</td>
+                        <td>{{ m.proveedor.nombre if m.proveedor else "-" }}</td>
                         <td>{{ m.fecha }}</td>
                         <td>{{ m.precio_unitario }}</td>
                     </tr>
                     {% endfor %}
                 </table>
-                {% else %}<p>No hay ingresos registrados.</p>{% endif %}
+                {% else %}
+                    <p>No hay ingresos registrados.</p>
+                {% endif %}
 
                 <h5>Salidas</h5>
                 {% if movs.salidas %}
@@ -150,13 +152,15 @@
                     <tr>
                         <td>{{ m.get_tipo_display }}</td>
                         <td>{{ m.cantidad }}</td>
-                        <td>{{ m.proveedor }}</td>
+                        <td>{{ m.proveedor.nombre if m.proveedor else "-" }}</td>
                         <td>{{ m.fecha }}</td>
                         <td>{{ m.precio_unitario }}</td>
                     </tr>
                     {% endfor %}
                 </table>
-                {% else %}<p>No hay salidas registradas.</p>{% endif %}
+                {% else %}
+                    <p>No hay salidas registradas.</p>
+                {% endif %}
             {% endfor %}
         </div>
     </div>
