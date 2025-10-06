@@ -226,7 +226,11 @@
               <span class="text-label">Almacén</span>
             </a>
             <div class="sublist" data-parent="almacen">
-              <a href="/almacen-gestion" class="nav-link child-link">Gestión</a>
+              <a
+                href="{% url 'almacen_dashboard' %}"
+                class="nav-link child-link"
+                >Gestión</a
+              >
             </div>
           </div>
 
