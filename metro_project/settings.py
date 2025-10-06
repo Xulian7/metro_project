@@ -133,13 +133,16 @@ USE_TZ = True
 # ---------------------------
 STATIC_URL = '/static/'
 
-# Durante desarrollo
-STATICFILES_DIRS = [
-    BASE_DIR / "static",  # carpeta global
-]
+
 
 # En producción (collectstatic los pone aquí)
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "accounts" / "static",
+]
+
+
 
 # Archivos multimedia (si usas subida de imágenes)
 MEDIA_URL = '/media/'
