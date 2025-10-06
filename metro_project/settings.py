@@ -128,21 +128,23 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 # ---------------------------
 # Archivos estáticos
 # ---------------------------
 STATIC_URL = '/static/'
 
-# En desarrollo: busca archivos estáticos en cada app
+# Durante desarrollo
 STATICFILES_DIRS = [
-    BASE_DIR / "accounts" / "static",
+    BASE_DIR / "static",  # carpeta global
 ]
 
-# En producción (Railway): collectstatic los pone aquí
+# En producción (collectstatic los pone aquí)
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Archivos multimedia (si usas subida de imágenes)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "media"
+
 
 
 
