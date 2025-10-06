@@ -133,20 +133,13 @@ USE_TZ = True
 # ---------------------------
 STATIC_URL = '/static/'
 
-
-
-# En producción (collectstatic los pone aquí)
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
 STATICFILES_DIRS = [
-    BASE_DIR / "accounts" / "static",
+    BASE_DIR / "static",          # carpeta global
+    BASE_DIR / "accounts" / "static",  # estáticos específicos de la app
 ]
 
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-
-# Archivos multimedia (si usas subida de imágenes)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / "media"
 
 # Almacenamiento de archivos estáticos con versionado (cache busting)
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
