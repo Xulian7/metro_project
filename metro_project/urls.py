@@ -17,7 +17,7 @@ Including another URLconf
 
 from accounts.views import MyLoginView, MyLogoutView, home
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -26,7 +26,8 @@ urlpatterns = [
     # Login y logout nativos de Django
     path("accounts/login/", auth_views.LoginView.as_view(template_name="accounts/login.html"), name="login"),
     path("accounts/logout/", auth_views.LogoutView.as_view(next_page="login"), name="logout"),
+   
+    
 
-    # Aquí luego vas a ir agregando tus apps
 ]
 
