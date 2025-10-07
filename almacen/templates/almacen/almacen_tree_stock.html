@@ -112,6 +112,35 @@
         <!-- Movimientos -->
         <div class="tab-pane fade" id="movimientos">
             <h3>Movimientos por Producto</h3>
+            <!-- Botón para nuevo movimiento -->
+            <div class="d-flex justify-content-end mb-3">
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#nuevoMovimientoModal">
+                    ➕ Nuevo movimiento
+                </button>
+            </div>
+
+            <!-- Modal Nuevo Movimiento -->
+            <div class="modal fade" id="nuevoMovimientoModal" tabindex="-1" aria-labelledby="nuevoMovimientoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="nuevoMovimientoLabel">Registrar Movimiento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                    {{ movimiento_form.as_p }}
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" name="movimiento_submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+            </div>
+            <!-- Listado de movimientos por producto -->
             {% for producto, movs in movimientos_por_producto.items %}
                 <h4 class="mt-3">
                     {{ producto.nombre }} ({{ producto.referencia }})
