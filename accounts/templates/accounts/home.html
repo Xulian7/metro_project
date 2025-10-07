@@ -4,7 +4,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>App - Panel de Inicio</title>
+    <title>{% block title %}App - Panel de Inicio{% endblock %}</title>
+
+    <!-- Bootstrap & Icons -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -13,6 +15,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
       rel="stylesheet"
     />
+
     <style>
       :root {
         --bg: #f1f3f5;
@@ -23,6 +26,7 @@
         --sidebar-width: 260px;
         --sidebar-collapsed-width: 72px;
       }
+
       [data-theme="dark"] {
         --bg: #071025;
         --card: #091426;
@@ -30,16 +34,19 @@
         --accent: #4dabf7;
         --sidebar-bg: #071526;
       }
+
       body {
         background: var(--bg);
         color: var(--muted);
         height: 100vh;
       }
+
       .app-shell {
         display: flex;
         height: 100vh;
         overflow: hidden;
       }
+
       .sidebar {
         width: var(--sidebar-width);
         min-width: var(--sidebar-width);
@@ -49,10 +56,12 @@
         display: flex;
         flex-direction: column;
       }
+
       .sidebar.collapsed {
         width: var(--sidebar-collapsed-width);
         min-width: var(--sidebar-collapsed-width);
       }
+
       .sidebar .brand {
         padding: 18px;
         font-weight: 700;
@@ -60,15 +69,18 @@
         gap: 10px;
         align-items: center;
       }
+
       .sidebar .nav-section {
         flex: 1;
         overflow: auto;
         padding: 8px;
       }
+
       .sidebar .nav-item {
         border-radius: 8px;
         margin: 6px 4px;
       }
+
       .sidebar .nav-link {
         color: var(--muted);
         display: flex;
@@ -79,11 +91,13 @@
         cursor: pointer;
         border-radius: 6px;
       }
+
       .sidebar .nav-link .icon {
         width: 28px;
         text-align: center;
         font-size: 1.2rem;
       }
+
       .sidebar .nav-link.active {
         background: linear-gradient(
           90deg,
@@ -93,21 +107,26 @@
         color: var(--accent);
         font-weight: 600;
       }
+
       .sidebar .parent-link.active-parent {
         background: rgba(13, 110, 253, 0.08);
       }
+
       .sidebar .sublist {
         padding-left: 38px;
         display: none;
       }
+
       .sidebar.collapsed .text-label {
         display: none;
       }
+
       .content {
         flex: 1;
         padding: 18px;
         overflow: auto;
       }
+
       .topbar {
         height: 56px;
         display: flex;
@@ -117,13 +136,16 @@
         padding: 0 12px;
         background: transparent;
       }
+
       .collapse-btn-container {
         padding: 12px;
         text-align: center;
       }
+
       .breadcrumb {
         --bs-breadcrumb-divider: ">";
       }
+
       .view-card {
         background: var(--card);
         border-radius: 12px;
@@ -131,9 +153,11 @@
         color: inherit;
         box-shadow: 0 4px 20px rgba(2, 6, 23, 0.06);
       }
+
       .sidebar.collapsed {
         box-shadow: inset 4px 0 0 rgba(13, 110, 253, 0.06);
       }
+
       @media (max-width: 760px) {
         .sidebar {
           position: fixed;
@@ -150,15 +174,18 @@
         border-radius: 10px;
         padding: 8px 0;
       }
+
       .dropdown-item i {
         width: 20px;
         text-align: center;
       }
+
       .dropdown-header {
         padding: 8px 12px;
       }
     </style>
   </head>
+
   <body data-theme="light">
     <div class="app-shell">
       <!-- Sidebar -->
@@ -181,8 +208,9 @@
             <small class="text-muted">Panel</small>
           </div>
         </div>
+
         <div class="nav-section">
-          <!-- Parent: Clientes -->
+          <!-- Clientes -->
           <div class="nav-item">
             <a class="nav-link parent-link" data-parent="clientes">
               <span class="icon"><i class="bi bi-people-fill"></i></span>
@@ -198,19 +226,14 @@
             </div>
           </div>
 
-          <!-- Parent: Vehículos -->
+          <!-- Vehículos -->
           <div class="nav-item">
-            <a
-              class="nav-link parent-link active-parent"
-              data-parent="vehiculos"
-            >
+            <a class="nav-link parent-link" data-parent="vehiculos">
               <span class="icon"><i class="bi bi-car-front-fill"></i></span>
               <span class="text-label">Vehículos</span>
             </a>
             <div class="sublist" data-parent="vehiculos">
-              <a
-                href="vehiculos-gestion.html"
-                class="nav-link child-link active"
+              <a href="vehiculos-gestion.html" class="nav-link child-link"
                 >Gestión</a
               >
               <a href="vehiculos-reportes.html" class="nav-link child-link"
@@ -219,7 +242,7 @@
             </div>
           </div>
 
-          <!-- Parent: Almacén -->
+          <!-- Almacén -->
           <div class="nav-item">
             <a class="nav-link parent-link" data-parent="almacen">
               <span class="icon"><i class="bi bi-box-seam"></i></span>
@@ -234,7 +257,7 @@
             </div>
           </div>
 
-          <!-- Parent: Taller -->
+          <!-- Taller -->
           <div class="nav-item">
             <a class="nav-link parent-link" data-parent="taller">
               <span class="icon"><i class="bi bi-tools"></i></span>
@@ -250,7 +273,7 @@
             </div>
           </div>
 
-          <!-- Parent: Arrendamientos -->
+          <!-- Arrendamientos -->
           <div class="nav-item">
             <a class="nav-link parent-link" data-parent="arrendamientos">
               <span class="icon"><i class="bi bi-building"></i></span>
@@ -271,6 +294,7 @@
             </div>
           </div>
         </div>
+
         <div class="collapse-btn-container">
           <button
             id="collapseSidebarBtn"
@@ -285,7 +309,7 @@
       <!-- Main -->
       <main class="content">
         <div class="topbar">
-          <h4 class="mb-0">Inicio</h4>
+          <h4 class="mb-0">{% block page_title %}Inicio{% endblock %}</h4>
 
           <div class="dropdown">
             <button
@@ -300,6 +324,7 @@
                 {{ request.user.get_full_name|default:request.user.username }}
               </span>
             </button>
+
             <ul
               class="dropdown-menu dropdown-menu-end shadow"
               aria-labelledby="userDropdown"
@@ -310,14 +335,14 @@
               </li>
               <li><hr class="dropdown-divider" /></li>
               <li>
-                <a class="dropdown-item" href="#">
-                  <i class="bi bi-person-lines-fill me-2"></i> Perfil
-                </a>
+                <a class="dropdown-item" href="#"
+                  ><i class="bi bi-person-lines-fill me-2"></i> Perfil</a
+                >
               </li>
               <li>
-                <a class="dropdown-item" href="#">
-                  <i class="bi bi-gear me-2"></i> Configuración
-                </a>
+                <a class="dropdown-item" href="#"
+                  ><i class="bi bi-gear me-2"></i> Configuración</a
+                >
               </li>
               <li><hr class="dropdown-divider" /></li>
               <li>
@@ -337,12 +362,15 @@
           </div>
         </div>
 
+        <!-- CONTENIDO PRINCIPAL -->
         <div class="view-card mt-3">
+          {% block content %}
           <h3 class="fw-bold">Bienvenido al panel de inicio</h3>
           <p class="text-muted">
             Selecciona una sección del sidebar para navegar a su página
             correspondiente.
           </p>
+          {% endblock %}
         </div>
       </main>
     </div>
