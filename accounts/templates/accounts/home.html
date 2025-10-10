@@ -17,14 +17,13 @@
     />
 
     <style>
+      /* Tema oscuro y estilos del sidebar */
       :root {
         --bg: #f1f3f5;
         --card: #fff;
         --muted: #6c757d;
         --accent: #0d6efd;
-        --sidebar-bg: #ffffff;
         --sidebar-width: 260px;
-        --sidebar-collapsed-width: 72px;
       }
 
       [data-theme="dark"] {
@@ -32,7 +31,12 @@
         --card: #091426;
         --muted: #9aa7bd;
         --accent: #4dabf7;
-        --sidebar-bg: #071526;
+        --sidebar-bg: #1e1e2f;
+        --sidebar-hover: #2a2a3d;
+        --sidebar-active: #3b3b5a;
+        --sidebar-border: #3f3f5a;
+        --text-parent: #ffffff;
+        --text-child: #cfd4e3;
       }
 
       body {
@@ -47,19 +51,14 @@
         overflow: hidden;
       }
 
+      /* Sidebar */
       .sidebar {
         width: var(--sidebar-width);
-        min-width: var(--sidebar-width);
         background: var(--sidebar-bg);
-        transition: width 0.25s ease, background 0.3s ease;
-        border-right: 1px solid rgba(0, 0, 0, 0.06);
+        border-right: 1px solid var(--sidebar-border);
         display: flex;
         flex-direction: column;
-      }
-
-      .sidebar.collapsed {
-        width: var(--sidebar-collapsed-width);
-        min-width: var(--sidebar-collapsed-width);
+        box-shadow: inset -3px 0 6px rgba(0, 0, 0, 0.3);
       }
 
       .sidebar .brand {
@@ -77,50 +76,58 @@
       }
 
       .sidebar .nav-item {
-        border-radius: 8px;
-        margin: 6px 4px;
+        margin: 8px 6px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
       }
 
       .sidebar .nav-link {
-        color: var(--muted);
+        color: var(--text-parent);
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 10px;
+        padding: 12px;
         text-decoration: none;
         cursor: pointer;
-        border-radius: 6px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
       }
 
-      .sidebar .nav-link .icon {
-        width: 28px;
-        text-align: center;
-        font-size: 1.2rem;
-      }
-
-      .sidebar .nav-link.active {
-        background: linear-gradient(
-          90deg,
-          rgba(13, 110, 253, 0.12),
-          transparent
-        );
+      .sidebar .nav-link:hover {
+        background: var(--sidebar-hover);
         color: var(--accent);
-        font-weight: 600;
+        border-color: var(--sidebar-border);
       }
 
       .sidebar .parent-link.active-parent {
-        background: rgba(13, 110, 253, 0.08);
+        background: var(--sidebar-active);
+        color: var(--accent);
+        font-weight: 600;
+        border: 1px solid var(--accent);
       }
 
       .sidebar .sublist {
-        padding-left: 38px;
+        padding-left: 40px;
         display: none;
       }
 
-      .sidebar.collapsed .text-label {
-        display: none;
+      .sidebar .sublist .child-link {
+        display: block;
+        color: var(--text-child);
+        font-size: 0.95rem;
+        padding: 6px 12px;
+        border-radius: 6px;
+        margin: 2px 0;
+        transition: all 0.2s ease;
       }
 
+      .sidebar .sublist .child-link:hover {
+        background: var(--sidebar-hover);
+        color: var(--accent);
+      }
+
+      /* Contenido principal */
       .content {
         flex: 1;
         padding: 18px;
@@ -137,11 +144,6 @@
         background: transparent;
       }
 
-      .collapse-btn-container {
-        padding: 12px;
-        text-align: center;
-      }
-
       .breadcrumb {
         --bs-breadcrumb-divider: ">";
       }
@@ -152,10 +154,6 @@
         padding: 18px;
         color: inherit;
         box-shadow: 0 4px 20px rgba(2, 6, 23, 0.06);
-      }
-
-      .sidebar.collapsed {
-        box-shadow: inset 4px 0 0 rgba(13, 110, 253, 0.06);
       }
 
       @media (max-width: 760px) {
@@ -186,7 +184,7 @@
     </style>
   </head>
 
-  <body data-theme="light">
+  <body data-theme="dark">
     <div class="app-shell">
       <!-- Sidebar -->
       <aside id="sidebar" class="sidebar">
@@ -294,16 +292,6 @@
             </div>
           </div>
         </div>
-
-        <div class="collapse-btn-container">
-          <button
-            id="collapseSidebarBtn"
-            class="btn btn-sm btn-outline-secondary"
-            title="Colapsar sidebar"
-          >
-            <i class="bi bi-arrow-left-right"></i>
-          </button>
-        </div>
       </aside>
 
       <!-- Main -->
@@ -376,23 +364,6 @@
     </div>
 
     <script>
-      const body = document.body;
-      const sidebar = document.getElementById("sidebar");
-      const collapseBtn = document.getElementById("collapseSidebarBtn");
-
-      // restore theme & collapse
-      body.setAttribute(
-        "data-theme",
-        localStorage.getItem("mf_theme") || "light"
-      );
-      if (localStorage.getItem("mf_sidebar_collapsed") === "true")
-        sidebar.classList.add("collapsed");
-
-      collapseBtn.addEventListener("click", () => {
-        const collapsed = sidebar.classList.toggle("collapsed");
-        localStorage.setItem("mf_sidebar_collapsed", collapsed);
-      });
-
       // toggle sublist tipo acordeón
       document.querySelectorAll(".parent-link").forEach((parent) => {
         parent.addEventListener("click", (e) => {
