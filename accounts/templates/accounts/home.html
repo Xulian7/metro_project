@@ -17,31 +17,10 @@
     />
 
     <style>
-      /* Tema oscuro y estilos del sidebar */
-      :root {
-        --bg: #f1f3f5;
-        --card: #fff;
-        --muted: #6c757d;
-        --accent: #0d6efd;
-        --sidebar-width: 260px;
-      }
-
-      [data-theme="dark"] {
-        --bg: #071025;
-        --card: #091426;
-        --muted: #9aa7bd;
-        --accent: #4dabf7;
-        --sidebar-bg: #1e1e2f;
-        --sidebar-hover: #2a2a3d;
-        --sidebar-active: #3b3b5a;
-        --sidebar-border: #3f3f5a;
-        --text-parent: #ffffff;
-        --text-child: #cfd4e3;
-      }
-
+      /* Tema general */
       body {
-        background: var(--bg);
-        color: var(--muted);
+        background: #ffffff; /* lienzo blanco para templates */
+        color: #6c757d;
         height: 100vh;
       }
 
@@ -51,11 +30,11 @@
         overflow: hidden;
       }
 
-      /* Sidebar */
+      /* Sidebar oscuro */
       .sidebar {
-        width: var(--sidebar-width);
-        background: var(--sidebar-bg);
-        border-right: 1px solid var(--sidebar-border);
+        width: 260px;
+        background: #1e1e2f;
+        border-right: 1px solid #3f3f5a;
         display: flex;
         flex-direction: column;
         box-shadow: inset -3px 0 6px rgba(0, 0, 0, 0.3);
@@ -83,7 +62,7 @@
       }
 
       .sidebar .nav-link {
-        color: var(--text-parent);
+        color: #ffffff;
         display: flex;
         align-items: center;
         gap: 12px;
@@ -95,16 +74,16 @@
       }
 
       .sidebar .nav-link:hover {
-        background: var(--sidebar-hover);
-        color: var(--accent);
-        border-color: var(--sidebar-border);
+        background: #2a2a3d;
+        color: #4dabf7;
+        border-color: #3f3f5a;
       }
 
       .sidebar .parent-link.active-parent {
-        background: var(--sidebar-active);
-        color: var(--accent);
+        background: #3b3b5a;
+        color: #4dabf7;
         font-weight: 600;
-        border: 1px solid var(--accent);
+        border: 1px solid #4dabf7;
       }
 
       .sidebar .sublist {
@@ -114,7 +93,7 @@
 
       .sidebar .sublist .child-link {
         display: block;
-        color: var(--text-child);
+        color: #cfd4e3;
         font-size: 0.95rem;
         padding: 6px 12px;
         border-radius: 6px;
@@ -123,15 +102,16 @@
       }
 
       .sidebar .sublist .child-link:hover {
-        background: var(--sidebar-hover);
-        color: var(--accent);
+        background: #2a2a3d;
+        color: #4dabf7;
       }
 
-      /* Contenido principal */
+      /* Contenido principal (canvas blanco) */
       .content {
         flex: 1;
         padding: 18px;
         overflow: auto;
+        background: #ffffff;
       }
 
       .topbar {
@@ -149,7 +129,7 @@
       }
 
       .view-card {
-        background: var(--card);
+        background: #ffffff; /* panel interno también blanco */
         border-radius: 12px;
         padding: 18px;
         color: inherit;
@@ -184,7 +164,7 @@
     </style>
   </head>
 
-  <body data-theme="dark">
+  <body>
     <div class="app-shell">
       <!-- Sidebar -->
       <aside id="sidebar" class="sidebar">
@@ -319,74 +299,12 @@
             >
               <li class="dropdown-header text-center">
                 <div class="fw-semibold">{{ request.user.username }}</div>
-                <small class="text-muted">Conectado</small>
-              </li>
-              <li><hr class="dropdown-divider" /></li>
-              <li>
-                <a class="dropdown-item" href="#"
-                  ><i class="bi bi-person-lines-fill me-2"></i> Perfil</a
-                >
-              </li>
-              <li>
-                <a class="dropdown-item" href="#"
-                  ><i class="bi bi-gear me-2"></i> Configuración</a
-                >
-              </li>
-              <li><hr class="dropdown-divider" /></li>
-              <li>
-                <form
-                  id="logoutForm"
-                  action="{% url 'logout' %}"
-                  method="post"
-                  class="mb-0"
-                >
-                  {% csrf_token %}
-                  <button type="submit" class="dropdown-item text-danger">
-                    <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
-                  </button>
-                </form>
+                <small class="text-muted">Con </small>
               </li>
             </ul>
           </div>
         </div>
-
-        <!-- CONTENIDO PRINCIPAL -->
-        <div class="view-card mt-3">
-          {% block content %}
-          <h3 class="fw-bold">Bienvenido al panel de inicio</h3>
-          <p class="text-muted">
-            Selecciona una sección del sidebar para navegar a su página
-            correspondiente.
-          </p>
-          {% endblock %}
-        </div>
       </main>
     </div>
-
-    <script>
-      // toggle sublist tipo acordeón
-      document.querySelectorAll(".parent-link").forEach((parent) => {
-        parent.addEventListener("click", (e) => {
-          e.preventDefault();
-          const pid = parent.dataset.parent;
-          const sub = document.querySelector(
-            '.sublist[data-parent="' + pid + '"]'
-          );
-          const isOpen = sub.style.display === "block";
-          document
-            .querySelectorAll(".sublist")
-            .forEach((sl) => (sl.style.display = "none"));
-          document
-            .querySelectorAll(".parent-link")
-            .forEach((pl) => pl.classList.remove("active-parent"));
-          if (!isOpen) {
-            sub.style.display = "block";
-            parent.classList.add("active-parent");
-          }
-        });
-      });
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
