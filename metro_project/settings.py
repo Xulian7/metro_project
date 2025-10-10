@@ -25,7 +25,6 @@ SECRET_KEY = 'django-insecure-p5v6rn7h7pb93(l+&w7d#8zylsihoi%px!x!u4wged=k(l1z7#
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 ALLOWED_HOSTS = ["*"]
 
 # settings.py
@@ -33,10 +32,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://metroproject-production.up.railway.app",
 ]
 
-
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -51,9 +47,9 @@ INSTALLED_APPS = [
     
 ]
 
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -63,8 +59,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'metro_project.urls'
-
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -81,11 +75,7 @@ TEMPLATES = [
     },
 ]
 
-
-
-
 WSGI_APPLICATION = 'metro_project.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
@@ -100,8 +90,6 @@ DATABASES = {
         'PORT': '30259',
     }
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -137,14 +125,11 @@ USE_TZ = True
 # ---------------------------
 # Archivos estáticos
 # ---------------------------
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",          # carpeta global
-    BASE_DIR / "accounts" / "static",  # estáticos específicos de la app
-]
-
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # Almacenamiento de archivos estáticos con versionado (cache busting)
