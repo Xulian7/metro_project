@@ -27,6 +27,41 @@
         </li>
     </ul>
 
+    <style>
+      /* Estilo base de las tabs */
+      #almacenTabs .nav-link {
+          border: 1px solid transparent;
+          border-radius: 0.5rem 0.5rem 0 0;
+          margin-right: 0.2rem;
+          transition: all 0.2s ease-in-out;
+      }
+
+      /* Hover sobre pestañas inactivas */
+      #almacenTabs .nav-link:not(.active):hover {
+          border-color: #dee2e6 #dee2e6 #dee2e6 #dee2e6;
+          background-color: #f8f9fa;
+      }
+
+      /* Pestaña activa */
+      #almacenTabs .nav-link.active {
+          border-color: #0d6efd #0d6efd white;
+          border-bottom-color: white;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          background-color: white;
+          font-weight: 500;
+      }
+
+      /* Ajuste del contenedor de tab content */
+      .tab-content {
+          border: 1px solid #dee2e6;
+          border-top: none;
+          padding: 1rem;
+          border-radius: 0 0 0.5rem 0.5rem;
+          background-color: white;
+      }
+    </style>
+
+
     <div class="tab-content mt-3">
         <!-- Productos -->
         <div class="tab-pane fade show active" id="productos">
@@ -153,7 +188,6 @@
             </div>
         </div>
 
-
         <!-- Movimientos -->
         <div class="tab-pane fade" id="movimientos">
             <h3>Movimientos por Producto</h3>
@@ -254,6 +288,7 @@
             {% endfor %}
 
         </div>
+
     </div>
 </div>
 {% endblock %}
