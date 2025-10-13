@@ -14,6 +14,7 @@ class Producto(models.Model):
     referencia = models.CharField(max_length=50, unique=True)
     utilidad = models.DecimalField(max_digits=10, decimal_places=2)
     precio_venta = models.DecimalField(max_digits=10, decimal_places=2)
+    ean = models.CharField(max_length=13, blank=True, null=True)
 
     def __str__(self):
         return f"{self.nombre} ({self.referencia})"
