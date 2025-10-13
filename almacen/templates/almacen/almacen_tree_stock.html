@@ -179,74 +179,27 @@
                 </button>
             </div>
 
-            
             <!-- Modal Nuevo Movimiento -->
             <div class="modal fade" id="nuevoMovimientoModal" tabindex="-1" aria-labelledby="nuevoMovimientoLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content shadow-lg rounded-4 border-0">
-                <form method="post" class="needs-validation" novalidate>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <form method="post">
                     {% csrf_token %}
-
-                    <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold" id="nuevoMovimientoLabel">Registrar Movimiento</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="nuevoMovimientoLabel">Registrar Movimiento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
-
                     <div class="modal-body">
-                    <div class="container">
-                        <div class="row g-3">
-
-                        <!-- Producto -->
-                        <div class="col-md-6">
-                            <label for="id_producto" class="form-label">Producto</label>
-                            {% render_field movimiento_form.producto class="form-select" %}
-                        </div>
-
-                        <!-- Tipo -->
-                        <div class="col-md-6">
-                            <label for="id_tipo" class="form-label">Tipo de Movimiento</label>
-                            {% render_field movimiento_form.tipo class="form-select" %}
-                        </div>
-
-                        <!-- Cantidad -->
-                        <div class="col-md-6">
-                            <label for="id_cantidad" class="form-label">Cantidad</label>
-                            {% render_field movimiento_form.cantidad class="form-control" %}
-                        </div>
-
-                        <!-- Precio Unitario -->
-                        <div class="col-md-6">
-                            <label for="id_precio_unitario" class="form-label">Precio Unitario</label>
-                            {% render_field movimiento_form.precio_unitario class="form-control" %}
-                        </div>
-
-                        <!-- Proveedor -->
-                        <div class="col-md-6">
-                            <label for="id_proveedor" class="form-label">Proveedor</label>
-                            {% render_field movimiento_form.proveedor class="form-select" %}
-                        </div>
-
-                        <!-- Fecha -->
-                        <div class="col-md-6">
-                            <label for="id_fecha" class="form-label">Fecha</label>
-                            {% render_field movimiento_form.fecha class="form-control" type="date" %}
-                        </div>
-
-                        </div>
+                    {{ movimiento_form.as_p }}
                     </div>
-                    </div>
-
                     <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="movimiento_submit" class="btn btn-primary px-4">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" name="movimiento_submit" class="btn btn-primary">Guardar</button>
                     </div>
-
                 </form>
                 </div>
             </div>
             </div>
-
-
 
             <!-- Listado de movimientos por producto -->
             {% for producto, movs in movimientos_por_producto.items %}
@@ -300,4 +253,3 @@
     </div>
 </div>
 {% endblock %}
-{% endwith %}
