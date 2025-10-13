@@ -1,6 +1,7 @@
 {% extends "accounts/home.html" %}
 {% load static %}
 {% load widget_tweaks %}
+{% with attrs="class=form-control" %}
 {% block title %}📦 Almacén Dashboard{% endblock %}
 
 {% block content %}
@@ -180,20 +181,61 @@
 
             <!-- Modal Nuevo Movimiento -->
             <div class="modal fade" id="nuevoMovimientoModal" tabindex="-1" aria-labelledby="nuevoMovimientoLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <form method="post">
+            <div class="modal-dialog modal-lg modal-dialog-centered"> <!-- más ancho y centrado -->
+                <div class="modal-content shadow-lg rounded-4 border-0">
+                <form method="post" class="needs-validation" novalidate>
                     {% csrf_token %}
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="nuevoMovimientoLabel">Registrar Movimiento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    
+                    <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold" id="nuevoMovimientoLabel">Registrar Movimiento</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
+
                     <div class="modal-body">
-                    {{ movimiento_form.as_p }}
+                    <div class="container">
+                        <div class="row g-3">
+                        <!-- Producto -->
+                        <div class="col-md-6">
+                            <label for="id_producto" class="form-label">Producto</label>
+                            {{ movimiento_form.producto|as_widget:attrs }}
+                        </div>
+
+                        <!-- Tipo -->
+                        <div class="col-md-6">
+                            <label for="id_tipo" class="form-label">Tipo de Movimiento</label>
+                            {{ movimiento_form.tipo|as_widget:attrs }}
+                        </div>
+
+                        <!-- Cantidad -->
+                        <div class="col-md-6">
+                            <label for="id_cantidad" class="form-label">Cantidad</label>
+                            {{ movimiento_form.cantidad|as_widget:attrs }}
+                        </div>
+
+                        <!-- Precio Unitario -->
+                        <div class="col-md-6">
+                            <label for="id_precio_unitario" class="form-label">Precio Unitario</label>
+                            {{ movimiento_form.precio_unitario|as_widget:attrs }}
+                        </div>
+
+                        <!-- Proveedor -->
+                        <div class="col-md-6">
+                            <label for="id_proveedor" class="form-label">Proveedor</label>
+                            {{ movimiento_form.proveedor|as_widget:attrs }}
+                        </div>
+
+                        <!-- Fecha -->
+                        <div class="col-md-6">
+                            <label for="id_fecha" class="form-label">Fecha</label>
+                            {{ movimiento_form.fecha|as_widget:attrs }}
+                        </div>
+                        </div>
                     </div>
+                    </div>
+
                     <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="movimiento_submit" class="btn btn-primary">Guardar</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" name="movimiento_submit" class="btn btn-primary px-4">Guardar</button>
                     </div>
                 </form>
                 </div>
@@ -252,3 +294,4 @@
     </div>
 </div>
 {% endblock %}
+{% endwith %}
