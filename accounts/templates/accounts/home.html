@@ -197,17 +197,28 @@
     </style>
   </head>
 
+  <style>
+  .brand-logo {
+      max-width: 80%;      /* nunca excede el ancho del contenedor */
+      height: auto;        /* mantiene proporción */
+      display: block;
+  }
+  .sidebar .brand {
+      text-align: center;  /* por si flex falla */
+  }
+  </style>
+
   <body>
     <div class="app-shell">
       <!-- Sidebar -->
       <aside id="sidebar" class="sidebar">
         <div class="brand">
-          <div class="brand-logo" style="width: 36px; height: 36px">
-            <img
-              src="{% static 'accounts/empresa.png' %}"
-              alt="Placas Logo"
-              style="width: 36px; height: 36px; object-fit: contain"
-            />
+          <div class="brand d-flex justify-content-center align-items-start py-3">
+              <img
+                  src="{% static 'accounts/empresa.png' %}"
+                  alt="Placas Logo"
+                  class="brand-logo"
+              />
           </div>
         </div>
 
