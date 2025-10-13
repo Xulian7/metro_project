@@ -181,7 +181,7 @@
 
             <!-- Modal Nuevo Movimiento -->
             <div class="modal fade" id="nuevoMovimientoModal" tabindex="-1" aria-labelledby="nuevoMovimientoLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered"> <!-- más ancho y centrado -->
+            <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content shadow-lg rounded-4 border-0">
                 <form method="post" class="needs-validation" novalidate>
                     {% csrf_token %}
@@ -194,41 +194,43 @@
                     <div class="modal-body">
                     <div class="container">
                         <div class="row g-3">
+
                         <!-- Producto -->
                         <div class="col-md-6">
                             <label for="id_producto" class="form-label">Producto</label>
-                            {{ movimiento_form.producto|as_widget:attrs }}
+                            {% render_field movimiento_form.producto class="form-select" %}
                         </div>
 
                         <!-- Tipo -->
                         <div class="col-md-6">
                             <label for="id_tipo" class="form-label">Tipo de Movimiento</label>
-                            {{ movimiento_form.tipo|as_widget:attrs }}
+                            {% render_field movimiento_form.tipo class="form-select" %}
                         </div>
 
                         <!-- Cantidad -->
                         <div class="col-md-6">
                             <label for="id_cantidad" class="form-label">Cantidad</label>
-                            {{ movimiento_form.cantidad|as_widget:attrs }}
+                            {% render_field movimiento_form.cantidad class="form-control" placeholder="Ej: 10" %}
                         </div>
 
                         <!-- Precio Unitario -->
                         <div class="col-md-6">
                             <label for="id_precio_unitario" class="form-label">Precio Unitario</label>
-                            {{ movimiento_form.precio_unitario|as_widget:attrs }}
+                            {% render_field movimiento_form.precio_unitario class="form-control" placeholder="Ej: 15000" %}
                         </div>
 
                         <!-- Proveedor -->
                         <div class="col-md-6">
                             <label for="id_proveedor" class="form-label">Proveedor</label>
-                            {{ movimiento_form.proveedor|as_widget:attrs }}
+                            {% render_field movimiento_form.proveedor class="form-select" %}
                         </div>
 
                         <!-- Fecha -->
                         <div class="col-md-6">
                             <label for="id_fecha" class="form-label">Fecha</label>
-                            {{ movimiento_form.fecha|as_widget:attrs }}
+                            {% render_field movimiento_form.fecha class="form-control" type="date" %}
                         </div>
+
                         </div>
                     </div>
                     </div>
@@ -241,6 +243,7 @@
                 </div>
             </div>
             </div>
+
 
             <!-- Listado de movimientos por producto -->
             {% for producto, movs in movimientos_por_producto.items %}
