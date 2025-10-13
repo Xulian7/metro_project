@@ -179,13 +179,14 @@
                 </button>
             </div>
 
+            
             <!-- Modal Nuevo Movimiento -->
             <div class="modal fade" id="nuevoMovimientoModal" tabindex="-1" aria-labelledby="nuevoMovimientoLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content shadow-lg rounded-4 border-0">
                 <form method="post" class="needs-validation" novalidate>
                     {% csrf_token %}
-                    
+
                     <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title fw-bold" id="nuevoMovimientoLabel">Registrar Movimiento</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -210,13 +211,13 @@
                         <!-- Cantidad -->
                         <div class="col-md-6">
                             <label for="id_cantidad" class="form-label">Cantidad</label>
-                            {% render_field movimiento_form.cantidad class="form-control" placeholder="Ej: 10" %}
+                            {% render_field movimiento_form.cantidad class="form-control" %}
                         </div>
 
                         <!-- Precio Unitario -->
                         <div class="col-md-6">
                             <label for="id_precio_unitario" class="form-label">Precio Unitario</label>
-                            {% render_field movimiento_form.precio_unitario class="form-control" placeholder="Ej: 15000" %}
+                            {% render_field movimiento_form.precio_unitario class="form-control" %}
                         </div>
 
                         <!-- Proveedor -->
@@ -239,10 +240,12 @@
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" name="movimiento_submit" class="btn btn-primary px-4">Guardar</button>
                     </div>
+
                 </form>
                 </div>
             </div>
             </div>
+
 
 
             <!-- Listado de movimientos por producto -->
