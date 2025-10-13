@@ -17,6 +17,24 @@ def almacen_dashboard(request):
     movimientos = Movimiento.objects.order_by('-fecha')
 
     # ---------------------------
+    # FILTROS
+    # ---------------------------
+    producto_id = request.GET.get('producto')
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+    tipo_mov = request.GET.get('tipo_mov')  # ingreso/salida
+
+    filtro = Q()
+    if producto_id:
+        filtro &= Q(producto_id=producto_id)
+    if fecha_inicio and fecha_fin:
+        filtro &= Q(fecha__range=[fecha_inicio, fecha_fin])
+    if tipo_mov in ['ingreso', 'salida']:
+        filtro &= Q(tipo__startswith=tipo_mov)
+
+    movimientos = movimientos.filter(filtro)
+
+    # ---------------------------
     # FORMULARIOS
     # ---------------------------
     producto_form = ProductoForm()
@@ -83,6 +101,10 @@ def almacen_dashboard(request):
         "producto_form": producto_form,
         "proveedor_form": proveedor_form,
         "movimiento_form": movimiento_form,
+        "fecha_inicio": fecha_inicio or "",
+        "fecha_fin": fecha_fin or "",
+        "producto_id": producto_id or "",
+        "tipo_mov": tipo_mov or "",
     }
 
     return render(request, "almacen/almacen_tree_stock.html", context)
