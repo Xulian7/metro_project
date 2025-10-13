@@ -26,8 +26,8 @@ urlpatterns = [
     # Login y logout nativos de Django
     path("accounts/login/", auth_views.LoginView.as_view(template_name="accounts/login.html"), name="login"),
     path("accounts/logout/", auth_views.LogoutView.as_view(next_page="login"), name="logout"),
-    path('almacen/', include('almacen.urls'))
-    
+    path('almacen/', include('almacen.urls')),
+    path('vehiculos/', include('vehiculos.urls')),
 
 ]
 
