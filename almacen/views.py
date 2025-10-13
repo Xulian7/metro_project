@@ -107,7 +107,7 @@ def almacen_dashboard(request):
         "tipo_mov": tipo_mov or "",
     }
 
-    return render(request, "almacen/almacen_tree_stock.html", context)
+    return render(request, "almacen/almacen_dashboard.html", context)
 
 
 # ------------------------------------------------------
