@@ -28,6 +28,7 @@ class Movimiento(models.Model):
         ('salida_devolucion_proveedor', 'Devolución a proveedor'),
         ('salida_cortesia', 'Cortesía'),
         ('salida_ajuste', 'Ajuste salida'),
+        ('salida_venta', 'Venta'),
     ]
 
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
