@@ -163,7 +163,6 @@
                     ➕ Nuevo movimiento
                 </button>
             </div>
-
             <!-- Modal Nuevo Movimiento -->
             <div class="modal fade" id="nuevoMovimientoModal" tabindex="-1" aria-labelledby="nuevoMovimientoLabel" aria-hidden="true">
               <div class="modal-dialog">
@@ -203,55 +202,57 @@
               </div>
             </div>
 
-
             <!-- Listado de movimientos por producto -->
             {% for producto, movs in movimientos_por_producto.items %}
-                <h4 class="mt-3">
-                    {{ producto.nombre }} ({{ producto.referencia }})
-                    - Stock: <span class="{% if movs.stock_actual <= 0 %}text-danger{% else %}text-success{% endif %}">{{ movs.stock_actual }}</span>
-                    - Valor Stock: ${{ movs.valor_stock }}
-                </h4>
+              <h4 class="mt-3">
+                {{ producto.nombre }} ({{ producto.referencia }}) 
+                - Stock: <span class="{% if movs.stock_actual <= 0 %}text-danger{% else %}text-success{% endif %}">{{ movs.stock_actual }}</span>
+                - Valor Stock: ${{ movs.valor_stock }}
+              </h4>
 
-                <h5>Ingresos</h5>
-                {% if movs.ingresos %}
-                <table class="table table-sm table-bordered">
-                    <tr>
-                        <th>Tipo</th><th>Cantidad</th><th>Proveedor</th><th>Fecha</th><th>Precio Unitario</th>
+              <table class="table table-sm table-bordered table-striped">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Tipo</th>
+                    <th>Cantidad</th>
+                    <th>Proveedor</th>
+                    <th>Fecha</th>
+                    <th>Precio Unitario</th>
+                    <th>Movimiento</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for m in movs.ingresos %}
+                    <tr class="table-success">
+                      <td>{{ m.get_tipo_display }}</td>
+                      <td>{{ m.cantidad }}</td>
+                      <td>{% if m.proveedor %}{{ m.proveedor.nombre }}{% else %}-{% endif %}</td>
+                      <td>{{ m.fecha }}</td>
+                      <td>{{ m.precio_unitario }}</td>
+                      <td>Ingreso</td>
                     </tr>
-                    {% for m in movs.ingresos %}
-                    <tr>
-                        <td>{{ m.get_tipo_display }}</td>
-                        <td>{{ m.cantidad }}</td>
-                        <td>{% if m.proveedor %}{{ m.proveedor.nombre }}{% else %}-{% endif %}</td>
-                        <td>{{ m.fecha }}</td>
-                        <td>{{ m.precio_unitario }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
-                {% else %}
-                    <p>No hay ingresos registrados.</p>
-                {% endif %}
+                  {% endfor %}
 
-                <h5>Salidas</h5>
-                {% if movs.salidas %}
-                <table class="table table-sm table-bordered">
-                    <tr>
-                        <th>Tipo</th><th>Cantidad</th><th>Proveedor</th><th>Fecha</th><th>Precio Unitario</th>
+                  {% for m in movs.salidas %}
+                    <tr class="table-danger">
+                      <td>{{ m.get_tipo_display }}</td>
+                      <td>{{ m.cantidad }}</td>
+                      <td>{% if m.proveedor %}{{ m.proveedor.nombre }}{% else %}-{% endif %}</td>
+                      <td>{{ m.fecha }}</td>
+                      <td>{{ m.precio_unitario }}</td>
+                      <td>Salida</td>
                     </tr>
-                    {% for m in movs.salidas %}
+                  {% endfor %}
+
+                  {% if not movs.ingresos and not movs.salidas %}
                     <tr>
-                        <td>{{ m.get_tipo_display }}</td>
-                        <td>{{ m.cantidad }}</td>
-                        <td>{% if m.proveedor %}{{ m.proveedor.nombre }}{% else %}-{% endif %}</td>
-                        <td>{{ m.fecha }}</td>
-                        <td>{{ m.precio_unitario }}</td>
+                      <td colspan="6" class="text-center">No hay movimientos registrados.</td>
                     </tr>
-                    {% endfor %}
-                </table>
-                {% else %}
-                    <p>No hay salidas registradas.</p>
-                {% endif %}
+                  {% endif %}
+                </tbody>
+              </table>
             {% endfor %}
+
         </div>
     </div>
 </div>
