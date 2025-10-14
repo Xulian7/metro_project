@@ -17,4 +17,12 @@ class TransaccionForm(forms.ModelForm):
         if medio_pago == 'nequi' and not origen:
             self.add_error('origen', 'Debe seleccionar un origen si el medio de pago es Nequi.')
 
-        return cleaned_data  # 🔹 Esto es clave
+        return cleaned_data
+
+    def clean_cliente(self):
+        cliente = self.cleaned_data.get('cliente', '')
+        return cliente.title()  # fuerza Nombre Propio
+
+    def clean_placa(self):
+        placa = self.cleaned_data.get('placa', '')
+        return placa.upper()  # fuerza mayúsculas

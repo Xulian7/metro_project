@@ -32,7 +32,7 @@ class Transaccion(models.Model):
     medio_pago = models.CharField(max_length=20, choices=MEDIOS_PAGO)
     origen = models.CharField(max_length=20, choices=ORIGEN_NEQUI, blank=True, null=True)
     referencia = models.CharField(max_length=50, blank=True)
-    fecha_ingreso = models.DateTimeField(auto_now_add=True)
+    fecha_ingreso = models.DateTimeField()  # editable por el usuario
 
     def clean(self):
         from django.core.exceptions import ValidationError
