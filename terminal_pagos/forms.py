@@ -16,3 +16,5 @@ class TransaccionForm(forms.ModelForm):
 
         if medio_pago == 'nequi' and not origen:
             self.add_error('origen', 'Debe seleccionar un origen si el medio de pago es Nequi.')
+
+        return cleaned_data  # 🔹 Esto es clave
