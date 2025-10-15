@@ -37,9 +37,17 @@ class Movimiento(models.Model):
     proveedor = models.ForeignKey(Proveedor, on_delete=models.SET_NULL, null=True, blank=True)
     fecha = models.DateField(auto_now_add=True)
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    factura_referencia = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text="Factura o documento relacionado (proveedor, cliente, placa, etc.)"
+    )
 
     def __str__(self):
-        return f"{self.producto.nombre} - {self.tipo} - {self.cantidad}"
+        ref = f" - Ref: {self.factura_referencia}" if self.factura_referencia else ""
+        return f"{self.producto.nombre} - {self.tipo} - {self.cantidad}{ref}"
 
     def valor_total(self):
         return self.cantidad * self.precio_unitario
+

@@ -370,3 +370,28 @@
     </div>
 </div>
 {% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tipoSelect = document.querySelector('#id_tipo');
+    const facturaFieldRow = document.querySelector('[for="id_factura_referencia"]')?.closest('.row');
+
+    function toggleFacturaField() {
+        if (!tipoSelect || !facturaFieldRow) return;
+
+        const tiposConFactura = [
+            'ingreso_compra',
+            'salida_venta',
+            'ingreso_devolucion_cliente',
+            'salida_devolucion_proveedor'
+        ];
+
+        facturaFieldRow.style.display = tiposConFactura.includes(tipoSelect.value) ? '' : 'none';
+    }
+
+    toggleFacturaField();
+    tipoSelect?.addEventListener('change', toggleFacturaField);
+});
+</script>
+{% endblock %}
