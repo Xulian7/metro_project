@@ -1,64 +1,128 @@
+{% extends 'base.html' %}
 {% load static %}
+
+{% block content %}
 <div class="container py-4">
-    <h2>Terminal de Pagos</h2>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h2 class="mb-4 text-primary">Terminal de Pagos</h2>
 
-    <form method="post">
-        {% csrf_token %}
-        <div class="row g-3">
-            {{ form.tipo_pago.label_tag }} {{ form.tipo_pago }}
-            {{ form.placa.label_tag }} {{ form.placa }}
-            {{ form.cedula.label_tag }} {{ form.cedula }}
-            {{ form.cliente.label_tag }} {{ form.cliente }}
-            {{ form.valor.label_tag }} {{ form.valor }}
-            {{ form.medio_pago.label_tag }} {{ form.medio_pago }}
-            <div id="origen_div" style="display:none;">
-                {{ form.origen.label_tag }} {{ form.origen }}
-            </div>
-            {{ form.referencia.label_tag }} {{ form.referencia }}
-            {{ form.fecha_ingreso.label_tag }} {{ form.fecha_ingreso }}
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                
+                <div class="col-md-4">
+                    {{ form.tipo_pago.label_tag }}
+                    {{ form.tipo_pago }}
+                </div>
+
+                <div class="col-md-4">
+                    {{ form.placa.label_tag }}
+                    {{ form.placa }}
+                </div>
+
+                <div class="col-md-4">
+                    {{ form.cedula.label_tag }}
+                    {{ form.cedula }}
+                </div>
+
+                <div class="col-md-6">
+                    {{ form.cliente.label_tag }}
+                    {{ form.cliente }}
+                </div>
+
+                <div class="col-md-3">
+                    {{ form.valor.label_tag }}
+                    {{ form.valor }}
+                </div>
+
+                <div class="col-md-3">
+                    {{ form.medio_pago.label_tag }}
+                    {{ form.medio_pago }}
+                </div>
+
+                <div id="origen_div" class="col-md-6" style="display:none;">
+                    {{ form.origen.label_tag }}
+                    {{ form.origen }}
+                </div>
+
+                <div class="col-md-6">
+                    {{ form.referencia.label_tag }}
+                    {{ form.referencia }}
+                </div>
+
+                <div class="col-md-6">
+                    {{ form.fecha_ingreso.label_tag }}
+                    {{ form.fecha_ingreso }}
+                </div>
+
+                <div class="col-12 text-end mt-3">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-cash-coin me-1"></i> Procesar Pago
+                    </button>
+                </div>
+            </form>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Procesar Pago</button>
-    </form>
+    </div>
 
-    <hr>
-    <h4>Últimas Transacciones</h4>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Cliente</th>
-                <th>Tipo Pago</th>
-                <th>Valor</th>
-                <th>Medio</th>
-                <th>Origen</th>
-                <th>Fecha</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for t in transacciones %}
-            <tr>
-                <td>{{ t.cliente }}</td>
-                <td>{{ t.get_tipo_pago_display }}</td>
-                <td>{{ t.valor }}</td>
-                <td>{{ t.get_medio_pago_display }}</td>
-                <td>{{ t.get_origen_display }}</td>
-                <td>{{ t.fecha_ingreso }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="card mt-4 shadow-sm border-0">
+        <div class="card-body">
+            <h4 class="mb-3 text-secondary">Últimas Transacciones</h4>
+
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Tipo Pago</th>
+                            <th>Valor</th>
+                            <th>Medio</th>
+                            <th>Origen</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in transacciones %}
+                        <tr>
+                            <td>{{ t.cliente }}</td>
+                            <td>{{ t.get_tipo_pago_display }}</td>
+                            <td>${{ t.valor|floatformat:0 }}</td>
+                            <td>{{ t.get_medio_pago_display }}</td>
+                            <td>{{ t.get_origen_display }}</td>
+                            <td>{{ t.fecha_ingreso }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-3">
+                                No hay transacciones registradas.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
-function toggleOrigen() {
-    const medioPago = document.getElementById('id_medio_pago').value;
+document.addEventListener('DOMContentLoaded', function() {
+    const medioPago = document.getElementById('id_medio_pago');
     const origenDiv = document.getElementById('origen_div');
-    if (medioPago === 'nequi') {
-        origenDiv.style.display = 'block';
-    } else {
-        origenDiv.style.display = 'none';
-        document.getElementById('id_origen').value = '';
+    const origenInput = document.getElementById('id_origen');
+
+    function toggleOrigen() {
+        if (medioPago.value === 'nequi') {
+            origenDiv.style.display = 'block';
+        } else {
+            origenDiv.style.display = 'none';
+            if (origenInput) origenInput.value = '';
+        }
     }
-}
-document.getElementById('id_medio_pago').addEventListener('change', toggleOrigen);
-window.addEventListener('DOMContentLoaded', toggleOrigen);
+
+    medioPago.addEventListener('change', toggleOrigen);
+    toggleOrigen(); // inicializar al cargar
+});
 </script>
+{% endblock %}
