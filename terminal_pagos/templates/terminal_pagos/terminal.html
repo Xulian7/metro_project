@@ -2,74 +2,78 @@
 {% load static %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <h2 class="mb-4 text-primary">Terminal de Pagos</h2>
+<div class="container py-5">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-body p-4">
+            <h2 class="mb-4 fw-bold text-primary text-center">
+                <i class="bi bi-credit-card me-2"></i>Terminal de Pagos
+            </h2>
 
-            <form method="post" class="row g-3">
+            <form method="post" class="row g-4 justify-content-center">
                 {% csrf_token %}
-                
-                <div class="col-md-4">
-                    {{ form.tipo_pago.label_tag }}
-                    {{ form.tipo_pago }}
-                </div>
 
                 <div class="col-md-4">
-                    {{ form.placa.label_tag }}
-                    {{ form.placa }}
+                    <label class="form-label fw-semibold text-secondary">{{ form.tipo_pago.label }}</label>
+                    {{ form.tipo_pago|add_class:"form-select shadow-sm" }}
                 </div>
 
                 <div class="col-md-4">
-                    {{ form.cedula.label_tag }}
-                    {{ form.cedula }}
+                    <label class="form-label fw-semibold text-secondary">{{ form.placa.label }}</label>
+                    {{ form.placa|add_class:"form-control shadow-sm" }}
                 </div>
 
-                <div class="col-md-6">
-                    {{ form.cliente.label_tag }}
-                    {{ form.cliente }}
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">{{ form.cedula.label }}</label>
+                    {{ form.cedula|add_class:"form-control shadow-sm" }}
                 </div>
 
-                <div class="col-md-3">
-                    {{ form.valor.label_tag }}
-                    {{ form.valor }}
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">{{ form.cliente.label }}</label>
+                    {{ form.cliente|add_class:"form-control shadow-sm" }}
                 </div>
 
-                <div class="col-md-3">
-                    {{ form.medio_pago.label_tag }}
-                    {{ form.medio_pago }}
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">{{ form.valor.label }}</label>
+                    {{ form.valor|add_class:"form-control shadow-sm" }}
                 </div>
 
-                <div id="origen_div" class="col-md-6" style="display:none;">
-                    {{ form.origen.label_tag }}
-                    {{ form.origen }}
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">{{ form.medio_pago.label }}</label>
+                    {{ form.medio_pago|add_class:"form-select shadow-sm" }}
                 </div>
 
-                <div class="col-md-6">
-                    {{ form.referencia.label_tag }}
-                    {{ form.referencia }}
+                <div id="origen_div" class="col-md-4" style="display:none;">
+                    <label class="form-label fw-semibold text-secondary">{{ form.origen.label }}</label>
+                    {{ form.origen|add_class:"form-select shadow-sm" }}
                 </div>
 
-                <div class="col-md-6">
-                    {{ form.fecha_ingreso.label_tag }}
-                    {{ form.fecha_ingreso }}
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">{{ form.referencia.label }}</label>
+                    {{ form.referencia|add_class:"form-control shadow-sm" }}
                 </div>
 
-                <div class="col-12 text-end mt-3">
-                    <button type="submit" class="btn btn-primary px-4">
-                        <i class="bi bi-cash-coin me-1"></i> Procesar Pago
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">{{ form.fecha_ingreso.label }}</label>
+                    {{ form.fecha_ingreso|add_class:"form-control shadow-sm" }}
+                </div>
+
+                <div class="col-12 text-center mt-4">
+                    <button type="submit" class="btn btn-primary px-5 py-2 rounded-3 shadow-sm">
+                        <i class="bi bi-cash-coin me-2"></i>Procesar Pago
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="card mt-4 shadow-sm border-0">
-        <div class="card-body">
-            <h4 class="mb-3 text-secondary">Últimas Transacciones</h4>
+    <div class="card mt-5 shadow border-0 rounded-4">
+        <div class="card-body p-4">
+            <h4 class="mb-4 fw-semibold text-secondary text-center">
+                <i class="bi bi-clock-history me-2"></i>Últimas Transacciones
+            </h4>
 
             <div class="table-responsive">
-                <table class="table table-striped align-middle">
+                <table class="table table-hover align-middle text-center">
                     <thead class="table-light">
                         <tr>
                             <th>Cliente</th>
@@ -85,14 +89,14 @@
                         <tr>
                             <td>{{ t.cliente }}</td>
                             <td>{{ t.get_tipo_pago_display }}</td>
-                            <td>${{ t.valor|floatformat:0 }}</td>
+                            <td class="fw-semibold text-success">${{ t.valor|floatformat:0 }}</td>
                             <td>{{ t.get_medio_pago_display }}</td>
                             <td>{{ t.get_origen_display }}</td>
                             <td>{{ t.fecha_ingreso }}</td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-3">
+                            <td colspan="6" class="text-center text-muted py-4">
                                 No hay transacciones registradas.
                             </td>
                         </tr>
@@ -122,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     medioPago.addEventListener('change', toggleOrigen);
-    toggleOrigen(); // inicializar al cargar
+    toggleOrigen();
 });
 </script>
 {% endblock %}
