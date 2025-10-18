@@ -371,57 +371,63 @@
         </div>
 
         <!-- CONTENIDO PRINCIPAL -->
-        <!-- Widgets Section -->
-        <section class="widgets grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <!-- Widget 1 -->
-          <div class="widget card bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-2xl shadow-lg p-5 flex flex-col justify-between">
-            <div>
-              <h3 class="text-lg font-semibold mb-2">Ventas del día</h3>
-              <p class="text-3xl font-bold">$1.245.000</p>
+        <!-- TABLERO DE WIDGETS -->
+        <div class="dashboard-widgets">
+
+          <!-- Widget: Ventas del Día -->
+          <div class="widget-box">
+            <div class="widget-header">
+              <i class="bi bi-cash-stack"></i> Ventas del Día
             </div>
-            <div class="flex items-center justify-between text-sm mt-3">
-              <span class="opacity-80">+12% respecto ayer</span>
-              <i class="fa fa-arrow-up"></i>
+            <div>
+              <h4 class="fw-bold mb-1 text-success">$1.245.000</h4>
+              <p class="text-muted mb-0">
+                <i class="bi bi-graph-up"></i> +12% respecto ayer
+              </p>
             </div>
           </div>
 
-          <!-- Widget 2 -->
-          <div class="widget card bg-gradient-to-r from-green-500 to-green-700 text-white rounded-2xl shadow-lg p-5 flex flex-col justify-between">
-            <div>
-              <h3 class="text-lg font-semibold mb-2">Pagos pendientes</h3>
-              <p class="text-3xl font-bold">$350.000</p>
+          <!-- Widget: Pagos Pendientes -->
+          <div class="widget-box">
+            <div class="widget-header">
+              <i class="bi bi-wallet2"></i> Pagos Pendientes
             </div>
-            <div class="flex items-center justify-between text-sm mt-3">
-              <span class="opacity-80">3 clientes en espera</span>
-              <i class="fa fa-hourglass-half"></i>
+            <div>
+              <h4 class="fw-bold mb-1 text-warning">$350.000</h4>
+              <p class="text-muted mb-0">
+                <i class="bi bi-hourglass-split"></i> 3 clientes en espera
+              </p>
             </div>
           </div>
 
-          <!-- Widget 3 -->
-          <div class="widget card bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-2xl shadow-lg p-5 flex flex-col justify-between">
-            <div>
-              <h3 class="text-lg font-semibold mb-2">Inventario activo</h3>
-              <p class="text-3xl font-bold">428</p>
+          <!-- Widget: Inventario Activo -->
+          <div class="widget-box">
+            <div class="widget-header">
+              <i class="bi bi-box-seam"></i> Inventario Activo
             </div>
-            <div class="flex items-center justify-between text-sm mt-3">
-              <span class="opacity-80">+18 productos hoy</span>
-              <i class="fa fa-boxes"></i>
+            <div>
+              <h4 class="fw-bold mb-1 text-primary">428</h4>
+              <p class="text-muted mb-0">
+                <i class="bi bi-arrow-up-short"></i> +18 productos hoy
+              </p>
             </div>
           </div>
 
-          <!-- Widget 4 -->
-          <div class="widget card bg-gradient-to-r from-rose-500 to-rose-700 text-white rounded-2xl shadow-lg p-5 flex flex-col justify-between">
-            <div>
-              <h3 class="text-lg font-semibold mb-2">Usuarios conectados</h3>
-              <p class="text-3xl font-bold">12</p>
+          <!-- Widget: Usuarios Conectados -->
+          <div class="widget-box">
+            <div class="widget-header">
+              <i class="bi bi-people"></i> Usuarios Conectados
             </div>
-            <div class="flex items-center justify-between text-sm mt-3">
-              <span class="opacity-80">2 nuevos hoy</span>
-              <i class="fa fa-user-friends"></i>
+            <div>
+              <h4 class="fw-bold mb-1 text-danger">12</h4>
+              <p class="text-muted mb-0">
+                <i class="bi bi-person-plus"></i> 2 nuevos hoy
+              </p>
             </div>
           </div>
-        </section>
-        <!-- End Widgets Section -->
+
+        </div>
+        <!-- FIN TABLERO DE WIDGETS -->
 
       </main>
 
