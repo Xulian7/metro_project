@@ -1,0 +1,137 @@
+{% extends 'accounts/home.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid px-4">
+  <h2 class="mt-4 mb-3 text-center">Gestión de Clientes</h2>
+
+  <!-- Botón nuevo cliente -->
+  <div class="text-end mb-3">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#clienteModal" onclick="nuevoCliente()">
+      + Nuevo Cliente
+    </button>
+  </div>
+
+  <!-- Tabla de clientes -->
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Cédula</th>
+          <th>Nombre</th>
+          <th>Nacionalidad</th>
+          <th>Teléfono</th>
+          <th>Tipo</th>
+          <th>Status</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="clientes-table">
+        {% for cliente in clientes %}
+        <tr id="cliente-{{ cliente.id }}">
+          <td>{{ cliente.cedula }}</td>
+          <td>{{ cliente.nombre }}</td>
+          <td>{{ cliente.nacionalidad }}</td>
+          <td>{{ cliente.telefono }}</td>
+          <td>{{ cliente.tipo }}</td>
+          <td>{{ cliente.status }}</td>
+          <td>
+            <button class="btn btn-sm btn-primary"
+                    onclick="editarCliente({{ cliente.id }})">
+              Editar
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted">No hay clientes registrados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Cliente -->
+<div class="modal fade" id="clienteModal" tabindex="-1" aria-labelledby="clienteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="clienteForm" method="POST">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="clienteModalLabel">Nuevo Cliente</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          {{ form.as_p }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap + AJAX -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function nuevoCliente() {
+  document.getElementById('clienteModalLabel').innerText = 'Nuevo Cliente';
+  const form = document.getElementById('clienteForm');
+  form.reset();
+  form.action = '/clientes/';
+}
+
+function editarCliente(id) {
+  fetch(`/clientes/${id}/`)
+    .then(response => response.json())
+    .then(data => {
+      const form = document.getElementById('clienteForm');
+      document.getElementById('clienteModalLabel').innerText = 'Editar Cliente';
+      form.action = `/clientes/${id}/`;
+
+      // Rellenar campos (asegúrate de que coincidan con los names del form)
+      for (const key in data) {
+        const field = document.getElementById(`id_${key}`);
+        if (field) field.value = data[key];
+      }
+
+      const modal = new bootstrap.Modal(document.getElementById('clienteModal'));
+      modal.show();
+    });
+}
+
+document.getElementById('clienteForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const form = e.target;
+  const url = form.action;
+  const formData = new FormData(form);
+
+  fetch(url, {
+    method: 'POST',
+    body: formData,
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      actualizarTabla();
+      bootstrap.Modal.getInstance(document.getElementById('clienteModal')).hide();
+    } else {
+      alert('Error al guardar cliente');
+    }
+  })
+  .catch(() => alert('Error en la comunicación con el servidor'));
+});
+
+function actualizarTabla() {
+  fetch('/clientes/')
+    .then(response => response.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const nuevaTabla = doc.querySelector('#clientes-table').innerHTML;
+      document.querySelector('#clientes-table').innerHTML = nuevaTabla;
+    });
+}
+</script>
+{% endblock %}

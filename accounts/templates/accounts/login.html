@@ -1,0 +1,123 @@
+<!-- accounts/templates/accounts/login.html -->
+{% load static %} {% load widget_tweaks %}
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login - Gestion</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f8f9fa;
+        --card: #fff;
+        --text: #222;
+      }
+      [data-theme="dark"] {
+        --bg: #0b1220;
+        --card: #0f1724;
+        --text: #e6eef8;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+      }
+      .auth-card {
+        max-width: 920px;
+        margin: auto;
+        margin-top: 6vh;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(2, 6, 23, 0.25);
+      }
+      .hero {
+        background: linear-gradient(180deg, #0d6efd33, transparent);
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .form-control:focus {
+        box-shadow: none;
+        border-color: #0d6efd;
+      }
+      .muted-small {
+        font-size: 0.9rem;
+        color: rgba(0, 0, 0, 0.55);
+      }
+      [data-theme="dark"] .muted-small {
+        color: rgba(255, 255, 255, 0.65);
+      }
+    </style>
+  </head>
+  <body data-theme="light">
+    <div class="container py-5">
+      <div class="card auth-card">
+        <div class="row g-0">
+          <div class="col-md-6 hero p-4">
+            <div class="text-center w-100">
+              <h1 class="fw-bold">Bienvenido</h1>
+              <img
+                src="{% static 'accounts/empresa.png' %}"
+                alt="Empresa"
+                class="img-fluid my-3"
+              />
+              <p class="muted-small">Gestión de compraventa: / 2025.</p>
+            </div>
+          </div>
+
+          <div class="col-md-6 p-4">
+            <div class="mb-3">
+              <h5 class="mb-0">Iniciar sesión</h5>
+              <small class="muted-small">Introduce tus datos</small>
+            </div>
+
+            <form method="post" class="needs-validation" novalidate>
+              {% csrf_token %}
+
+              <div class="mb-3 form-floating">
+                {{ form.username|add_class:"form-control" }}
+                <label for="{{ form.username.id_for_label }}">Usuario</label>
+                <div class="invalid-feedback">Escribe tu usuario.</div>
+              </div>
+
+              <div class="mb-3 form-floating">
+                {{ form.password|add_class:"form-control" }}
+                <label for="{{ form.password.id_for_label }}">Contraseña</label>
+                <div class="form-text muted-small">
+                  Introduce tu contraseña.
+                </div>
+                <div class="invalid-feedback">Contraseña requerida.</div>
+              </div>
+
+              {% if form.errors %}
+              <div class="text-danger mb-2">
+                Usuario o contraseña incorrectos.
+              </div>
+              {% endif %}
+
+              <div class="d-grid mb-3">
+                <button class="btn btn-primary btn-lg" type="submit">
+                  Entrar
+                </button>
+              </div>
+            </form>
+
+            <hr />
+            <div class="text-center muted-small">
+              <small>Versión 1.0.0 Septiembre 2025</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

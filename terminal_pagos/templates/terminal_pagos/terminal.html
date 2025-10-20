@@ -1,0 +1,133 @@
+{% extends 'accounts/home.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-body p-4">
+            <h2 class="mb-4 fw-bold text-primary text-center">
+                <i class="bi bi-credit-card me-2"></i>Terminal de Pagos
+            </h2>
+
+            <form method="post" class="row g-4 justify-content-center">
+                {% csrf_token %}
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">{{ form.tipo_pago.label }}</label>
+                    {{ form.tipo_pago|add_class:"form-select shadow-sm" }}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">{{ form.placa.label }}</label>
+                    {{ form.placa|add_class:"form-control shadow-sm" }}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">{{ form.cedula.label }}</label>
+                    {{ form.cedula|add_class:"form-control shadow-sm" }}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">{{ form.cliente.label }}</label>
+                    {{ form.cliente|add_class:"form-control shadow-sm" }}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">{{ form.valor.label }}</label>
+                    {{ form.valor|add_class:"form-control shadow-sm" }}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">{{ form.medio_pago.label }}</label>
+                    {{ form.medio_pago|add_class:"form-select shadow-sm" }}
+                </div>
+
+                <div id="origen_div" class="col-md-4" style="display:none;">
+                    <label class="form-label fw-semibold text-secondary">{{ form.origen.label }}</label>
+                    {{ form.origen|add_class:"form-select shadow-sm" }}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">{{ form.referencia.label }}</label>
+                    {{ form.referencia|add_class:"form-control shadow-sm" }}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary">{{ form.fecha_ingreso.label }}</label>
+                    {{ form.fecha_ingreso|add_class:"form-control shadow-sm" }}
+                </div>
+
+                <div class="col-12 text-center mt-4">
+                    <button type="submit" class="btn btn-primary px-5 py-2 rounded-3 shadow-sm">
+                        <i class="bi bi-cash-coin me-2"></i>Procesar Pago
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mt-5 shadow border-0 rounded-4">
+        <div class="card-body p-4">
+            <h4 class="mb-4 fw-semibold text-secondary text-center">
+                <i class="bi bi-clock-history me-2"></i>Últimas Transacciones
+            </h4>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Tipo Pago</th>
+                            <th>Valor</th>
+                            <th>Medio</th>
+                            <th>Origen</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in transacciones %}
+                        <tr>
+                            <td>{{ t.cliente }}</td>
+                            <td>{{ t.get_tipo_pago_display }}</td>
+                            <td class="fw-semibold text-success">${{ t.valor|floatformat:0 }}</td>
+                            <td>{{ t.get_medio_pago_display }}</td>
+                            <td>{{ t.get_origen_display }}</td>
+                            <td>{{ t.fecha_ingreso }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                No hay transacciones registradas.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const medioPago = document.getElementById('id_medio_pago');
+    const origenDiv = document.getElementById('origen_div');
+    const origenInput = document.getElementById('id_origen');
+
+    function toggleOrigen() {
+        if (medioPago.value === 'nequi') {
+            origenDiv.style.display = 'block';
+        } else {
+            origenDiv.style.display = 'none';
+            if (origenInput) origenInput.value = '';
+        }
+    }
+
+    medioPago.addEventListener('change', toggleOrigen);
+    toggleOrigen();
+});
+</script>
+{% endblock %}

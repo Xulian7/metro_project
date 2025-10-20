@@ -1,0 +1,397 @@
+{% extends "accounts/home.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}Gestion de almacen{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <h1 class="mb-2">Gestion de almacen</h1>
+
+    
+
+    <!-- Export CSV -->
+    <form method="post" class="mb-3">
+        {% csrf_token %}
+        <button type="submit" name="export_csv" class="btn btn-success">Exportar CSV</button>
+    </form>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs" id="almacenTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="productos-tab" data-bs-toggle="tab" data-bs-target="#productos" type="button">Productos</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="proveedores-tab" data-bs-toggle="tab" data-bs-target="#proveedores" type="button">Proveedores</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="movimientos-tab" data-bs-toggle="tab" data-bs-target="#movimientos" type="button">Movimientos</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="stock-tab" data-bs-toggle="tab" data-bs-target="#stock" type="button">Stock</button>
+    </ul>
+
+    <style>
+      /* Estilo base de las tabs */
+      #almacenTabs .nav-link {
+          border: 1px solid transparent;
+          border-radius: 0.5rem 0.5rem 0 0;
+          margin-right: 0.2rem;
+          transition: all 0.2s ease-in-out;
+      }
+
+      /* Hover sobre pestañas inactivas */
+      #almacenTabs .nav-link:not(.active):hover {
+          border-color: #dee2e6 #dee2e6 #dee2e6 #dee2e6;
+          background-color: #f8f9fa;
+      }
+
+      /* Pestaña activa */
+      #almacenTabs .nav-link.active {
+          border-color: #0d6efd #0d6efd white;
+          border-bottom-color: white;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          background-color: white;
+          font-weight: 500;
+      }
+
+      /* Ajuste del contenedor de tab content */
+      .tab-content {
+          border: 1px solid #dee2e6;
+          border-top: none;
+          padding: 1rem;
+          border-radius: 0 0 0.5rem 0.5rem;
+          background-color: white;
+      }
+    </style>
+
+
+    <div class="tab-content mt-3">
+        <!-- Productos -->
+        <div class="tab-pane fade show active" id="productos">
+            <!-- Crear Producto Individual -->
+            <div class="card shadow-sm p-4 mb-4">
+                <h4 class="fw-bold mb-3">Crear Producto</h4>
+
+                <form method="post" class="row g-3">
+                    {% csrf_token %}
+                    
+                    <!-- Nombre -->
+                    <div class="col-md-3">
+                        <label for="{{ producto_form.nombre.id_for_label }}" class="form-label">Nombre</label>
+                        {% render_field producto_form.nombre class="form-control" placeholder="Ej. Tornillo cabeza hexagonal" %}
+                    </div>
+
+                    <!-- Referencia -->
+                    <div class="col-md-3">
+                        <label for="{{ producto_form.referencia.id_for_label }}" class="form-label">Referencia</label>
+                        {% render_field producto_form.referencia class="form-control" placeholder="Ref-001" %}
+                    </div>
+
+                    <!-- Utilidad -->
+                    <div class="col-md-2">
+                        <label for="{{ producto_form.utilidad.id_for_label }}" class="form-label">Utilidad</label>
+                        {% render_field producto_form.utilidad class="form-control" placeholder="Alta/Media/Baja" %}
+                    </div>
+
+                    <!-- Precio venta -->
+                    <div class="col-md-2">
+                        <label for="{{ producto_form.precio_venta.id_for_label }}" class="form-label">Precio venta</label>
+                        {% render_field producto_form.precio_venta class="form-control" step="0.01" placeholder="5000" %}
+                    </div>
+
+                    <!-- EAN -->
+                    <div class="col-md-2">
+                        <label for="{{ producto_form.ean.id_for_label }}" class="form-label">EAN</label>
+                        {% render_field producto_form.ean class="form-control" placeholder="Código EAN" %}
+                    </div>
+
+                    <!-- Botón Guardar -->
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" name="producto_submit" class="btn btn-primary w-100">Guardar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Carga Masiva de Productos -->
+            <div class="card shadow-sm p-4 mb-4">
+                <h4 class="fw-bold mb-3">Carga Masiva de Productos</h4>
+
+                {% if mensaje %}
+                    <div class="alert alert-{{ mensaje.tipo }}" role="alert">
+                        {{ mensaje.texto }}
+                    </div>
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data" class="row g-3">
+                    {% csrf_token %}
+                    <div class="col-md-6">
+                        <input type="file" name="archivo_excel" class="form-control" accept=".xlsx">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" name="carga_masiva_productos" class="btn btn-success w-100">Cargar Productos</button>
+                    </div>
+                </form>
+
+                <p class="mt-2 text-muted">
+                    El archivo debe tener las columnas: <strong>referencia, nombre, precio_venta, utilidad, ean</strong>
+                </p>
+            </div>
+
+            <!-- Lista de Productos -->
+            <h3>Lista de Productos</h3>
+            <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Referencia</th>
+                        <th>Utilidad</th>
+                        <th>Precio Venta</th>
+                        <th>EAN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.nombre }}</td>
+                        <td>{{ producto.referencia }}</td>
+                        <td>{{ producto.utilidad }}</td>
+                        <td>{{ producto.precio_venta }}</td>
+                        <td>{{ producto.ean }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Proveedores -->
+        <div class="tab-pane fade" id="proveedores">
+            <h3 class="mb-4">🧾 Crear Proveedor</h3>
+
+            <form method="post" class="row g-3 mb-4 needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="col-md-4">
+                    <label for="id_nombre" class="form-label">Nombre</label>
+                    {{ proveedor_form.nombre|add_class:"form-control" }}
+                </div>
+                <div class="col-md-4">
+                    <label for="id_nit" class="form-label">NIT</label>
+                    {{ proveedor_form.nit|add_class:"form-control" }}
+                </div>
+                <div class="col-md-4">
+                    <label for="id_telefono" class="form-label">Teléfono</label>
+                    {{ proveedor_form.telefono|add_class:"form-control" }}
+                </div>
+
+                <div class="col-12 d-flex justify-content-end mt-3">
+                    <button type="submit" name="proveedor_submit" class="btn btn-primary px-4">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+
+            <hr>
+
+            <h3 class="mb-3">📋 Lista de Proveedores</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>NIT</th>
+                            <th>Teléfono</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prov in proveedores %}
+                        <tr>
+                            <td>{{ prov.nombre }}</td>
+                            <td>{{ prov.nit }}</td>
+                            <td>{{ prov.telefono }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-muted">No hay proveedores registrados</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Movimientos -->
+        <div class="tab-pane fade" id="movimientos">
+            <h3>Movimientos por Producto</h3>
+
+            <!-- Botones superiores -->
+            <div class="d-flex justify-content-between mb-3">
+                <!-- Nuevo movimiento -->
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#nuevoMovimientoModal">
+                    ➕ Nuevo movimiento
+                </button>
+
+                <!-- Carga masiva de factura -->
+                <form method="post" enctype="multipart/form-data" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <input type="file" name="archivo_factura" class="form-control" accept=".xlsx">
+                    <button type="submit" name="carga_masiva_factura" class="btn btn-primary">
+                        📄 Cargar Factura
+                    </button>
+                </form>
+            </div>
+
+            {% if mensaje_factura %}
+                <div class="alert alert-{{ mensaje_factura.tipo }}" role="alert">
+                    {{ mensaje_factura.texto }}
+                </div>
+            {% endif %}
+
+            <!-- Modal Nuevo Movimiento -->
+            <div class="modal fade" id="nuevoMovimientoModal" tabindex="-1" aria-labelledby="nuevoMovimientoLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="nuevoMovimientoLabel">Registrar Movimiento</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    {% for field in movimiento_form %}
+                                        <div class="row mb-3">
+                                            <label for="{{ field.id_for_label }}" class="col-sm-4 col-form-label text-end">
+                                                {{ field.label }}{% if field.field.required %}*{% endif %}
+                                            </label>
+                                            <div class="col-sm-8">
+                                                {{ field }}
+                                                {% if field.help_text %}
+                                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                                {% endif %}
+                                                {% for error in field.errors %}
+                                                    <div class="text-danger">{{ error }}</div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" name="movimiento_submit" class="btn btn-primary">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Listado de movimientos por producto -->
+            {% for producto, movs in movimientos_por_producto.items %}
+                <h4 class="mt-3">
+                    {{ producto.nombre }} ({{ producto.referencia }}) 
+                    - Stock: <span class="{% if movs.stock_actual <= 0 %}text-danger{% else %}text-success{% endif %}">{{ movs.stock_actual }}</span>
+                    - Valor Stock: ${{ movs.valor_stock }}
+                </h4>
+
+                <table class="table table-sm table-bordered table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Cantidad</th>
+                            <th>Proveedor</th>
+                            <th>Fecha</th>
+                            <th>Precio Unitario</th>
+                            <th>Movimiento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in movs.ingresos %}
+                            <tr class="table-success">
+                                <td>{{ m.get_tipo_display }}</td>
+                                <td>{{ m.cantidad }}</td>
+                                <td>{% if m.proveedor %}{{ m.proveedor.nombre }}{% else %}-{% endif %}</td>
+                                <td>{{ m.fecha }}</td>
+                                <td>{{ m.precio_unitario }}</td>
+                                <td>Ingreso</td>
+                            </tr>
+                        {% endfor %}
+
+                        {% for m in movs.salidas %}
+                            <tr class="table-danger">
+                                <td>{{ m.get_tipo_display }}</td>
+                                <td>{{ m.cantidad }}</td>
+                                <td>{% if m.proveedor %}{{ m.proveedor.nombre }}{% else %}-{% endif %}</td>
+                                <td>{{ m.fecha }}</td>
+                                <td>{{ m.precio_unitario }}</td>
+                                <td>Salida</td>
+                            </tr>
+                        {% endfor %}
+
+                        {% if not movs.ingresos and not movs.salidas %}
+                            <tr>
+                                <td colspan="6" class="text-center">No hay movimientos registrados.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            {% endfor %}
+        </div>
+
+
+        <!-- Pestaña Stock -->
+        <div class="tab-pane fade" id="stock" role="tabpanel" aria-labelledby="stock-tab">
+            <h5 class="mb-3">Resumen de Stock</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Producto</th>
+                            <th>Referencia</th>
+                            <th>Stock Actual</th>
+                            <th>Valor Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for producto, movs in movimientos_por_producto.items %}
+                        <tr>
+                            <td>{{ producto.nombre }}</td>
+                            <td>{{ producto.referencia }}</td>
+                            <td>
+                                <span class="{% if movs.stock_actual <= 0 %}text-danger fw-bold{% else %}text-success{% endif %}">
+                                    {{ movs.stock_actual }}
+                                </span>
+                            </td>
+                            <td>${{ movs.valor_stock }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tipoSelect = document.querySelector('#id_tipo');
+    const facturaFieldRow = document.querySelector('[for="id_factura_referencia"]')?.closest('.row');
+
+    function toggleFacturaField() {
+        if (!tipoSelect || !facturaFieldRow) return;
+
+        const tiposConFactura = [
+            'ingreso_compra',
+            'salida_venta',
+            'ingreso_devolucion_cliente',
+            'salida_devolucion_proveedor'
+        ];
+
+        facturaFieldRow.style.display = tiposConFactura.includes(tipoSelect.value) ? '' : 'none';
+    }
+
+    toggleFacturaField();
+    tipoSelect?.addEventListener('change', toggleFacturaField);
+});
+</script>
+{% endblock %}

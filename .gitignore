@@ -1,0 +1,41 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# --- Virtualenv / Pipenv ---
+.env
+.venv/
+env/
+venv/
+ENV/
+Pipfile.lock
+poetry.lock
+
+# --- Django ---
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+
+
+# --- IDEs / Editores ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.swo
+
+# --- Mac / Linux / Windows basura ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# --- Railway / Heroku ---
+*.sqlite3
+*.bak
+*.old
