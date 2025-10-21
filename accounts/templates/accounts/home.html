@@ -307,6 +307,16 @@
         });
       });
 
+      // Expandir el sidebar al hacer clic en cualquier icono cuando esté colapsado
+      document.querySelectorAll(".sidebar .nav-link").forEach(link => {
+        link.addEventListener("click", () => {
+          const sidebar = document.querySelector("#sidebar");
+          if (sidebar.classList.contains("collapsed")) {
+            sidebar.classList.remove("collapsed");
+          }
+        });
+      });
+
 </script>
 
     <!-- Bootstrap JS Bundle -->
