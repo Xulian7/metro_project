@@ -199,6 +199,26 @@ document.querySelectorAll('.edit-vehiculo-btn').forEach(btn => {
         document.getElementById('modal-estado').value = btn.dataset.estado;
     });
 });
+
+document.querySelector('#editarVehiculoModal form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+
+  const formData = new FormData(form);
+  const response = await fetch('/vehiculos/update/', {
+    method: 'POST',
+    body: formData,
+    headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') },
+  });
+
+  if (response.ok) {
+    // Cierra el modal y recarga solo la tabla (puedes hacerlo con fetch o simplemente reload)
+    location.reload();
+  } else {
+    alert('Error al actualizar el vehículo.');
+  }
+});
+
 </script>
 
 
