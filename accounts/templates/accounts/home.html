@@ -165,9 +165,9 @@
             <i class="bi bi-list"></i>
           </button>
 
-          <div class="dropdown">
+          <div class="dropdown user-dropdown">
             <button
-              class="btn btn-outline-primary d-flex align-items-center gap-2 py-1 px-2"
+              class="btn btn-outline-primary user-btn d-flex align-items-center gap-2 py-1 px-3"
               type="button"
               id="userDropdown"
               data-bs-toggle="dropdown"
@@ -180,14 +180,13 @@
             </button>
 
             <ul
-              class="dropdown-menu dropdown-menu-end shadow-sm border-0"
+              class="dropdown-menu dropdown-menu-end user-menu shadow border-0 mt-2"
               aria-labelledby="userDropdown"
             >
-              <li class="dropdown-header text-center py-2">
-                <div class="fw-semibold">{{ request.user.username }}</div>
+              <li class="dropdown-header text-center py-2 border-bottom">
+                <div class="fw-semibold text-primary">{{ request.user.username }}</div>
                 <small class="text-muted">Conectado</small>
               </li>
-              <li><hr class="dropdown-divider my-1" /></li>
               <li>
                 <form
                   id="logoutForm"
@@ -203,7 +202,7 @@
               </li>
             </ul>
           </div>
-        </div>
+
 
         <!-- CONTENIDO PRINCIPAL -->
         <div class="view-card mt-2">
