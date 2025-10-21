@@ -256,11 +256,3 @@ border-radius: 8px;
   display: flex;
   height: 100vh;
 }
-
-.sidebar.collapsed ~ .content {
-  margin-left: 80px;
-}
-
-.sidebar ~ .content {
-  margin-left: 260px;
-}
