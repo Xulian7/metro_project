@@ -57,6 +57,12 @@
     </form>
 
     <!-- ===================================== -->
+    <!-- Buscador -->
+    <!-- ===================================== -->
+    <div class="mb-3">
+        <input type="text" id="busquedaPlaca" class="form-control" placeholder="Buscar por placa...">
+    </div>
+    <!-- ===================================== -->
     <!-- Tabla de Vehículos con Modal Dinámico -->
     <!-- ===================================== -->
     <table class="table table-striped table-bordered">
@@ -219,7 +225,15 @@ document.querySelector('#editarVehiculoModal form').addEventListener('submit', a
   }
 });
 
+document.getElementById('busquedaPlaca').addEventListener('keyup', function() {
+    const filtro = this.value.toLowerCase();
+    const filas = document.querySelectorAll('#tablaVehiculos tbody tr');
 
+    filas.forEach(fila => {
+        const placa = fila.querySelector('td').textContent.toLowerCase();
+        fila.style.display = placa.includes(filtro) ? '' : 'none';
+    });
+});
 
 </script>
 
