@@ -256,3 +256,14 @@ border-radius: 8px;
   display: flex;
   height: 100vh;
 }
+
+/* === Barra superior personalizada === */
+.topbar {
+  background-color: #0b1e39 !important;
+  color: white;
+}
+.topbar .btn,
+.topbar .dropdown-toggle {
+  color: white !important;
+  border-color: rgba(255, 255, 255, 0.2);
+}
