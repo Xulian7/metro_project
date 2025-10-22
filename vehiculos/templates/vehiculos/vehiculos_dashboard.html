@@ -113,6 +113,22 @@
             {% endfor %}
         </tbody>
     </table>
+    </table>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('busquedaPlaca');
+        const filas = document.querySelectorAll('table tbody tr');
+
+        input.addEventListener('keyup', function() {
+            const filtro = this.value.toLowerCase();
+            filas.forEach(fila => {
+                const placa = fila.querySelector('td').textContent.toLowerCase();
+                fila.style.display = placa.includes(filtro) ? '' : 'none';
+            });
+        });
+    });
+    </script>
 
 </div>
 
@@ -223,16 +239,6 @@ document.querySelector('#editarVehiculoModal form').addEventListener('submit', a
   } else {
     alert('Error al actualizar el vehículo.');
   }
-});
-
-document.getElementById('busquedaPlaca').addEventListener('keyup', function() {
-    const filtro = this.value.toLowerCase();
-    const filas = document.querySelectorAll('#tablaVehiculos tbody tr');
-
-    filas.forEach(fila => {
-        const placa = fila.querySelector('td').textContent.toLowerCase();
-        fila.style.display = placa.includes(filtro) ? '' : 'none';
-    });
 });
 
 </script>
