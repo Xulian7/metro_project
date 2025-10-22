@@ -259,14 +259,14 @@ border-radius: 8px;
 
 /* === Barra superior personalizada === */
 
+
 .topbar {
-  background-color: #1e1e2f;
+  background-color: #0b1e39 !important;
   color: white;
   border-radius: 12px;
   margin: 8px; /* opcional, separa la barra de los bordes */
   padding: 6px 12px;
 }
-
 .topbar .btn,
 .topbar .dropdown-toggle {
   color: white !important;
