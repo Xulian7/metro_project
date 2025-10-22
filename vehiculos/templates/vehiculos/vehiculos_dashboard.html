@@ -84,7 +84,7 @@
                 <td>{{ v.propietario }}</td>
                 <td>{{ v.numero_motor }}</td>
                 <td>{{ v.numero_chasis }}</td>
-                <td>{{ v.actualizacion_soat|date:"d/m/Y" }}</td>
+                <td>{{ v.actualizacion_soat|date:"Y-m-d" }}</td>
                 <td>{{ v.estado }}</td>
                 <td>
                     <button type="button" class="btn btn-sm btn-warning edit-vehiculo-btn"
@@ -96,7 +96,7 @@
                         data-propietario="{{ v.propietario }}"
                         data-motor="{{ v.numero_motor }}"
                         data-chasis="{{ v.numero_chasis }}"
-                        data-soat="{{ v.actualizacion_soat }}"
+                        data-soat="{{ v.actualizacion_soat|date:'Y-m-d' }}"
                         data-estado="{{ v.estado }}"
                         data-bs-toggle="modal"
                         data-bs-target="#editarVehiculoModal">
