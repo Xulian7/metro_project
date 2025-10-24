@@ -60,7 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'core.middlewares.GroupAccessMiddleware',
+    'core.middlewares.restrict_user_group.RestrictUserGroupMiddleware',
 ]
 
 ROOT_URLCONF = 'metro_project.urls'
