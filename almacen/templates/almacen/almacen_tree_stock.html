@@ -67,49 +67,65 @@
     <div class="tab-content mt-3">
         <!-- Productos -->
         <div class="tab-pane fade show active" id="productos">
-            <!-- Crear Producto Individual -->
-            <div class="card shadow-sm p-4 mb-4">
-                <h4 class="fw-bold mb-3">Crear Producto</h4>
+            <!-- Crear Producto (en modal) -->
+            <div class="d-flex justify-content-end mb-3">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearProductoModal">
+                ➕ Agregar Producto
+            </button>
+            </div>
 
-                <form method="post" class="row g-3">
+            <!-- Modal Crear Producto -->
+            <div class="modal fade" id="crearProductoModal" tabindex="-1" aria-labelledby="crearProductoLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                <form method="post">
                     {% csrf_token %}
-                    
-                    <!-- Nombre -->
-                    <div class="col-md-3">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="crearProductoLabel">Crear Nuevo Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                    <div class="row g-3">
+                        <!-- Nombre -->
+                        <div class="col-md-6">
                         <label for="{{ producto_form.nombre.id_for_label }}" class="form-label">Nombre</label>
                         {% render_field producto_form.nombre class="form-control" placeholder="Ej. Tornillo cabeza hexagonal" %}
-                    </div>
+                        </div>
 
-                    <!-- Referencia -->
-                    <div class="col-md-3">
+                        <!-- Referencia -->
+                        <div class="col-md-6">
                         <label for="{{ producto_form.referencia.id_for_label }}" class="form-label">Referencia</label>
                         {% render_field producto_form.referencia class="form-control" placeholder="Ref-001" %}
-                    </div>
+                        </div>
 
-                    <!-- Utilidad -->
-                    <div class="col-md-2">
+                        <!-- Utilidad -->
+                        <div class="col-md-4">
                         <label for="{{ producto_form.utilidad.id_for_label }}" class="form-label">Utilidad</label>
                         {% render_field producto_form.utilidad class="form-control" placeholder="Alta/Media/Baja" %}
-                    </div>
+                        </div>
 
-                    <!-- Precio venta -->
-                    <div class="col-md-2">
+                        <!-- Precio venta -->
+                        <div class="col-md-4">
                         <label for="{{ producto_form.precio_venta.id_for_label }}" class="form-label">Precio venta</label>
                         {% render_field producto_form.precio_venta class="form-control" step="0.01" placeholder="5000" %}
-                    </div>
+                        </div>
 
-                    <!-- EAN -->
-                    <div class="col-md-2">
+                        <!-- EAN -->
+                        <div class="col-md-4">
                         <label for="{{ producto_form.ean.id_for_label }}" class="form-label">EAN</label>
                         {% render_field producto_form.ean class="form-control" placeholder="Código EAN" %}
+                        </div>
                     </div>
-
-                    <!-- Botón Guardar -->
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" name="producto_submit" class="btn btn-primary w-100">Guardar</button>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" name="producto_submit" class="btn btn-primary">Guardar</button>
                     </div>
                 </form>
+                </div>
             </div>
+            </div>
+
 
             <!-- Carga Masiva de Productos -->
             <div class="card shadow-sm p-4 mb-4">
