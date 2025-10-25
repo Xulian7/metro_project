@@ -7,6 +7,8 @@ from .forms import ProductoForm, ProveedorForm, MovimientoForm
 import datetime
 import csv
 import openpyxl
+import openpyxl
+from openpyxl.styles import Font
 
 
 def almacen_dashboard(request):
@@ -89,35 +91,79 @@ def almacen_dashboard(request):
                 return redirect('almacen_dashboard')
 
             productos_creados = 0
+            productos_actualizados = 0
             errores = []
+            columnas = ['referencia', 'nombre', 'precio_venta', 'utilidad', 'ean']
 
             for i, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
-                ref, nombre, precio, utilidad, ean = row
-                if not ref or not nombre or precio is None:
-                    errores.append(f"Fila {i}: campos obligatorios vacíos")
-                    continue
                 try:
-                    precio = float(precio)
-                except ValueError:
-                    errores.append(f"Fila {i}: precio_venta inválido")
-                    continue
+                    datos = dict(zip(columnas, row))
 
-                producto, created = Producto.objects.update_or_create(
-                    referencia=ref,
-                    defaults={
-                        'nombre': nombre,
-                        'precio_venta': precio,
-                        'utilidad': utilidad,
-                        'ean': ean
-                    }
-                )
-                if created:
-                    productos_creados += 1
+                    # Validar campos obligatorios
+                    for campo in ['referencia', 'nombre', 'precio_venta']:
+                        if not datos[campo]:
+                            raise ValueError(f"Campo obligatorio vacío en columna '{campo}'")
 
+                    # Validar longitud de texto
+                    for campo in ['referencia', 'nombre', 'ean']:
+                        valor = datos[campo]
+                        if valor and isinstance(valor, str) and len(valor) > 50:
+                            raise ValueError(f"Valor demasiado largo en columna '{campo}' (máx 50 caracteres)")
+
+                    # Validar tipo numérico
+                    try:
+                        datos['precio_venta'] = float(datos['precio_venta'])
+                    except ValueError:
+                        raise ValueError(f"Valor inválido en columna 'precio_venta' → '{datos['precio_venta']}'")
+
+                    # Crear o actualizar
+                    producto, created = Producto.objects.update_or_create(
+                        referencia=datos['referencia'],
+                        defaults={
+                            'nombre': datos['nombre'],
+                            'precio_venta': datos['precio_venta'],
+                            'utilidad': datos['utilidad'],
+                            'ean': datos['ean']
+                        }
+                    )
+
+                    if created:
+                        productos_creados += 1
+                    else:
+                        productos_actualizados += 1
+
+                except Exception as e:
+                    errores.append({
+                        'fila': i,
+                        'error': str(e)
+                    })
+
+            # Si hay errores → generar Excel para descargar
             if errores:
-                messages.error(request, f"Errores en algunas filas: {errores}")
-            if productos_creados:
-                messages.success(request, f"Se crearon {productos_creados} productos correctamente.")
+                error_wb = openpyxl.Workbook()
+                error_ws = error_wb.active
+                error_ws.title = "Errores"
+                error_ws.append(["Fila", "Descripción del error"])
+
+                for err in errores:
+                    error_ws.append([err['fila'], err['error']])
+
+                # Encabezado en negrita
+                for cell in error_ws[1]:
+                    cell.font = Font(bold=True)
+
+                response = HttpResponse(
+                    content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+                response["Content-Disposition"] = 'attachment; filename="errores_carga_productos.xlsx"'
+                error_wb.save(response)
+                return response
+
+            # Si no hubo errores → mensajes normales
+            if productos_creados or productos_actualizados:
+                messages.success(request, f"Productos creados: {productos_creados} | actualizados: {productos_actualizados}")
+            else:
+                messages.info(request, "No se realizaron cambios en los productos.")
 
             return redirect('almacen_dashboard')
 
