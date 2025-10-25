@@ -73,7 +73,7 @@
             <form method="post" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
                 {% csrf_token %}
                 {{ form.archivo|add_class:"form-control form-control-sm" }}
-                <button type="submit" name="carga_masiva_submit" class="btn btn-outline-primary btn-sm">
+                <button type="submit" name="carga_masiva_productos" class="btn btn-outline-primary btn-sm">
                 <i class="bi bi-upload"></i> Cargar productos
                 </button>
             </form>
