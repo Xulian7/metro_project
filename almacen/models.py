@@ -11,8 +11,8 @@ class Proveedor(models.Model):
 
 class Producto(models.Model):
     nombre = models.CharField(max_length=100)
-    referencia = models.CharField(max_length=50, unique=True)
-    utilidad = models.CharField(max_length=50, blank=True, null=True)
+    referencia = models.CharField(max_length=100, unique=True)
+    utilidad = models.CharField(max_length=100, blank=True, null=True)
     precio_venta = models.DecimalField(max_digits=10, decimal_places=2)
     ean = models.CharField(max_length=13, blank=True, null=True)
 
