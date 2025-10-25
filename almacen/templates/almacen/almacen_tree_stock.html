@@ -72,11 +72,12 @@
             <!-- Formulario de carga masiva -->
             <form method="post" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
                 {% csrf_token %}
-                {{ form.archivo|add_class:"form-control form-control-sm" }}
+                <input type="file" name="archivo_excel" accept=".xlsx,.xls" class="form-control form-control-sm">
                 <button type="submit" name="carga_masiva_productos" class="btn btn-outline-primary btn-sm">
-                <i class="bi bi-upload"></i> Cargar productos
+                    <i class="bi bi-upload"></i> Cargar productos
                 </button>
             </form>
+
 
             <!-- Botón crear producto -->
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#crearProductoModal">
