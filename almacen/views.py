@@ -292,7 +292,6 @@ def export_movimientos_csv(movimientos):
         ])
     return response
 
-@csrf_exempt  # si usas {% csrf_token %} en el template, puedes quitar esto
 def editar_producto(request, id):
     """Actualiza los datos de un producto en tiempo real (AJAX)."""
     if request.method == "POST":

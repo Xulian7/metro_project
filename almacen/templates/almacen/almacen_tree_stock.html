@@ -9,10 +9,10 @@
     </div>
 
     <!-- Export CSV -->
-    <!-- <form method="post" class="mb-3">
+    <form method="post" class="mb-3">
         {% csrf_token %}
         <button type="submit" name="export_csv" class="btn btn-success">Exportar CSV</button>
-    </form> -->
+    </form>
 
     <!-- Tabs -->
     <ul class="nav nav-tabs" id="almacenTabs" role="tablist">
@@ -190,7 +190,7 @@
             const table = document.getElementById("tablaProductos");
             const rows = table.getElementsByTagName("tr");
 
-            // 🔎 Filtrado dinámico
+            //Filtrado dinámico
             input.addEventListener("keyup", function() {
                 const filtro = input.value.toLowerCase();
                 for (let i = 1; i < rows.length; i++) {
@@ -202,7 +202,7 @@
                 }
             });
 
-            // ✏️ Cargar datos al modal
+            //Cargar datos al modal
             document.querySelectorAll(".editarBtn").forEach(boton => {
                 boton.addEventListener("click", function() {
                 const fila = boton.closest("tr");
@@ -215,7 +215,7 @@
                 });
             });
 
-            // 💾 Guardar cambios (AJAX)
+            //Guardar cambios (AJAX)
             document.getElementById("formEditar").addEventListener("submit", function(e) {
                 e.preventDefault();
                 const id = document.getElementById("productoId").value;
@@ -227,7 +227,7 @@
                 ean: document.getElementById("editEan").value
                 };
 
-                fetch(`/productos/editar/${id}/`, {
+                fetch("{% url 'editar_producto' 0 %}".replace("0", id), {
                 method: "POST",
                 headers: {
                     "X-CSRFToken": "{{ csrf_token }}",
