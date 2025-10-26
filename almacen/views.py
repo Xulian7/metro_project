@@ -107,7 +107,7 @@ def almacen_dashboard(request):
                     # Validar longitud de texto
                     for campo in ['referencia', 'nombre', 'ean']:
                         valor = datos[campo]
-                        if valor and isinstance(valor, str) and len(valor) > 50:
+                        if valor and isinstance(valor, str) and len(valor) > 100:
                             raise ValueError(f"Valor demasiado largo en columna '{campo}' (máx 50 caracteres)")
 
                     # Validar tipo numérico
