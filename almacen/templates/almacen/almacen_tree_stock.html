@@ -94,17 +94,29 @@
             </div>
             </div>
 
+            <!-- Contenedor principal -->
+            <div class="card shadow-sm p-4">
+            <div class="card-body">
+                <!-- Título -->
+                <h5 class="card-title text-center mb-4 fw-semibold">📦 Lista de Productos</h5>
 
-            <!-- Buscador dinámico -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="mb-0">Lista de Productos</h3>
-            <input type="text" id="filtroNombre" class="form-control w-25" placeholder="🔎 Buscar por nombre...">
-            </div>
+                <!-- Buscador con icono -->
+                <div class="d-flex justify-content-center mb-3">
+                <div class="position-relative w-50">
+                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                    <input 
+                    type="text" 
+                    id="filtroNombre" 
+                    class="form-control ps-5 text-center" 
+                    placeholder="Buscar por nombre..."
+                    >
+                </div>
+                </div>
 
-            <!-- Lista de Productos -->
-            <h3>Lista de Productos</h3>
-            <table class="table table-bordered align-middle text-center">
-                <thead class="table-light">
+                <!-- Tabla de productos -->
+                <div class="table-responsive">
+                <table class="table table-bordered align-middle text-center" id="tablaProductos">
+                    <thead class="table-light">
                     <tr>
                         <th>Nombre</th>
                         <th>Referencia</th>
@@ -112,8 +124,8 @@
                         <th>Precio Venta</th>
                         <th>EAN</th>
                     </tr>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
                     {% for producto in productos %}
                     <tr>
                         <td>{{ producto.nombre }}</td>
@@ -123,29 +135,43 @@
                         <td>{{ producto.ean }}</td>
                     </tr>
                     {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+            </div>
+
             <!-- Script de filtrado -->
             <script>
             document.addEventListener("DOMContentLoaded", function() {
-                const input = document.getElementById("filtroNombre");
-                const table = document.getElementById("tablaProductos");
-                const rows = table.getElementsByTagName("tr");
+            const input = document.getElementById("filtroNombre");
+            const table = document.getElementById("tablaProductos");
+            const rows = table.getElementsByTagName("tr");
 
-                input.addEventListener("keyup", function() {
+            input.addEventListener("keyup", function() {
                 const filtro = input.value.toLowerCase();
 
-                // Recorre todas las filas excepto el encabezado
                 for (let i = 1; i < rows.length; i++) {
-                    const celdaNombre = rows[i].getElementsByTagName("td")[0];
-                    if (celdaNombre) {
+                const celdaNombre = rows[i].getElementsByTagName("td")[0];
+                if (celdaNombre) {
                     const texto = celdaNombre.textContent.toLowerCase();
                     rows[i].style.display = texto.includes(filtro) ? "" : "none";
-                    }
                 }
-                });
+                }
+            });
             });
             </script>
+
+            <!-- Estilo adicional para la animación de la lupa -->
+            <style>
+            #filtroNombre:focus + .bi-search,
+            #filtroNombre:not(:placeholder-shown) + .bi-search {
+            color: #0d6efd;
+            transform: scale(1.1);
+            transition: all 0.2s ease;
+            }
+            </style>
+
         </div>
 
         <!-- Proveedores -->
