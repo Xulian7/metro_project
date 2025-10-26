@@ -9,7 +9,9 @@ import csv
 import openpyxl
 import openpyxl
 from openpyxl.styles import Font
-
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json 
 
 def almacen_dashboard(request):
     productos = Producto.objects.all()
@@ -289,3 +291,26 @@ def export_movimientos_csv(movimientos):
             m.valor_total()
         ])
     return response
+
+@csrf_exempt  # si usas {% csrf_token %} en el template, puedes quitar esto
+def editar_producto(request, id):
+    """Actualiza los datos de un producto en tiempo real (AJAX)."""
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            producto = Producto.objects.get(pk=id)
+
+            producto.nombre = data.get("nombre", producto.nombre)
+            producto.referencia = data.get("referencia", producto.referencia)
+            producto.utilidad = data.get("utilidad", producto.utilidad)
+            producto.precio_venta = data.get("precio_venta", producto.precio_venta)
+            producto.ean = data.get("ean", producto.ean)
+            producto.save()
+
+            return JsonResponse({"success": True})
+        except Producto.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Producto no encontrado."}, status=404)
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=400)
+
+    return JsonResponse({"success": False, "error": "Método no permitido."}, status=405)
