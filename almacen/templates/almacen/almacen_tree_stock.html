@@ -98,19 +98,18 @@
             <div class="card shadow-sm p-4">
             <div class="card-body">
                 <!-- Título -->
-                <h5 class="card-title text-center mb-4 fw-semibold">📦 Lista de Productos</h5>
-
+                <h5 class="card-title text-center mb-4 fw-semibold">Lista de Productos</h5>
                 <!-- Buscador con icono -->
                 <div class="d-flex justify-content-center mb-3">
-                <div class="position-relative w-50">
-                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                    <input 
-                    type="text" 
-                    id="filtroNombre" 
-                    class="form-control ps-5 text-center" 
-                    placeholder="Buscar por nombre..."
-                    >
-                </div>
+                    <div class="position-relative w-50">
+                        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                        <input 
+                        type="text" 
+                        id="filtroNombre" 
+                        class="form-control ps-5 text-center" 
+                        placeholder="Buscar por nombre..."
+                        >
+                    </div>
                 </div>
 
                 <!-- Tabla de productos -->
@@ -123,16 +122,22 @@
                         <th>Utilidad</th>
                         <th>Precio Venta</th>
                         <th>EAN</th>
+                        <th>Acción</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for producto in productos %}
-                    <tr>
+                    <tr data-id="{{ producto.id }}">
                         <td>{{ producto.nombre }}</td>
                         <td>{{ producto.referencia }}</td>
                         <td>{{ producto.utilidad }}</td>
                         <td>{{ producto.precio_venta }}</td>
                         <td>{{ producto.ean }}</td>
+                        <td>
+                        <button class="btn btn-outline-primary btn-sm editarBtn" data-bs-toggle="modal" data-bs-target="#modalEditar">
+                            <i class="bi bi-pencil-square"></i> Editar
+                        </button>
+                        </td>
                     </tr>
                     {% endfor %}
                     </tbody>
@@ -141,16 +146,54 @@
             </div>
             </div>
 
-            <!-- Script de filtrado -->
+            <!-- Modal de edición -->
+            <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarLabel">Editar Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditar">
+                    <input type="hidden" id="productoId">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" id="editNombre" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Referencia</label>
+                        <input type="text" id="editReferencia" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Utilidad</label>
+                        <input type="number" step="0.01" id="editUtilidad" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Precio Venta</label>
+                        <input type="number" step="0.01" id="editPrecioVenta" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">EAN</label>
+                        <input type="text" id="editEan" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Guardar cambios</button>
+                    </form>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Script de filtrado y edición -->
             <script>
             document.addEventListener("DOMContentLoaded", function() {
             const input = document.getElementById("filtroNombre");
             const table = document.getElementById("tablaProductos");
             const rows = table.getElementsByTagName("tr");
 
+            // 🔎 Filtrado dinámico
             input.addEventListener("keyup", function() {
                 const filtro = input.value.toLowerCase();
-
                 for (let i = 1; i < rows.length; i++) {
                 const celdaNombre = rows[i].getElementsByTagName("td")[0];
                 if (celdaNombre) {
@@ -159,10 +202,60 @@
                 }
                 }
             });
+
+            // ✏️ Cargar datos al modal
+            document.querySelectorAll(".editarBtn").forEach(boton => {
+                boton.addEventListener("click", function() {
+                const fila = boton.closest("tr");
+                document.getElementById("productoId").value = fila.dataset.id;
+                document.getElementById("editNombre").value = fila.children[0].textContent;
+                document.getElementById("editReferencia").value = fila.children[1].textContent;
+                document.getElementById("editUtilidad").value = fila.children[2].textContent;
+                document.getElementById("editPrecioVenta").value = fila.children[3].textContent;
+                document.getElementById("editEan").value = fila.children[4].textContent;
+                });
+            });
+
+            // 💾 Guardar cambios (AJAX)
+            document.getElementById("formEditar").addEventListener("submit", function(e) {
+                e.preventDefault();
+                const id = document.getElementById("productoId").value;
+                const data = {
+                nombre: document.getElementById("editNombre").value,
+                referencia: document.getElementById("editReferencia").value,
+                utilidad: document.getElementById("editUtilidad").value,
+                precio_venta: document.getElementById("editPrecioVenta").value,
+                ean: document.getElementById("editEan").value
+                };
+
+                fetch(`/productos/editar/${id}/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+                })
+                .then(res => res.json())
+                .then(resp => {
+                if (resp.success) {
+                    const fila = document.querySelector(`tr[data-id="${id}"]`);
+                    fila.children[0].textContent = data.nombre;
+                    fila.children[1].textContent = data.referencia;
+                    fila.children[2].textContent = data.utilidad;
+                    fila.children[3].textContent = data.precio_venta;
+                    fila.children[4].textContent = data.ean;
+                    bootstrap.Modal.getInstance(document.getElementById("modalEditar")).hide();
+                } else {
+                    alert("Error al guardar cambios");
+                }
+                })
+                .catch(() => alert("Error de conexión"));
+            });
             });
             </script>
 
-            <!-- Estilo adicional para la animación de la lupa -->
+            <!-- Estilo adicional -->
             <style>
             #filtroNombre:focus + .bi-search,
             #filtroNombre:not(:placeholder-shown) + .bi-search {
@@ -171,6 +264,7 @@
             transition: all 0.2s ease;
             }
             </style>
+
 
         </div>
 
