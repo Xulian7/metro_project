@@ -3,10 +3,8 @@
 {% load widget_tweaks %}
 {% block title %}Gestion de almacen{% endblock %}
 {% block content %}
-<div class="container-fluid py-4">
-    <h1 class="mb-2">Gestion de almacen</h1>
-
-    
+<div class="container-fluid py-2">
+    <h5 class="mb-2 fw-semibold">Gestión de repuestos</h5>
 
     <!-- Export CSV -->
     <form method="post" class="mb-3">
@@ -28,41 +26,6 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="stock-tab" data-bs-toggle="tab" data-bs-target="#stock" type="button">Stock</button>
     </ul>
-
-    <style>
-      /* Estilo base de las tabs */
-      #almacenTabs .nav-link {
-          border: 1px solid transparent;
-          border-radius: 0.5rem 0.5rem 0 0;
-          margin-right: 0.2rem;
-          transition: all 0.2s ease-in-out;
-      }
-
-      /* Hover sobre pestañas inactivas */
-      #almacenTabs .nav-link:not(.active):hover {
-          border-color: #dee2e6 #dee2e6 #dee2e6 #dee2e6;
-          background-color: #f8f9fa;
-      }
-
-      /* Pestaña activa */
-      #almacenTabs .nav-link.active {
-          border-color: #0d6efd #0d6efd white;
-          border-bottom-color: white;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          background-color: white;
-          font-weight: 500;
-      }
-
-      /* Ajuste del contenedor de tab content */
-      .tab-content {
-          border: 1px solid #dee2e6;
-          border-top: none;
-          padding: 1rem;
-          border-radius: 0 0 0.5rem 0.5rem;
-          background-color: white;
-      }
-    </style>
-
 
     <div class="tab-content mt-3">
         <!-- Productos -->
