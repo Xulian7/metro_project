@@ -328,3 +328,38 @@ border-radius: 8px;
   box-shadow: 0 0 4px rgba(13, 110, 253, 0.3);
 }
 
+.widget-box {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  padding: 0;
+}
+
+.widget-header {
+  background-color: #0d6efd;
+  color: #fff;
+  font-weight: 600;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.widget-placeholder {
+  padding: 10px;
+  text-align: center;
+}
+
+.pico-placa-img {
+  width: 100%;
+  height: auto; /* mantiene proporciones */
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgba(13, 110, 253, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.pico-placa-img:hover {
+  transform: scale(1.03);
+}
