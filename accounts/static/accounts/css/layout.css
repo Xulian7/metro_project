@@ -302,6 +302,7 @@ border-radius: 8px;
   gap: 6px;
   transition: all 0.25s ease-in-out;
   box-shadow: none;
+  white-space: nowrap; /* ✅ evita salto de línea */
 }
 
 .btn-cargar-productos i {
@@ -321,8 +322,9 @@ border-radius: 8px;
   transform: translateY(-1px);
 }
 
-/* Opcional: efecto “click” sutil */
+/* Efecto “click” sutil */
 .btn-cargar-productos:active {
   transform: translateY(1px);
   box-shadow: 0 0 4px rgba(13, 110, 253, 0.3);
 }
+
