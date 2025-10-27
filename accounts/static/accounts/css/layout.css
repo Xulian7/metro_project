@@ -328,12 +328,19 @@ border-radius: 8px;
   box-shadow: 0 0 4px rgba(13, 110, 253, 0.3);
 }
 
+
+/* === Widget de Pico y Placa === */
 .widget-box {
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: auto; /* ✅ que crezca naturalmente */
+  min-height: 200px;
+  max-height: 100%; /* ✅ no se sale del contenedor padre */
+  width: 100%;
   overflow: hidden;
-  padding: 0;
 }
 
 .widget-header {
@@ -348,18 +355,21 @@ border-radius: 8px;
 }
 
 .widget-placeholder {
+  flex: 1;
   padding: 10px;
   text-align: center;
 }
 
+/* ✅ Imagen se adapta al ancho y no se deforma */
 .pico-placa-img {
   width: 100%;
-  height: auto; /* mantiene proporciones */
+  height: auto;
   border-radius: 8px;
   box-shadow: 0 0 6px rgba(13, 110, 253, 0.2);
   transition: transform 0.3s ease;
 }
 
+/* Efecto hover elegante */
 .pico-placa-img:hover {
   transform: scale(1.03);
 }
