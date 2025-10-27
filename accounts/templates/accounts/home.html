@@ -304,6 +304,16 @@
 
         toggleBtn.addEventListener("click", () => {
           sidebar.classList.toggle("collapsed");
+
+          // Cerrar todas las sublistas al colapsar
+          if (sidebar.classList.contains("collapsed")) {
+            document
+              .querySelectorAll(".sublist")
+              .forEach((sl) => sl.classList.remove("show"));
+            document
+              .querySelectorAll(".parent-link")
+              .forEach((pl) => pl.classList.remove("active-parent"));
+          }
         });
       });
 
