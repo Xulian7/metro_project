@@ -373,3 +373,14 @@ border-radius: 8px;
 .pico-placa-img:hover {
   transform: scale(1.03);
 }
+
+.panel-header {
+  border-left: 4px solid var(--bs-primary);
+  padding-left: 12px;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
