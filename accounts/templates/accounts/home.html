@@ -51,11 +51,12 @@
       <aside id="sidebar" class="sidebar">
         <div class="brand">
           <div class="brand d-flex justify-content-center align-items-start py-3">
-              <a href="/home">
+              <a href="{% url 'home' %}">
                 <img
-                    src="{% static 'accounts/empresa-2.png' %}"
-                    alt="Placas Logo"
-                    class="brand-logo"
+                  src="{% static 'accounts/empresa-2.png' %}"
+                  alt="Placas Logo"
+                  class="brand-logo"
+                  style="cursor: pointer;"
                 />
               </a>
           </div>
