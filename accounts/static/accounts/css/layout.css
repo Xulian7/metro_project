@@ -259,7 +259,6 @@ border-radius: 8px;
 
 /* === Barra superior personalizada === */
 
-
 .topbar {
   background-color: #0b1e39 !important;
   color: white;
@@ -292,3 +291,38 @@ border-radius: 8px;
       align-items: stretch !important;
     }
   }
+
+  .btn-cargar-productos {
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease-in-out;
+  box-shadow: none;
+}
+
+.btn-cargar-productos i {
+  font-size: 1rem;
+  transition: transform 0.25s ease;
+}
+
+/* 🧊 Efecto hover suave con glow azul */
+.btn-cargar-productos:hover {
+  background-color: var(--bs-primary);
+  color: #fff;
+  box-shadow: 0 0 8px rgba(13, 110, 253, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-cargar-productos:hover i {
+  transform: translateY(-1px);
+}
+
+/* Opcional: efecto “click” sutil */
+.btn-cargar-productos:active {
+  transform: translateY(1px);
+  box-shadow: 0 0 4px rgba(13, 110, 253, 0.3);
+}

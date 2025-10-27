@@ -38,7 +38,8 @@
             <form method="post" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
                 {% csrf_token %}
                 <input type="file" name="archivo_excel" accept=".xlsx,.xls" class="form-control form-control-sm">
-                <button type="submit" name="carga_masiva_productos" class="btn btn-outline-primary btn-sm">
+                <button type="submit" name="carga_masiva_productos"
+                    class="btn btn-outline-primary btn-sm btn-cargar-productos">
                     <i class="bi bi-upload"></i> Cargar productos
                 </button>
             </form>
