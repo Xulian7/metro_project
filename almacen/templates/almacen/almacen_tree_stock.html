@@ -91,54 +91,54 @@
 
             <!-- Contenedor principal -->
             <div class="card shadow-sm p-4">
-            <div class="card-body">
-                <!-- Título -->
-                <!--<h5 class="card-title text-center mb-4 fw-semibold">Lista de Productos</h5> -->
-                <!-- Buscador con icono -->
-                <div class="d-flex justify-content-center mb-3">
-                    <div class="position-relative w-50">
-                        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                        <input 
-                        type="text" 
-                        id="filtroNombre" 
-                        class="form-control ps-5 text-center" 
-                        placeholder="Buscar por nombre..."
-                        >
+                <div class="card-body">
+                    <!-- Título -->
+                    <!--<h5 class="card-title text-center mb-4 fw-semibold">Lista de Productos</h5> -->
+                    <!-- Buscador con icono -->
+                    <div class="d-flex justify-content-center mb-3">
+                        <div class="position-relative w-50">
+                            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                            <input 
+                            type="text" 
+                            id="filtroNombre" 
+                            class="form-control ps-5 text-center" 
+                            placeholder="Buscar por nombre..."
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Tabla de productos -->
+                    <div class="table-responsive">
+                        <table class="table modern-table align-middle text-center" id="tablaProductos">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Referencia</th>
+                                    <th>Utilidad</th>
+                                    <th>Precio Venta</th>
+                                    <th>EAN</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for producto in productos %}
+                                <tr data-id="{{ producto.id }}">
+                                    <td>{{ producto.nombre }}</td>
+                                    <td>{{ producto.referencia }}</td>
+                                    <td>{{ producto.utilidad }}</td>
+                                    <td>{{ producto.precio_venta }}</td>
+                                    <td>{{ producto.ean }}</td>
+                                    <td>
+                                        <button class="btn btn-outline-primary btn-sm btn-app-action editarBtn" data-bs-toggle="modal" data-bs-target="#modalEditar">
+                                            <i class="bi bi-pencil-square"></i> Editar
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-
-                <!-- Tabla de productos -->
-                <div class="table-responsive">
-                <table class="table table-bordered align-middle text-center" id="tablaProductos">
-                    <thead class="table-light">
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Referencia</th>
-                        <th>Utilidad</th>
-                        <th>Precio Venta</th>
-                        <th>EAN</th>
-                        <th>Acción</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for producto in productos %}
-                    <tr data-id="{{ producto.id }}">
-                        <td>{{ producto.nombre }}</td>
-                        <td>{{ producto.referencia }}</td>
-                        <td>{{ producto.utilidad }}</td>
-                        <td>{{ producto.precio_venta }}</td>
-                        <td>{{ producto.ean }}</td>
-                        <td>
-                        <button class="btn btn-outline-primary btn-sm editarBtn" data-bs-toggle="modal" data-bs-target="#modalEditar">
-                            <i class="bi bi-pencil-square"></i> Editar
-                        </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                </div>
-            </div>
             </div>
 
             <!-- Modal de edición -->
