@@ -452,3 +452,65 @@ border-radius: 8px;
   transform: translateY(1px);
   box-shadow: 0 0 4px rgba(13, 110, 253, 0.2);
 }
+
+/* 📊 Estilo moderno para tablas */
+.modern-table {
+  border-collapse: separate;
+  border-spacing: 0 0.4rem;
+  font-size: 0.9rem;
+}
+
+/* 🧩 Encabezado elegante */
+.modern-table thead {
+  background: linear-gradient(90deg, rgba(13,110,253,0.1), rgba(13,110,253,0.05));
+  color: #333;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.modern-table thead th {
+  border: none;
+  padding: 0.6rem 0.75rem;
+}
+
+/* 🔹 Filas compactas y sutilmente elevadas */
+.modern-table tbody tr {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: all 0.25s ease;
+}
+
+.modern-table tbody td {
+  border: none;
+  padding: 0.45rem 0.75rem;
+  vertical-align: middle;
+}
+
+/* 🧊 Efecto hover: fila flotante */
+.modern-table tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(13, 110, 253, 0.15);
+  background-color: rgba(13, 110, 253, 0.02);
+}
+
+/* 🔻 Bordes redondeados en extremos */
+.modern-table tbody tr td:first-child {
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+}
+.modern-table tbody tr td:last-child {
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+/* 🧠 Compacta en pantallas pequeñas */
+@media (max-width: 768px) {
+  .modern-table {
+    font-size: 0.85rem;
+  }
+  .modern-table tbody td {
+    padding: 0.4rem 0.5rem;
+  }
+}
