@@ -38,12 +38,10 @@
                 <form method="post" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
                     {% csrf_token %}
                     <input type="file" name="archivo_excel" accept=".xlsx,.xls" class="form-control form-control-sm">
-                    <button type="submit" name="carga_masiva_productos"
-                        class="btn btn-outline-primary btn-sm btn-cargar-productos">
+                    <button type="submit" class="btn btn-outline-primary btn-sm btn-app-action">
                         <i class="bi bi-upload"></i> Cargar productos
                     </button>
-                    <!-- Botón crear producto -->
-                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#crearProductoModal">
+                    <button type="button" class="btn btn-outline-primary btn-sm btn-app-action" data-bs-toggle="modal" data-bs-target="#crearProductoModal">
                         <i class="bi bi-plus-lg"></i> Nuevo producto
                     </button>
                 </form>

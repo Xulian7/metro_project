@@ -305,29 +305,29 @@ border-radius: 8px;
   white-space: nowrap; /* ✅ evita salto de línea */
 }
 
-.btn-cargar-productos i {
+/* 🎯 Estilo base para botones de acción de la app */
+.btn-app-action i {
   font-size: 1rem;
   transition: transform 0.25s ease;
 }
 
-/* 🧊 Efecto hover suave con glow azul */
-.btn-cargar-productos:hover {
+/* 🧊 Hover con glow azul elegante */
+.btn-app-action:hover {
   background-color: var(--bs-primary);
   color: #fff;
   box-shadow: 0 0 8px rgba(13, 110, 253, 0.5);
   transform: translateY(-1px);
 }
 
-.btn-cargar-productos:hover i {
+.btn-app-action:hover i {
   transform: translateY(-1px);
 }
 
-/* Efecto “click” sutil */
-.btn-cargar-productos:active {
+/* 🎬 Efecto de clic sutil y responsivo */
+.btn-app-action:active {
   transform: translateY(1px);
   box-shadow: 0 0 4px rgba(13, 110, 253, 0.3);
 }
-
 
 /* === Widget de Pico y Placa === */
 .widget-box {
