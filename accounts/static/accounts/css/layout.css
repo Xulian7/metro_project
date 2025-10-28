@@ -389,3 +389,66 @@ border-radius: 8px;
   from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* 🌊 Tabs modernos para la app */
+.modern-tabs {
+  border-bottom: 2px solid rgba(13, 110, 253, 0.15);
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  padding-bottom: 0.3rem;
+}
+
+/* Estilo base de cada tab */
+.modern-tabs .nav-link {
+  position: relative;
+  color: #555;
+  border: none;
+  background: transparent;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+/* Hover animado */
+.modern-tabs .nav-link:hover {
+  color: var(--bs-primary);
+  background: rgba(13, 110, 253, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Estado activo con subrayado animado */
+.modern-tabs .nav-link.active {
+  color: var(--bs-primary);
+  font-weight: 600;
+  background-color: rgba(13, 110, 253, 0.1);
+  box-shadow: 0 0 8px rgba(13, 110, 253, 0.15);
+}
+
+/* Subrayado dinámico tipo "barra deslizante" */
+.modern-tabs .nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: var(--bs-primary);
+  border-radius: 2px;
+  transition: all 0.25s ease;
+  transform: translateX(-50%);
+}
+
+.modern-tabs .nav-link.active::after {
+  width: 60%;
+}
+
+/* Animación sutil de clic */
+.modern-tabs .nav-link:active {
+  transform: translateY(1px);
+  box-shadow: 0 0 4px rgba(13, 110, 253, 0.2);
+}
