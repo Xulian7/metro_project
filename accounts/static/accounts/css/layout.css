@@ -306,6 +306,10 @@ border-radius: 8px;
 }
 
 /* 🎯 Estilo base para botones de acción de la app */
+.btn-app-action {
+  white-space: nowrap; /* evita que el texto salte de línea */
+}
+
 .btn-app-action i {
   font-size: 1rem;
   transition: transform 0.25s ease;
@@ -328,6 +332,7 @@ border-radius: 8px;
   transform: translateY(1px);
   box-shadow: 0 0 4px rgba(13, 110, 253, 0.3);
 }
+
 
 /* === Widget de Pico y Placa === */
 .widget-box {
