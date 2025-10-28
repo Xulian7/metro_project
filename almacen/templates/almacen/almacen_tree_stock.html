@@ -8,12 +8,6 @@
         <h5 class="fw-semibold mb-0">Gestión de repuestos</h5>
     </div>
 
-    <!-- Export CSV -->
-    <form method="post" class="mb-3">
-        {% csrf_token %}
-        <button type="submit" name="export_csv" class="btn btn-success">Exportar CSV</button>
-    </form>
-
     <!-- Tabs -->
     <ul class="nav nav-tabs" id="almacenTabs" role="tablist">
         <li class="nav-item" role="presentation">
@@ -44,6 +38,13 @@
                     <button type="button" class="btn btn-outline-primary btn-sm btn-app-action" data-bs-toggle="modal" data-bs-target="#crearProductoModal">
                         <i class="bi bi-plus-lg"></i> Nuevo producto
                     </button>
+                    <form method="post" class="m-0">
+                        {% csrf_token %}
+                        <button type="submit" name="export_csv"
+                            class="btn btn-outline-primary btn-sm btn-app-action">
+                            <i class="bi bi-file-earmark-arrow-down"></i> Exportar CSV
+                        </button>
+                    </form>
                 </form>
             </div>
 
