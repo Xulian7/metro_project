@@ -1,211 +1,571 @@
-<style>
-      /* Tema general */
-      body {
-        background: #ffffff; /* lienzo blanco para templates */
-        color: #6c757d;
-        height: 100vh;
-      }
+/* Tema general */
+body {
+background: #ffffff; /* lienzo blanco para templates */
+color: #6c757d;
+height: 100vh;
+}
 
-      .app-shell {
-        display: flex;
-        height: 100vh;
-        overflow: hidden;
-      }
+.app-shell {
+display: flex;
+height: 100vh;
+overflow: hidden;
+}
 
-      /* Sidebar oscuro */
-      .sidebar {
-        width: 260px;
-        background: #1e1e2f;
-        border-right: 1px solid #3f3f5a;
-        display: flex;
-        flex-direction: column;
-        box-shadow: inset -3px 0 6px rgba(0, 0, 0, 0.3);
-      }
+/* Sidebar oscuro */
+.sidebar {
+width: 260px;
+background: #1e1e2f;
+border-right: 1px solid #3f3f5a;
+display: flex;
+flex-direction: column;
+box-shadow: inset -3px 0 6px rgba(0, 0, 0, 0.3);
+}
 
-      .sidebar .brand {
-        padding: 18px;
-        font-weight: 700;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
+.sidebar .brand {
+padding: 18px;
+font-weight: 700;
+display: flex;
+gap: 10px;
+align-items: center;
+}
 
-      .sidebar .nav-section {
-        flex: 1;
-        overflow: auto;
-        padding: 8px;
-      }
+.sidebar .nav-section {
+flex: 1;
+overflow: auto;
+padding: 8px;
+}
 
-      .sidebar .nav-item {
-        margin: 8px 6px;
-        border-radius: 10px;
-        border: 1px solid transparent;
-        transition: all 0.2s ease;
-      }
+.sidebar .nav-item {
+margin: 8px 6px;
+border-radius: 10px;
+border: 1px solid transparent;
+transition: all 0.2s ease;
+}
 
-      .sidebar .nav-link {
-        color: #ffffff;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px;
-        text-decoration: none;
-        cursor: pointer;
-        border-radius: 8px;
-        transition: all 0.2s ease;
-      }
+.sidebar .nav-link {
+color: #ffffff;
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 12px;
+text-decoration: none;
+cursor: pointer;
+border-radius: 8px;
+transition: all 0.2s ease;
+}
 
-      .sidebar .nav-link:hover {
-        background: #2a2a3d;
-        color: #4dabf7;
-        border-color: #3f3f5a;
-      }
+.sidebar .nav-link:hover {
+background: #2a2a3d;
+color: #4dabf7;
+border-color: #3f3f5a;
+}
 
-      .sidebar .parent-link.active-parent {
-        background: #3b3b5a;
-        color: #4dabf7;
-        font-weight: 600;
-        border: 1px solid #4dabf7;
-      }
+.sidebar .parent-link.active-parent {
+background: #3b3b5a;
+color: #4dabf7;
+font-weight: 600;
+border: 1px solid #4dabf7;
+}
 
-      /* Sublistas con animación fade-in */
-      .sublist {
-        padding-left: 40px;
-        display: none;
-        opacity: 0;
-        transform: translateY(-5px);
-        transition: opacity 0.25s ease, transform 0.25s ease;
-      }
+/* Sublistas con animación fade-in */
+.sublist {
+padding-left: 40px;
+display: none;
+opacity: 0;
+transform: translateY(-5px);
+transition: opacity 0.25s ease, transform 0.25s ease;
+}
 
-      .sublist.show {
-        display: block;
-        opacity: 1;
-        transform: translateY(0);
-      }
+.sublist.show {
+display: block;
+opacity: 1;
+transform: translateY(0);
+}
 
-      .sublist .child-link {
-        display: block;
-        color: #cfd4e3;
-        font-size: 0.95rem;
-        padding: 6px 12px;
-        border-radius: 6px;
-        margin: 2px 0;
-        transition: all 0.2s ease;
-      }
+.sublist .child-link {
+display: block;
+color: #cfd4e3;
+font-size: 0.95rem;
+padding: 6px 12px;
+border-radius: 6px;
+margin: 2px 0;
+transition: all 0.2s ease;
+}
 
-      .sublist .child-link:hover {
-        background: #2a2a3d;
-        color: #4dabf7;
-      }
+.sublist .child-link:hover {
+background: #2a2a3d;
+color: #4dabf7;
+}
 
-      /* Contenido principal (canvas blanco) */
-      .content {
-        flex: 1;
-        padding: 18px;
-        overflow: auto;
-        background: #ffffff;
-      }
+/* Contenido principal (canvas blanco) */
+.content {
+flex: 1;
+padding: 18px;
+overflow: auto;
+background: #ffffff;
+}
 
-      .topbar {
-        height: 56px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 0 12px;
-        background: transparent;
-      }
+.topbar {
+height: 56px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 12px;
+padding: 0 12px;
+background: transparent;
+}
 
-      .breadcrumb {
-        --bs-breadcrumb-divider: ">";
-      }
+.breadcrumb {
+--bs-breadcrumb-divider: ">";
+}
 
-      .view-card {
-        background: #ffffff; /* panel interno también blanco */
-        border-radius: 12px;
-        padding: 18px;
-        color: inherit;
-        box-shadow: 0 4px 20px rgba(2, 6, 23, 0.06);
-      }
+.view-card {
+background: #ffffff; /* panel interno también blanco */
+border-radius: 12px;
+padding: 18px;
+color: inherit;
+box-shadow: 0 4px 20px rgba(2, 6, 23, 0.06);
+}
 
-      @media (max-width: 760px) {
-        .sidebar {
-          position: fixed;
-          z-index: 1050;
-          transform: translateX(-100%);
-        }
-        .sidebar.open {
-          transform: translateX(0);
-        }
-      }
+@media (max-width: 760px) {
+.sidebar {
+    position: fixed;
+    z-index: 1050;
+    transform: translateX(-100%);
+}
+.sidebar.open {
+    transform: translateX(0);
+}
+}
 
-      .dropdown-menu {
-        min-width: 200px;
-        border-radius: 10px;
-        padding: 8px 0;
-      }
+.dropdown-menu {
+min-width: 200px;
+border-radius: 10px;
+padding: 8px 0;
+}
 
-      .dropdown-item i {
-        width: 20px;
-        text-align: center;
-      }
+.dropdown-item i {
+width: 20px;
+text-align: center;
+}
 
-      .dropdown-header {
-        padding: 8px 12px;
-      }
+.dropdown-header {
+padding: 8px 12px;
+}
 
-      .brand-logo {
-      max-width: 80%;      /* nunca excede el ancho del contenedor */
-      height: auto;        /* mantiene proporción */
-      display: block;
-      }
-      .sidebar .brand {
-          text-align: center;  /* por si flex falla */
-      }
+.brand-logo {
+max-width: 80%;      /* nunca excede el ancho del contenedor */
+height: auto;        /* mantiene proporción */
+display: block;
+}
+.sidebar .brand {
+    text-align: center;  /* por si flex falla */
+}
 
-      /* --- Tablero widgets --- */
-      .dashboard-widgets {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 20px;
-        margin-top: 30px;
-      }
+/* --- Tablero widgets --- */
+.dashboard-widgets {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 20px;
+margin-top: 30px;
+}
 
-      .widget-box {
-        background: linear-gradient(180deg, #f9fafc, #ffffff);
-        border: 1px solid #e3e6ef;
-        border-radius: 12px;
-        padding: 16px 18px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-      }
+.widget-box {
+background: linear-gradient(180deg, #f9fafc, #ffffff);
+border: 1px solid #e3e6ef;
+border-radius: 12px;
+padding: 16px 18px;
+box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
-      .widget-box:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      }
+.widget-box:hover {
+transform: translateY(-3px);
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
 
-      .widget-header {
-        font-weight: 600;
-        color: #4dabf7;
-        font-size: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 10px;
-      }
+.widget-header {
+font-weight: 600;
+color: #4dabf7;
+font-size: 1rem;
+display: flex;
+align-items: center;
+gap: 8px;
+margin-bottom: 10px;
+}
 
-      .widget-placeholder {
-        height: 80px;
-        background: repeating-linear-gradient(
-          45deg,
-          #f2f4f7,
-          #f2f4f7 10px,
-          #eaecef 10px,
-          #eaecef 20px
-        );
-        border-radius: 8px;
-      }
+.widget-placeholder {
+height: 80px;
+background: repeating-linear-gradient(
+    45deg,
+    #f2f4f7,
+    #f2f4f7 10px,
+    #eaecef 10px,
+    #eaecef 20px
+);
+border-radius: 8px;
+}
 
-      
-    </style>
+/* === Sidebar colapsable === */
+.sidebar {
+  width: 260px;
+  background: #1e1e2f;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 80px; /* ancho reducido */
+}
+
+/* Ocultar texto y logo al colapsar */
+.sidebar.collapsed .brand,
+.sidebar.collapsed .text-label {
+  display: none !important;
+}
+
+/* Centrar los iconos cuando está colapsado */
+.sidebar.collapsed .nav-link {
+  justify-content: center;
+}
+
+.sidebar.collapsed .icon {
+  margin-right: 0;
+}
+
+.sidebar .icon {
+  margin-right: 8px;
+}
+
+/* Transiciones suaves */
+.sidebar .nav-link,
+.sidebar .icon {
+  transition: all 0.3s ease;
+}
+
+/* Ajusta el contenido principal para que no se oculte */
+.content {
+  flex: 1;
+  transition: margin-left 0.3s ease;
+}
+
+.app-shell {
+  display: flex;
+  height: 100vh;
+}
+
+/* === Barra superior personalizada === */
+
+.topbar {
+  background-color: #0b1e39 !important;
+  color: white;
+  border-radius: 12px;
+  margin: 8px; /* opcional, separa la barra de los bordes */
+  padding: 6px 12px;
+}
+.topbar .btn,
+.topbar .dropdown-toggle {
+  color: white !important;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-sm {
+    border-radius: 0.5rem;
+  }
+
+  .form-control-sm {
+    min-width: 200px;
+  }
+
+  #crearProductoModal .modal-content {
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  @media (max-width: 768px) {
+    .d-flex.flex-wrap {
+      flex-direction: column;
+      align-items: stretch !important;
+    }
+  }
+
+  .btn-cargar-productos {
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease-in-out;
+  box-shadow: none;
+  white-space: nowrap; /* ✅ evita salto de línea */
+}
+
+/* 🎯 Estilo base para botones de acción de la app */
+.btn-app-action {
+  white-space: nowrap; /* evita que el texto salte de línea */
+}
+
+.btn-app-action i {
+  font-size: 1rem;
+  transition: transform 0.25s ease;
+}
+
+/* 🧊 Hover con glow azul elegante */
+.btn-app-action:hover {
+  background-color: var(--bs-primary);
+  color: #fff;
+  box-shadow: 0 0 8px rgba(13, 110, 253, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-app-action:hover i {
+  transform: translateY(-1px);
+}
+
+/* 🎬 Efecto de clic sutil y responsivo */
+.btn-app-action:active {
+  transform: translateY(1px);
+  box-shadow: 0 0 4px rgba(13, 110, 253, 0.3);
+}
+
+
+/* === Widget de Pico y Placa === */
+.widget-box {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: auto; /* ✅ que crezca naturalmente */
+  min-height: 200px;
+  max-height: 100%; /* ✅ no se sale del contenedor padre */
+  width: 100%;
+  overflow: hidden;
+}
+
+.widget-header {
+  background-color: #0d6efd;
+  color: #fff;
+  font-weight: 600;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.widget-placeholder {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+}
+
+/* ✅ Imagen se adapta al ancho y no se deforma */
+.pico-placa-img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgba(13, 110, 253, 0.2);
+  transition: transform 0.3s ease;
+}
+
+/* Efecto hover elegante */
+.pico-placa-img:hover {
+  transform: scale(1.03);
+}
+
+.panel-header {
+  border-left: 4px solid var(--bs-primary);
+  padding-left: 12px;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/*  Tabs modernos para la app */
+/*  Tabs modernos para la app */
+/*  Tabs modernos para la app */
+
+.modern-tabs {
+  border-bottom: 2px solid rgba(13, 110, 253, 0.15);
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  padding-bottom: 0.3rem;
+}
+
+/* Estilo base de cada tab */
+.modern-tabs .nav-link {
+  position: relative;
+  color: #555;
+  border: none;
+  background: transparent;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+/* Hover animado */
+.modern-tabs .nav-link:hover {
+  color: var(--bs-primary);
+  background: rgba(13, 110, 253, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Estado activo con subrayado animado */
+.modern-tabs .nav-link.active {
+  color: var(--bs-primary);
+  font-weight: 600;
+  background-color: rgba(13, 110, 253, 0.1);
+  box-shadow: 0 0 8px rgba(13, 110, 253, 0.15);
+}
+
+/* Subrayado dinámico tipo "barra deslizante" */
+.modern-tabs .nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: var(--bs-primary);
+  border-radius: 2px;
+  transition: all 0.25s ease;
+  transform: translateX(-50%);
+}
+
+.modern-tabs .nav-link.active::after {
+  width: 60%;
+}
+
+/* Animación sutil de clic */
+.modern-tabs .nav-link:active {
+  transform: translateY(1px);
+  box-shadow: 0 0 4px rgba(13, 110, 253, 0.2);
+}
+
+/* === Estilos modernos para tablas === */
+/* === Estilos modernos para tablas === */
+/* === Estilos modernos para tablas === */
+
+.modern-table {
+  border-collapse: separate;
+  border-spacing: 0 0.4rem;
+  font-size: 0.9rem;
+}
+
+/* 🧩 Encabezado elegante */
+.modern-table thead {
+  background: linear-gradient(90deg, rgba(13,110,253,0.1), rgba(13,110,253,0.05));
+  color: #333;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.modern-table thead th {
+  border: none;
+  padding: 0.6rem 0.75rem;
+}
+
+/* 🔹 Filas compactas y sutilmente elevadas */
+.modern-table tbody tr {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: all 0.25s ease;
+}
+
+.modern-table tbody td {
+  border: none;
+  padding: 0.45rem 0.75rem;
+  vertical-align: middle;
+}
+
+/* 🧊 Efecto hover: fila flotante */
+.modern-table tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(13, 110, 253, 0.15);
+  background-color: rgba(13, 110, 253, 0.02);
+}
+
+/* 🔻 Bordes redondeados en extremos */
+.modern-table tbody tr td:first-child {
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+}
+.modern-table tbody tr td:last-child {
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+/* 🧠 Compacta en pantallas pequeñas */
+@media (max-width: 768px) {
+  .modern-table {
+    font-size: 0.85rem;
+  }
+  .modern-table tbody td {
+    padding: 0.4rem 0.5rem;
+  }
+}
+
+/* === Estilos modernos para formularios === */
+/* === Estilos modernos para formularios === */
+/* === Estilos modernos para formularios === */
+
+.modern-form {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.modern-form:hover {
+  box-shadow: 0 4px 14px rgba(13, 110, 253, 0.15);
+}
+
+/* ✍️ Campos de entrada */
+.form-control-modern {
+  border: 1px solid #dee2e6;
+  border-radius: 0.6rem;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
+  background-color: #f8f9fa;
+}
+
+.form-control-modern:focus {
+  border-color: rgba(13, 110, 253, 0.4);
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.1);
+  background-color: #fff;
+}
+
+/* 🧩 Botón elegante */
+.btn-modern {
+  background: linear-gradient(90deg, #0d6efd, #0b5ed7);
+  border: none;
+  color: white;
+  padding: 0.6rem 1.6rem;
+  border-radius: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: all 0.25s ease;
+}
+
+.btn-modern:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+}
