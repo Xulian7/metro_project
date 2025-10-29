@@ -266,33 +266,34 @@
 
         <!-- Proveedores -->
         <div class="tab-pane fade" id="proveedores">
-            <h3 class="mb-4">🧾 Crear Proveedor</h3>
+            <h3 class="mb-4"> Crear Proveedor</h3>
 
-            <form method="post" class="row g-3 mb-4 needs-validation" novalidate>
+            <form method="post" class="modern-form row g-3 mb-4" novalidate>
                 {% csrf_token %}
                 <div class="col-md-4">
-                    <label for="id_nombre" class="form-label">Nombre</label>
-                    {{ proveedor_form.nombre|add_class:"form-control" }}
+                    <label for="id_nombre" class="form-label fw-semibold text-secondary small">Nombre</label>
+                    {{ proveedor_form.nombre|add_class:"form-control form-control-modern" }}
                 </div>
                 <div class="col-md-4">
-                    <label for="id_nit" class="form-label">NIT</label>
-                    {{ proveedor_form.nit|add_class:"form-control" }}
+                    <label for="id_nit" class="form-label fw-semibold text-secondary small">NIT</label>
+                    {{ proveedor_form.nit|add_class:"form-control form-control-modern" }}
                 </div>
                 <div class="col-md-4">
-                    <label for="id_telefono" class="form-label">Teléfono</label>
-                    {{ proveedor_form.telefono|add_class:"form-control" }}
+                    <label for="id_telefono" class="form-label fw-semibold text-secondary small">Teléfono</label>
+                    {{ proveedor_form.telefono|add_class:"form-control form-control-modern" }}
                 </div>
 
                 <div class="col-12 d-flex justify-content-end mt-3">
-                    <button type="submit" name="proveedor_submit" class="btn btn-primary px-4">
+                    <button type="submit" name="proveedor_submit" class="btn-modern">
                         Guardar
                     </button>
                 </div>
             </form>
 
+
             <hr>
 
-            <h3 class="mb-3">📋 Lista de Proveedores</h3>
+            <h3 class="mb-3">Lista de Proveedores</h3>
             <div class="table-responsive">
                 <table class="modern-table w-100 text-center align-middle">
                     <thead>
