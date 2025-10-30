@@ -326,16 +326,6 @@
 
             <!-- Botones superiores -->
             <div class="d-flex justify-content-between mb-3">
-                <!-- Nuevo movimiento -->
-                <button 
-                    type="button" 
-                    class="btn btn-primary btn-app-action" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#nuevoMovimientoModal">
-                    <i class="bi bi-plus-circle"></i> Nuevo movimiento
-                </button>
-
-
                 <!-- Carga masiva de factura -->
                 <form method="post" enctype="multipart/form-data" class="d-flex gap-2">
                     {% csrf_token %}
@@ -347,6 +337,16 @@
                         <i class="bi bi-file-earmark-arrow-up"></i> Cargar factura
                     </button>
                 </form>
+
+                <!-- Nuevo movimiento -->
+                <button 
+                    type="button" 
+                    class="btn btn-primary btn-app-action" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#nuevoMovimientoModal">
+                    <i class="bi bi-plus-circle"></i> Nuevo movimiento
+                </button>
+
             </div>
 
             {% if mensaje_factura %}
