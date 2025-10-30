@@ -394,88 +394,57 @@
                 </div>
             </div>
 
-
-            <!-- 🔍 Filtro por nombre de producto -->
-            <div class="mb-3">
-            <input 
-                type="text" 
-                id="filtroProducto" 
-                class="form-control" 
-                placeholder="Filtrar por nombre del producto..."
-            >
-            </div>
-
             <!-- Listado de movimientos por producto -->
-            <div id="listadoProductos">
             {% for producto, movs in movimientos_por_producto.items %}
-                <div class="producto-item mb-4">
-                <h4 class="mt-3 nombre-producto">
+                <h4 class="mt-3">
                     {{ producto.nombre }} ({{ producto.referencia }}) 
-                    - Stock: 
-                    <span class="{% if movs.stock_actual <= 0 %}text-danger{% else %}text-success{% endif %}">
-                    {{ movs.stock_actual }}
-                    </span>
+                    - Stock: <span class="{% if movs.stock_actual <= 0 %}text-danger{% else %}text-success{% endif %}">{{ movs.stock_actual }}</span>
                     - Valor Stock: ${{ movs.valor_stock }}
                 </h4>
 
                 <table class="table table-sm table-bordered table-striped">
                     <thead class="table-dark">
-                    <tr>
-                        <th>Tipo</th>
-                        <th>Cantidad</th>
-                        <th>Proveedor</th>
-                        <th>Fecha</th>
-                        <th>Precio Unitario</th>
-                        <th>Movimiento</th>
-                    </tr>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Cantidad</th>
+                            <th>Proveedor</th>
+                            <th>Fecha</th>
+                            <th>Precio Unitario</th>
+                            <th>Movimiento</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {% for m in movs.ingresos %}
-                        <tr class="table-success">
-                        <td>{{ m.get_tipo_display }}</td>
-                        <td>{{ m.cantidad }}</td>
-                        <td>{% if m.proveedor %}{{ m.proveedor.nombre }}{% else %}-{% endif %}</td>
-                        <td>{{ m.fecha }}</td>
-                        <td>{{ m.precio_unitario }}</td>
-                        <td>Ingreso</td>
-                        </tr>
-                    {% endfor %}
+                        {% for m in movs.ingresos %}
+                            <tr class="table-success">
+                                <td>{{ m.get_tipo_display }}</td>
+                                <td>{{ m.cantidad }}</td>
+                                <td>{% if m.proveedor %}{{ m.proveedor.nombre }}{% else %}-{% endif %}</td>
+                                <td>{{ m.fecha }}</td>
+                                <td>{{ m.precio_unitario }}</td>
+                                <td>Ingreso</td>
+                            </tr>
+                        {% endfor %}
 
-                    {% for m in movs.salidas %}
-                        <tr class="table-danger">
-                        <td>{{ m.get_tipo_display }}</td>
-                        <td>{{ m.cantidad }}</td>
-                        <td>{% if m.proveedor %}{{ m.proveedor.nombre }}{% else %}-{% endif %}</td>
-                        <td>{{ m.fecha }}</td>
-                        <td>{{ m.precio_unitario }}</td>
-                        <td>Salida</td>
-                        </tr>
-                    {% endfor %}
+                        {% for m in movs.salidas %}
+                            <tr class="table-danger">
+                                <td>{{ m.get_tipo_display }}</td>
+                                <td>{{ m.cantidad }}</td>
+                                <td>{% if m.proveedor %}{{ m.proveedor.nombre }}{% else %}-{% endif %}</td>
+                                <td>{{ m.fecha }}</td>
+                                <td>{{ m.precio_unitario }}</td>
+                                <td>Salida</td>
+                            </tr>
+                        {% endfor %}
 
-                    {% if not movs.ingresos and not movs.salidas %}
-                        <tr>
-                        <td colspan="6" class="text-center">No hay movimientos registrados.</td>
-                        </tr>
-                    {% endif %}
+                        {% if not movs.ingresos and not movs.salidas %}
+                            <tr>
+                                <td colspan="6" class="text-center">No hay movimientos registrados.</td>
+                            </tr>
+                        {% endif %}
                     </tbody>
                 </table>
-                </div>
             {% endfor %}
-            </div>
-
-            <!-- 🧠 Script de filtrado -->
-            <script>
-            document.getElementById("filtroProducto").addEventListener("input", function() {
-            const filtro = this.value.toLowerCase().trim();
-            const productos = document.querySelectorAll(".producto-item");
-
-            productos.forEach(prod => {
-                const nombre = prod.querySelector(".nombre-producto").textContent.toLowerCase();
-                prod.style.display = nombre.includes(filtro) ? "" : "none";
-            });
-            });
-            </script>
-
+        </div>
 
 
         <!-- Pestaña Stock -->
