@@ -327,16 +327,24 @@
             <!-- Botones superiores -->
             <div class="d-flex justify-content-between mb-3">
                 <!-- Nuevo movimiento -->
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#nuevoMovimientoModal">
-                    ➕ Nuevo movimiento
+                <button 
+                    type="button" 
+                    class="btn btn-success btn-app-action" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#nuevoMovimientoModal">
+                    <i class="bi bi-plus-circle"></i> Nuevo movimiento
                 </button>
+
 
                 <!-- Carga masiva de factura -->
                 <form method="post" enctype="multipart/form-data" class="d-flex gap-2">
                     {% csrf_token %}
                     <input type="file" name="archivo_factura" class="form-control" accept=".xlsx">
-                    <button type="submit" name="carga_masiva_factura" class="btn btn-primary">
-                        📄 Cargar Factura
+                    <button 
+                        type="submit" 
+                        name="carga_masiva_factura" 
+                        class="btn btn-primary btn-app-action">
+                        <i class="bi bi-file-earmark-arrow-up"></i> Cargar factura
                     </button>
                 </form>
             </div>

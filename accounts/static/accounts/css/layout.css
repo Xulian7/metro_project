@@ -1,3 +1,5 @@
+/* layout.css */
+/* Tema general */
 /* Tema general */
 body {
 background: #ffffff; /* lienzo blanco para templates */
@@ -11,6 +13,8 @@ height: 100vh;
 overflow: hidden;
 }
 
+/* Sidebar oscuro */
+/* Sidebar oscuro */
 /* Sidebar oscuro */
 .sidebar {
 width: 260px;
@@ -67,6 +71,8 @@ font-weight: 600;
 border: 1px solid #4dabf7;
 }
 
+/* Sublistas con animación fade-in */
+/* Sublistas con animación fade-in */
 /* Sublistas con animación fade-in */
 .sublist {
 padding-left: 40px;
@@ -162,6 +168,9 @@ display: block;
     text-align: center;  /* por si flex falla */
 }
 
+
+/* --- Tablero widgets --- */
+/* --- Tablero widgets --- */
 /* --- Tablero widgets --- */
 .dashboard-widgets {
 display: grid;
@@ -206,6 +215,8 @@ background: repeating-linear-gradient(
 border-radius: 8px;
 }
 
+/* === Sidebar colapsable === */
+/* === Sidebar colapsable === */
 /* === Sidebar colapsable === */
 .sidebar {
   width: 260px;
@@ -258,7 +269,8 @@ border-radius: 8px;
 }
 
 /* === Barra superior personalizada === */
-
+/* === Barra superior personalizada === */
+/* === Barra superior personalizada === */
 .topbar {
   background-color: #0b1e39 !important;
   color: white;
@@ -305,7 +317,9 @@ border-radius: 8px;
   white-space: nowrap; /* ✅ evita salto de línea */
 }
 
-/* 🎯 Estilo base para botones de acción de la app */
+/*Botones de acción de la app */
+/*Botones de acción de la app */
+/*Botones de acción de la app */
 .btn-app-action {
   white-space: nowrap; /* evita que el texto salte de línea */
 }
@@ -315,7 +329,6 @@ border-radius: 8px;
   transition: transform 0.25s ease;
 }
 
-/* 🧊 Hover con glow azul elegante */
 .btn-app-action:hover {
   background-color: var(--bs-primary);
   color: #fff;
