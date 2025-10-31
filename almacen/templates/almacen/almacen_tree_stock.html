@@ -327,16 +327,23 @@
             <!-- Botones superiores -->
             <div class="d-flex justify-content-between mb-3">
                 <!-- Carga masiva de factura -->
-                <form method="post" enctype="multipart/form-data" class="d-flex gap-2">
+                <form 
+                    method="post" 
+                    enctype="multipart/form-data" 
+                    class="d-flex gap-2"
+                    action="{% url 'almacen_dashboard' %}"
+                >
                     {% csrf_token %}
                     <input type="file" name="archivo_factura" class="form-control" accept=".xlsx">
                     <button 
                         type="submit" 
                         name="carga_masiva_factura" 
+                        value="1"
                         class="btn btn-primary btn-app-action">
                         <i class="bi bi-file-earmark-arrow-up"></i> Cargar factura
                     </button>
                 </form>
+
 
                 <!-- Nuevo movimiento -->
                 <button 
@@ -346,7 +353,6 @@
                     data-bs-target="#nuevoMovimientoModal">
                     <i class="bi bi-plus-circle"></i> Nuevo movimiento
                 </button>
-
             </div>
 
             {% if mensaje_factura %}
