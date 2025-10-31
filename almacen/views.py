@@ -185,7 +185,7 @@ def almacen_dashboard(request):
 
             # Validar encabezados
             expected_headers = ['referencia', 'cantidad', 'precio_unitario', 'proveedor']
-            actual_headers = [cell.value for cell in ws[1]]
+            actual_headers = [str(cell.value).strip().lower() for cell in ws[1] if cell.value]
             if actual_headers != expected_headers:
                 messages.error(request, f"Encabezados inválidos. Se esperaban: {expected_headers}")
                 return redirect('almacen_dashboard')
@@ -195,26 +195,35 @@ def almacen_dashboard(request):
 
             for i, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
                 ref, cantidad, precio_unitario, proveedor_nombre = row
+
+                # Validación de campos obligatorios
                 if not ref or cantidad is None or precio_unitario is None:
-                    errores.append(f"Fila {i}: campos obligatorios vacíos")
+                    errores.append(f"Fila {i}: campos obligatorios vacíos.")
                     continue
+
+                # Conversión de valores numéricos
                 try:
                     cantidad = int(cantidad)
                     precio_unitario = float(precio_unitario)
                 except ValueError:
-                    errores.append(f"Fila {i}: cantidad o precio_unitario inválido")
+                    errores.append(f"Fila {i}: cantidad o precio_unitario inválido.")
                     continue
 
-                try:
-                    producto = Producto.objects.get(referencia=ref)
-                except Producto.DoesNotExist:
-                    errores.append(f"Fila {i}: producto con referencia '{ref}' no existe")
+                # 🔍 Buscar producto por referencia o por nombre
+                producto = Producto.objects.filter(referencia=ref).first()
+                if not producto:
+                    producto = Producto.objects.filter(nombre__icontains=ref).first()
+
+                if not producto:
+                    errores.append(f"Fila {i}: no se encontró producto con referencia o nombre '{ref}'.")
                     continue
 
+                # Buscar o crear proveedor
                 proveedor = None
                 if proveedor_nombre:
-                    proveedor, _ = Proveedor.objects.get_or_create(nombre=proveedor_nombre)
+                    proveedor, _ = Proveedor.objects.get_or_create(nombre=str(proveedor_nombre).strip())
 
+                # Crear el movimiento
                 Movimiento.objects.create(
                     producto=producto,
                     tipo='ingreso_compra',
@@ -224,12 +233,14 @@ def almacen_dashboard(request):
                 )
                 movimientos_creados += 1
 
+            # Reportar resultados
             if errores:
                 messages.error(request, f"Errores en algunas filas: {errores}")
             if movimientos_creados:
                 messages.success(request, f"Se crearon {movimientos_creados} movimientos correctamente.")
 
             return redirect('almacen_dashboard')
+
 
     # ---------------------------
     # AGRUPAR MOVIMIENTOS POR PRODUCTO
