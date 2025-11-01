@@ -90,11 +90,10 @@ def almacen_dashboard(request):
                 messages.error(request, f"No se pudo leer el archivo: {str(e)}")
                 return redirect('almacen_dashboard')
 
-            # Validar encabezados
             expected_headers = ['referencia', 'cantidad', 'precio_unitario', 'proveedor', 'factura_referencia']
             actual_headers = [str(cell.value).strip().lower() if cell.value else '' for cell in ws[1]]
 
-            print("👉 Encabezados detectados:", actual_headers)  # debug
+            print("👉 Encabezados detectados:", actual_headers)
 
             if actual_headers != expected_headers:
                 messages.error(request, f"Encabezados inválidos. Se esperaban: {expected_headers}")
@@ -102,36 +101,34 @@ def almacen_dashboard(request):
 
             movimientos_creados = 0
             productos_no_encontrados = []
+            proveedores_no_encontrados = []
             errores = []
 
             for i, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
                 try:
-                    referencia, cantidad, precio_unitario, proveedor, factura_referencia = row
+                    referencia, cantidad, precio_unitario, proveedor_nombre, factura_referencia = row
 
                     if not referencia:
-                        raise ValueError("Referencia o nombre vacío")
+                        raise ValueError("Referencia vacía")
 
-                    # 🔍 Buscar producto por referencia o nombre
-                    ref_str = str(referencia).strip()
-                    producto = Producto.objects.filter(referencia=ref_str).first()
-
+                    # Buscar producto por referencia o nombre
+                    producto = (
+                        Producto.objects.filter(referencia__iexact=str(referencia).strip()).first()
+                        or Producto.objects.filter(nombre__iexact=str(referencia).strip()).first()
+                    )
                     if not producto:
-                        producto = Producto.objects.filter(nombre__icontains=ref_str).first()
+                        productos_no_encontrados.append(str(referencia))
+                        continue
 
-                    if not producto:
-                        productos_no_encontrados.append({
-                            'fila': i,
-                            'referencia_o_nombre': ref_str,
-                            'factura': factura_referencia
-                        })
-                        continue  # No crear movimiento si no se encontró
+                    # Buscar proveedor (por nombre exacto)
+                    proveedor = Proveedor.objects.filter(nombre__iexact=str(proveedor_nombre).strip()).first()
+                    if not proveedor:
+                        proveedores_no_encontrados.append(str(proveedor_nombre))
+                        continue  # no crea movimiento
 
                     # Validar cantidad y precio
-                    try:
-                        cantidad = float(cantidad)
-                        precio_unitario = float(precio_unitario)
-                    except (TypeError, ValueError):
-                        raise ValueError("Cantidad o precio_unitario inválido")
+                    cantidad = float(cantidad)
+                    precio_unitario = float(precio_unitario)
 
                     # Crear movimiento
                     Movimiento.objects.create(
@@ -139,8 +136,8 @@ def almacen_dashboard(request):
                         tipo_movimiento="Entrada",
                         unidades=cantidad,
                         valor_unitario=precio_unitario,
-                        proveedor=str(proveedor).strip() if proveedor else "",
-                        factura_referencia=str(factura_referencia).strip() if factura_referencia else ""
+                        proveedor=proveedor,  # ← ahora es un objeto, no texto
+                        factura_referencia=str(factura_referencia).strip()
                     )
 
                     movimientos_creados += 1
@@ -151,33 +148,21 @@ def almacen_dashboard(request):
             print(f"✅ Movimientos creados: {movimientos_creados}")
             print(f"❌ Productos no encontrados: {productos_no_encontrados}")
             print(f"⚠️ Errores detectados: {errores}")
+            print(f"⚠️ Proveedores no encontrados: {proveedores_no_encontrados}")
 
-            # ---------------------------
             # Generar log si hay errores
-            # ---------------------------
-            if errores or productos_no_encontrados:
+            if errores or productos_no_encontrados or proveedores_no_encontrados:
                 log_wb = openpyxl.Workbook()
                 log_ws = log_wb.active
                 log_ws.title = "Log Carga Factura"
-                log_ws.append(["Tipo", "Fila", "Referencia o Nombre", "Factura", "Detalle"])
+                log_ws.append(["Tipo", "Detalle"])
 
-                for prod in productos_no_encontrados:
-                    log_ws.append([
-                        "Producto no encontrado",
-                        prod["fila"],
-                        prod["referencia_o_nombre"],
-                        prod["factura"],
-                        "-"
-                    ])
-
+                for ref in productos_no_encontrados:
+                    log_ws.append(["Producto no encontrado", ref])
+                for prov in proveedores_no_encontrados:
+                    log_ws.append(["Proveedor no encontrado", prov])
                 for err in errores:
-                    log_ws.append([
-                        "Error",
-                        err["fila"],
-                        "-",
-                        "-",
-                        err["error"]
-                    ])
+                    log_ws.append(["Error", f"Fila {err['fila']}: {err['error']}"])
 
                 for cell in log_ws[1]:
                     cell.font = Font(bold=True)
@@ -185,19 +170,17 @@ def almacen_dashboard(request):
                 response = HttpResponse(
                     content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
-                response["Content-Disposition"] = 'attachment; filename=\"log_carga_factura.xlsx\"'
+                response["Content-Disposition"] = 'attachment; filename="log_carga_factura.xlsx"'
                 log_wb.save(response)
                 return response
 
-            # ---------------------------
-            # Mensajes finales
-            # ---------------------------
             if movimientos_creados:
-                messages.success(request, f"Movimientos creados correctamente: {movimientos_creados}")
+                messages.success(request, f"Movimientos creados: {movimientos_creados}")
             else:
-                messages.info(request, "No se crearon movimientos (productos no encontrados o archivo vacío).")
+                messages.info(request, "No se crearon movimientos (productos o proveedores no encontrados).")
 
             return redirect('almacen_dashboard')
+
 
 
 
