@@ -73,6 +73,7 @@ def almacen_dashboard(request):
             return export_movimientos_csv(movimientos)
 
         # Carga masiva de facturas
+        # Carga masiva de facturas
         elif 'carga_masiva_factura' in request.POST:
             archivo = request.FILES.get('archivo_factura')
             if not archivo:
@@ -82,6 +83,7 @@ def almacen_dashboard(request):
             import openpyxl
             from openpyxl.styles import Font
             from django.http import HttpResponse
+            from decimal import Decimal, InvalidOperation
 
             try:
                 wb = openpyxl.load_workbook(archivo)
@@ -93,7 +95,7 @@ def almacen_dashboard(request):
             expected_headers = ['referencia', 'cantidad', 'precio_unitario', 'proveedor', 'factura_referencia']
             actual_headers = [str(cell.value).strip().lower() if cell.value else '' for cell in ws[1]]
 
-            print("👉 Encabezados detectados:", actual_headers)
+            print("👉 Encabezados detectados:", actual_headers)  # Debug opcional
 
             if actual_headers != expected_headers:
                 messages.error(request, f"Encabezados inválidos. Se esperaban: {expected_headers}")
@@ -106,38 +108,56 @@ def almacen_dashboard(request):
 
             for i, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
                 try:
-                    referencia, cantidad, precio_unitario, proveedor_nombre, factura_referencia = row
+                    referencia_o_nombre, cantidad_raw, precio_unitario_raw, proveedor_nombre, factura_ref = row
 
-                    if not referencia:
-                        raise ValueError("Referencia vacía")
+                    if not referencia_o_nombre:
+                        raise ValueError("Referencia o nombre vacío en la fila")
 
-                    # Buscar producto por referencia o nombre
-                    producto = (
-                        Producto.objects.filter(referencia__iexact=str(referencia).strip()).first()
-                        or Producto.objects.filter(nombre__iexact=str(referencia).strip()).first()
-                    )
+                    # Buscar producto por referencia exacta o por nombre similar
+                    ref_str = str(referencia_o_nombre).strip()
+                    producto = Producto.objects.filter(referencia__iexact=ref_str).first()
                     if not producto:
-                        productos_no_encontrados.append(str(referencia))
+                        producto = Producto.objects.filter(nombre__icontains=ref_str).first()
+
+                    if not producto:
+                        productos_no_encontrados.append({
+                            'fila': i,
+                            'referencia_o_nombre': ref_str,
+                            'factura': factura_ref or ''
+                        })
                         continue
 
-                    # Buscar proveedor (por nombre exacto)
-                    proveedor = Proveedor.objects.filter(nombre__iexact=str(proveedor_nombre).strip()).first()
-                    if not proveedor:
-                        proveedores_no_encontrados.append(str(proveedor_nombre))
-                        continue  # no crea movimiento
+                    # Buscar proveedor (NO crear si no existe)
+                    proveedor = None
+                    if proveedor_nombre:
+                        proveedor = Proveedor.objects.filter(nombre__iexact=str(proveedor_nombre).strip()).first()
+                        if not proveedor:
+                            proveedores_no_encontrados.append({
+                                'fila': i,
+                                'proveedor': proveedor_nombre,
+                                'referencia_o_nombre': ref_str
+                            })
+                            continue  # no crea movimiento si proveedor no existe
 
                     # Validar cantidad y precio
-                    cantidad = float(cantidad)
-                    precio_unitario = float(precio_unitario)
+                    try:
+                        cantidad = int(cantidad_raw)
+                    except (TypeError, ValueError):
+                        raise ValueError("Cantidad inválida (debe ser un número entero)")
+
+                    try:
+                        precio_unitario = Decimal(str(precio_unitario_raw))
+                    except (TypeError, InvalidOperation):
+                        raise ValueError("Precio unitario inválido (debe ser numérico)")
 
                     # Crear movimiento
                     Movimiento.objects.create(
                         producto=producto,
-                        tipo_movimiento="Entrada",
-                        unidades=cantidad,
-                        valor_unitario=precio_unitario,
-                        proveedor=proveedor,  # ← ahora es un objeto, no texto
-                        factura_referencia=str(factura_referencia).strip()
+                        tipo='ingreso_compra',
+                        cantidad=cantidad,
+                        proveedor=proveedor,
+                        precio_unitario=precio_unitario,
+                        factura_referencia=str(factura_ref).strip() if factura_ref else None
                     )
 
                     movimientos_creados += 1
@@ -145,24 +165,46 @@ def almacen_dashboard(request):
                 except Exception as e:
                     errores.append({'fila': i, 'error': str(e)})
 
+            # Debug opcional
             print(f"✅ Movimientos creados: {movimientos_creados}")
             print(f"❌ Productos no encontrados: {productos_no_encontrados}")
-            print(f"⚠️ Errores detectados: {errores}")
             print(f"⚠️ Proveedores no encontrados: {proveedores_no_encontrados}")
+            print(f"⚠️ Errores detectados: {errores}")
 
             # Generar log si hay errores
             if errores or productos_no_encontrados or proveedores_no_encontrados:
                 log_wb = openpyxl.Workbook()
                 log_ws = log_wb.active
                 log_ws.title = "Log Carga Factura"
-                log_ws.append(["Tipo", "Detalle"])
+                log_ws.append(["Tipo", "Fila", "Referencia/Nombre", "Proveedor", "Factura", "Detalle"])
 
-                for ref in productos_no_encontrados:
-                    log_ws.append(["Producto no encontrado", ref])
+                for prod in productos_no_encontrados:
+                    log_ws.append([
+                        "Producto no encontrado",
+                        prod["fila"],
+                        prod["referencia_o_nombre"],
+                        "-",
+                        prod.get("factura", "-"),
+                        "-"
+                    ])
                 for prov in proveedores_no_encontrados:
-                    log_ws.append(["Proveedor no encontrado", prov])
+                    log_ws.append([
+                        "Proveedor no encontrado",
+                        prov["fila"],
+                        prov.get("referencia_o_nombre", "-"),
+                        prov["proveedor"],
+                        "-",
+                        "-"
+                    ])
                 for err in errores:
-                    log_ws.append(["Error", f"Fila {err['fila']}: {err['error']}"])
+                    log_ws.append([
+                        "Error",
+                        err["fila"],
+                        "-",
+                        "-",
+                        "-",
+                        err["error"]
+                    ])
 
                 for cell in log_ws[1]:
                     cell.font = Font(bold=True)
@@ -174,12 +216,14 @@ def almacen_dashboard(request):
                 log_wb.save(response)
                 return response
 
+            # Mensajes finales
             if movimientos_creados:
-                messages.success(request, f"Movimientos creados: {movimientos_creados}")
+                messages.success(request, f"Se crearon {movimientos_creados} movimientos correctamente.")
             else:
-                messages.info(request, "No se crearon movimientos (productos o proveedores no encontrados).")
+                messages.info(request, "No se crearon movimientos (productos o proveedores no encontrados, o archivo vacío).")
 
             return redirect('almacen_dashboard')
+
 
 
 
