@@ -72,7 +72,7 @@ def almacen_dashboard(request):
         elif 'export_csv' in request.POST:
             return export_movimientos_csv(movimientos)
 
-        # Carga masiva de productos
+        # Carga masiva de factura (solo crea movimientos para productos existentes)
         elif 'carga_masiva_productos' in request.POST:
             archivo = request.FILES.get('archivo_excel')
             if not archivo:
@@ -86,88 +86,90 @@ def almacen_dashboard(request):
                 messages.error(request, f"No se pudo leer el archivo: {str(e)}")
                 return redirect('almacen_dashboard')
 
-            expected_headers = ['referencia', 'nombre', 'precio_venta', 'utilidad', 'ean']
-            actual_headers = [cell.value for cell in ws[1]]
+            expected_headers = ['referencia', 'cantidad', 'precio_unitario', 'proveedor', 'factura_referencia']
+            actual_headers = [str(cell.value).strip().lower() for cell in ws[1] if cell.value]
             if actual_headers != expected_headers:
                 messages.error(request, f"Encabezados inválidos. Se esperaban: {expected_headers}")
                 return redirect('almacen_dashboard')
 
-            productos_creados = 0
-            productos_actualizados = 0
+            movimientos_creados = 0
+            productos_no_existentes = []
             errores = []
-            columnas = ['referencia', 'nombre', 'precio_venta', 'utilidad', 'ean']
 
             for i, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+                referencia, cantidad, precio_unitario, proveedor_nombre, factura_ref = row
+
+                # Validaciones básicas
+                if not referencia or cantidad is None or precio_unitario is None:
+                    errores.append(f"Fila {i}: campos obligatorios vacíos.")
+                    continue
+
                 try:
-                    datos = dict(zip(columnas, row))
+                    cantidad = int(cantidad)
+                    precio_unitario = float(precio_unitario)
+                except ValueError:
+                    errores.append(f"Fila {i}: cantidad o precio_unitario inválido.")
+                    continue
 
-                    # Validar campos obligatorios
-                    for campo in ['referencia', 'nombre', 'precio_venta']:
-                        if not datos[campo]:
-                            raise ValueError(f"Campo obligatorio vacío en columna '{campo}'")
+                # Buscar producto existente
+                producto = Producto.objects.filter(referencia=str(referencia).strip()).first()
 
-                    # Validar longitud de texto
-                    for campo in ['referencia', 'nombre', 'ean']:
-                        valor = datos[campo]
-                        if valor and isinstance(valor, str) and len(valor) > 100:
-                            raise ValueError(f"Valor demasiado largo en columna '{campo}' (máx 50 caracteres)")
-
-                    # Validar tipo numérico
-                    try:
-                        datos['precio_venta'] = float(datos['precio_venta'])
-                    except ValueError:
-                        raise ValueError(f"Valor inválido en columna 'precio_venta' → '{datos['precio_venta']}'")
-
-                    # Crear o actualizar
-                    producto, created = Producto.objects.update_or_create(
-                        referencia=datos['referencia'],
-                        defaults={
-                            'nombre': datos['nombre'],
-                            'precio_venta': datos['precio_venta'],
-                            'utilidad': datos['utilidad'],
-                            'ean': datos['ean']
-                        }
-                    )
-
-                    if created:
-                        productos_creados += 1
-                    else:
-                        productos_actualizados += 1
-
-                except Exception as e:
-                    errores.append({
-                        'fila': i,
-                        'error': str(e)
+                if not producto:
+                    productos_no_existentes.append({
+                        "fila": i,
+                        "referencia": referencia,
+                        "factura_ref": factura_ref
                     })
+                    continue
 
-            # Si hay errores → generar Excel para descargar
-            if errores:
-                error_wb = openpyxl.Workbook()
-                error_ws = error_wb.active
-                error_ws.title = "Errores"
-                error_ws.append(["Fila", "Descripción del error"])
+                # Buscar o crear proveedor
+                proveedor = None
+                if proveedor_nombre:
+                    proveedor, _ = Proveedor.objects.get_or_create(nombre=str(proveedor_nombre).strip())
 
-                for err in errores:
-                    error_ws.append([err['fila'], err['error']])
+                # Crear el movimiento
+                Movimiento.objects.create(
+                    producto=producto,
+                    tipo='ingreso_compra',
+                    cantidad=cantidad,
+                    precio_unitario=precio_unitario,
+                    proveedor=proveedor
+                )
+                movimientos_creados += 1
 
-                # Encabezado en negrita
-                for cell in error_ws[1]:
+            # ---------------------------
+            # Generar log de productos no admitidos
+            # ---------------------------
+            if productos_no_existentes:
+                log_wb = openpyxl.Workbook()
+                log_ws = log_wb.active
+                log_ws.title = "No encontrados"
+                log_ws.append(["Fila", "Referencia", "Factura Referencia"])
+                for prod in productos_no_existentes:
+                    log_ws.append([prod["fila"], prod["referencia"], prod["factura_ref"]])
+
+                for cell in log_ws[1]:
                     cell.font = Font(bold=True)
 
                 response = HttpResponse(
                     content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
-                response["Content-Disposition"] = 'attachment; filename="errores_carga_productos.xlsx"'
-                error_wb.save(response)
+                response["Content-Disposition"] = 'attachment; filename="productos_no_encontrados.xlsx"'
+                log_wb.save(response)
                 return response
 
-            # Si no hubo errores → mensajes normales
-            if productos_creados or productos_actualizados:
-                messages.success(request, f"Productos creados: {productos_creados} | actualizados: {productos_actualizados}")
-            else:
-                messages.info(request, "No se realizaron cambios en los productos.")
+            # ---------------------------
+            # Mensajes finales
+            # ---------------------------
+            if errores:
+                messages.warning(request, f"Se encontraron algunos errores: {errores}")
+            if movimientos_creados:
+                messages.success(request, f"Se crearon {movimientos_creados} movimientos correctamente.")
+            if not movimientos_creados and not productos_no_existentes:
+                messages.info(request, "No se creó ningún movimiento.")
 
             return redirect('almacen_dashboard')
+
 
         # Carga masiva de factura de proveedor (movimientos)
         elif 'carga_masiva_factura' in request.POST:
