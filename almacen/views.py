@@ -73,7 +73,7 @@ def almacen_dashboard(request):
             return export_movimientos_csv(movimientos)
 
         # Carga masiva de factura (solo crea movimientos para productos existentes)
-        elif 'carga_masiva_productos' in request.POST:
+        elif 'carga_masiva_factura' in request.POST:
             archivo = request.FILES.get('archivo_excel')
             if not archivo:
                 messages.error(request, "Debe seleccionar un archivo.")
