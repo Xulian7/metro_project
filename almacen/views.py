@@ -226,10 +226,6 @@ def almacen_dashboard(request):
 
 
 
-
-
-
-
     # ---------------------------
     # AGRUPAR MOVIMIENTOS POR PRODUCTO
     # ---------------------------

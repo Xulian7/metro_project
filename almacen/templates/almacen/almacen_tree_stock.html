@@ -544,5 +544,17 @@ document.addEventListener('DOMContentLoaded', function() {
     toggleFacturaField();
     tipoSelect?.addEventListener('change', toggleFacturaField);
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializa Select2 para todos los selects dentro del modal
+    $('#nuevoMovimientoModal select').select2({
+        dropdownParent: $('#nuevoMovimientoModal'),
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: 'Seleccione una opción',
+        allowClear: true
+    });
+});
+
 </script>
 {% endblock %}
