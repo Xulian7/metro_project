@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import terminal_pagos_view
+from . import views
 
 urlpatterns = [
-    path('', terminal_pagos_view, name='terminal_pagos'),
+    path('pagos/', views.terminal_pagos_view, name='terminal_pagos'),
 ]
