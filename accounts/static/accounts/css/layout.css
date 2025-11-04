@@ -514,6 +514,22 @@ border-radius: 8px;
   background-color: rgba(13, 110, 253, 0.02);
 }
 
+.modern-table .btn-sm {
+  border-radius: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.8rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.modern-table .btn-sm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+
+
+
+
 /* 🔻 Bordes redondeados en extremos */
 .modern-table tbody tr td:first-child {
   border-top-left-radius: 0.5rem;
