@@ -58,22 +58,26 @@
   </div>
 </div>
 
-<!-- Modal Cliente -->
+<!-- 🐾 Modal Cliente - Estilo Bruno -->
 <div class="modal fade" id="clienteModal" tabindex="-1" aria-labelledby="clienteModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <form id="clienteForm" method="POST">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content bruno-modal shadow-lg border-0">
+      <form id="clienteForm" method="POST" class="p-2">
         {% csrf_token %}
-        <div class="modal-header">
-          <h5 class="modal-title" id="clienteModalLabel">Nuevo Cliente</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-header align-items-center border-0 pb-0">
+          <h4 class="modal-title fw-bold text-primary" id="clienteModalLabel">🐶 Nuevo Cliente</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
+
         <div class="modal-body">
-          {{ form.as_p }}
+          <div class="bruno-form">
+            {{ form.as_p }}
+          </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar</button>
+
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-light bruno-btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn bruno-btn-save">💾 Guardar</button>
         </div>
       </form>
     </div>

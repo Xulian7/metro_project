@@ -598,3 +598,82 @@ border-radius: 8px;
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
 }
+
+/* Modal del perro peluches
+/* Modal del perro peluches
+/* Modal del perro peluches
+/* 🐾 Modal Bruno Style */
+.bruno-modal {
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #ffffff, #f9fbff);
+  padding: 0.5rem 1rem;
+  animation: popIn 0.3s ease;
+}
+
+/* 🌀 Animación sutil */
+@keyframes popIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* 🧩 Formulario dentro del modal */
+.bruno-form p {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.bruno-form label {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.bruno-form input,
+.bruno-form select,
+.bruno-form textarea {
+  border-radius: 0.5rem;
+  border: 1px solid #dce3ef;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.2s ease;
+  background-color: #fff;
+}
+
+.bruno-form input:focus,
+.bruno-form select:focus,
+.bruno-form textarea:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+  outline: none;
+}
+
+/* 🐾 Botones con carácter */
+.bruno-btn-save {
+  background: linear-gradient(90deg, #0d6efd, #4c9eff);
+  border: none;
+  border-radius: 0.6rem;
+  color: white;
+  font-weight: 600;
+  padding: 0.45rem 1.1rem;
+  box-shadow: 0 3px 10px rgba(13, 110, 253, 0.25);
+  transition: all 0.25s ease;
+}
+
+.bruno-btn-save:hover {
+  background: linear-gradient(90deg, #4c9eff, #0d6efd);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(13, 110, 253, 0.35);
+}
+
+.bruno-btn-cancel {
+  border-radius: 0.6rem;
+  font-weight: 500;
+  color: #555;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease;
+}
+
+.bruno-btn-cancel:hover {
+  background-color: #f1f3f8;
+  transform: translateY(-1px);
+}
