@@ -106,75 +106,56 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-function nuevoCliente() {
-  document.getElementById('clienteModalLabel').innerText = 'Nuevo Cliente';
-  const form = document.getElementById('clienteForm');
-  form.reset();
-  form.action = '/clientes/';
-}
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = new bootstrap.Modal(document.getElementById('clienteModal'));
+    const form = document.getElementById('clienteForm');
+    let clienteId = null;
 
-function editarCliente(id) {
-  fetch(`/clientes/${id}/`)
-    .then(response => response.json())
-    .then(data => {
-      const form = document.getElementById('clienteForm');
-      document.getElementById('clienteModalLabel').innerText = 'Editar Cliente';
-      form.action = `/clientes/${id}/`;
-
-      // Rellenar campos (asegúrate de que coincidan con los names del form)
-      for (const key in data) {
-        const field = document.getElementById(`id_${key}`);
-        if (field) field.value = data[key];
-      }
-
-      const modal = new bootstrap.Modal(document.getElementById('clienteModal'));
-      modal.show();
+    // 🐶 Nuevo cliente
+    document.getElementById('nuevoClienteBtn').addEventListener('click', () => {
+        clienteId = null;
+        form.reset();
+        document.getElementById('clienteModalLabel').textContent = 'Registrar Cliente';
     });
-}
 
-document.getElementById('clienteForm').addEventListener('submit', function (e) {
-  e.preventDefault();
-  const form = e.target;
-  const url = form.action;
-  const formData = new FormData(form);
+    // ✏️ Editar cliente
+    document.querySelectorAll('.editarClienteBtn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            clienteId = btn.dataset.id;
+            const response = await fetch(`/clientes/${clienteId}/`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await response.json();
 
-  fetch(url, {
-    method: 'POST',
-    body: formData,
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      actualizarTabla();
-      bootstrap.Modal.getInstance(document.getElementById('clienteModal')).hide();
-    } else {
-      alert('Error al guardar cliente');
-    }
-  })
-  .catch(() => alert('Error en la comunicación con el servidor'));
-});
+            for (let key in data) {
+                if (form.elements[key]) form.elements[key].value = data[key];
+            }
 
-function actualizarTabla() {
-  fetch('/clientes/')
-    .then(response => response.text())
-    .then(html => {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-      const nuevaTabla = doc.querySelector('#clientes-table').innerHTML;
-      document.querySelector('#clientes-table').innerHTML = nuevaTabla;
+            document.getElementById('clienteModalLabel').textContent = 'Editar Cliente';
+            modal.show();
+        });
     });
-}
 
-// Filtro por nombre
-document.getElementById('filtroNombre').addEventListener('keyup', function () {
-  const filtro = this.value.toLowerCase();
-  const filas = document.querySelectorAll('#clientes-table tr');
+    // 💾 Guardar o actualizar
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const url = clienteId ? `/clientes/${clienteId}/` : '/clientes/';
 
-  filas.forEach(fila => {
-    const nombre = fila.children[1]?.textContent.toLowerCase() || '';
-    fila.style.display = nombre.includes(filtro) ? '' : 'none';
-  });
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            location.reload();
+        } else {
+            console.error(result.errors);
+            alert('❌ Error al guardar el cliente. Revisa los campos.');
+        }
+    });
 });
-
 </script>
 {% endblock %}
