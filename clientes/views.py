@@ -1,11 +1,10 @@
-from django.template.loader import render_to_string
 from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Cliente
 from .forms import ClienteForm
 
 def clientes_view(request, pk=None):
-    # 🔹 Si es AJAX y GET → obtener datos del cliente
+    # Si es AJAX y GET → obtener datos del cliente para editar
     if request.headers.get('x-requested-with') == 'XMLHttpRequest' and request.method == 'GET':
         if pk:
             cliente = get_object_or_404(Cliente, pk=pk)
@@ -23,13 +22,9 @@ def clientes_view(request, pk=None):
                 'status': cliente.status,
             }
             return JsonResponse(data)
-        else:
-            # 🔹 Si es AJAX sin pk → devolver solo el fragmento HTML de la tabla
-            clientes = Cliente.objects.all().order_by('nombre')
-            html = render_to_string('clientes/tabla_clientes.html', {'clientes': clientes})
-            return JsonResponse({'html': html})
+        return JsonResponse({'error': 'Cliente no encontrado'}, status=404)
 
-    # 🔹 POST → crear o actualizar cliente
+    # POST → crear o actualizar cliente
     if request.method == 'POST':
         cliente = get_object_or_404(Cliente, pk=pk) if pk else None
         form = ClienteForm(request.POST, instance=cliente)
@@ -38,7 +33,7 @@ def clientes_view(request, pk=None):
             return JsonResponse({'success': True})
         return JsonResponse({'success': False, 'errors': form.errors})
 
-    # 🔹 GET normal → renderizar página completa
+    # GET normal → render de la lista
     clientes = Cliente.objects.all().order_by('nombre')
     form = ClienteForm()
     return render(request, 'clientes/clientes.html', {'clientes': clientes, 'form': form})

@@ -22,57 +22,39 @@
     </div>
 
     <!-- Tabla -->
-    <table class="modern-table table table-striped align-middle w-100">
-    <thead class="table-light">
-      <tr>
-        <th>Cédula</th>
-        <th>Nombre</th>
-        <th>Nacionalidad</th>
-        <th>Dirección</th>
-        <th>Teléfono</th>
-        <th>Referencia 1</th>
-        <th>Teléfono Ref. 1</th>
-        <th>Referencia 2</th>
-        <th>Teléfono Ref. 2</th>
-        <th>Tipo</th>
-        <th>Status</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody id="clientes-table">
-      {% for cliente in clientes %}
-      <tr id="cliente-{{ cliente.id }}">
-        <td>{{ cliente.cedula }}</td>
-        <td>{{ cliente.nombre }}</td>
-        <td>{{ cliente.nacionalidad|default:"—" }}</td>
-        <td>{{ cliente.direccion|default:"—" }}</td>
-        <td>{{ cliente.telefono|default:"—" }}</td>
-        <td>{{ cliente.referencia_1|default:"—" }}</td>
-        <td>{{ cliente.telefono_ref_1|default:"—" }}</td>
-        <td>{{ cliente.referencia_2|default:"—" }}</td>
-        <td>{{ cliente.telefono_ref_2|default:"—" }}</td>
-        <td>
-          <span class="badge {% if cliente.tipo == 'inversionista' %}bg-success{% else %}bg-secondary{% endif %}">
-            {{ cliente.get_tipo_display }}
-          </span>
-        </td>
-        <td>
-          <span class="badge {% if cliente.status == 'lista_negra' %}bg-danger{% else %}bg-primary{% endif %}">
-            {{ cliente.get_status_display }}
-          </span>
-        </td>
-        <td>
-          <button class="btn btn-sm btn-primary" onclick="editarCliente({{ cliente.id }})">
-            ✏️ Editar
-          </button>
-        </td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="12" class="text-center text-muted">No hay clientes registrados.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
+    <table class="modern-table table align-middle w-100">
+      <thead>
+        <tr>
+          <th>Cédula</th>
+          <th>Nombre</th>
+          <th>Nacionalidad</th>
+          <th>Teléfono</th>
+          <th>Tipo</th>
+          <th>Status</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="clientes-table">
+        {% for cliente in clientes %}
+        <tr id="cliente-{{ cliente.id }}">
+          <td>{{ cliente.cedula }}</td>
+          <td>{{ cliente.nombre }}</td>
+          <td>{{ cliente.nacionalidad }}</td>
+          <td>{{ cliente.telefono }}</td>
+          <td>{{ cliente.tipo }}</td>
+          <td>{{ cliente.status }}</td>
+          <td>
+            <button class="btn btn-sm btn-primary"
+                    onclick="editarCliente({{ cliente.id }})">
+              Editar
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted">No hay clientes registrados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 </div>
 
@@ -106,95 +88,75 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+function nuevoCliente() {
+  document.getElementById('clienteModalLabel').innerText = 'Nuevo Cliente';
   const form = document.getElementById('clienteForm');
-  const modalEl = document.getElementById('clienteModal');
-  const modal = new bootstrap.Modal(modalEl);
-  const filtroInput = document.getElementById('filtroNombre');
+  form.reset();
+  form.action = '/clientes/';
+}
 
-  // Crear nuevo cliente
-  window.nuevoCliente = function () {
-    document.getElementById('clienteModalLabel').innerText = '🐶 Nuevo Cliente';
-    form.reset();
-    form.action = '/clientes/';
-  };
-
-  // Editar cliente
-  window.editarCliente = function (id) {
-    fetch(`/clientes/${id}/`, {
-      headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('clienteModalLabel').innerText = '✏️ Editar Cliente';
-        form.action = `/clientes/${id}/`;
-
-        for (const key in data) {
-          const field = document.getElementById(`id_${key}`);
-          if (field) field.value = data[key] ?? '';
-        }
-
-        modal.show();
-      })
-      .catch(() => alert('Error al obtener datos del cliente.'));
-  };
-
-  //Enviar formulario por AJAX
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    const url = form.action;
-    const formData = new FormData(form);
-
-    fetch(url, {
-      method: 'POST',
-      body: formData,
-      headers: { 'X-Requested-With': 'XMLHttpRequest' },
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          modal.hide();
-          form.reset();
-          actualizarTabla();
-        } else {
-          console.error(data.errors);
-          alert('Error al guardar cliente. Revisa los datos.');
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        alert('Error al comunicar con el servidor.');
-      });
-  });
-
-  // Actualizar tabla sin recargar la página
-  window.actualizarTabla = function () {
-  fetch('/clientes/', {
-    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-  })
+function editarCliente(id) {
+  fetch(`/clientes/${id}/`)
     .then(response => response.json())
     .then(data => {
-      const tablaActual = document.querySelector('#clientes-table');
-      tablaActual.innerHTML = data.html;
-      aplicarFiltro(); // vuelve a aplicar filtro
-    })
-    .catch(err => console.error('Error al actualizar tabla:', err));
-};
+      const form = document.getElementById('clienteForm');
+      document.getElementById('clienteModalLabel').innerText = 'Editar Cliente';
+      form.action = `/clientes/${id}/`;
 
-  //Filtro por nombre
-  filtroInput.addEventListener('keyup', aplicarFiltro);
+      // Rellenar campos (asegúrate de que coincidan con los names del form)
+      for (const key in data) {
+        const field = document.getElementById(`id_${key}`);
+        if (field) field.value = data[key];
+      }
 
-  function aplicarFiltro() {
-    const filtro = filtroInput.value.toLowerCase();
-    const filas = document.querySelectorAll('#clientes-table tr');
-
-    filas.forEach(fila => {
-      const nombre = fila.children[1]?.textContent.toLowerCase() || '';
-      fila.style.display = nombre.includes(filtro) ? '' : 'none';
+      const modal = new bootstrap.Modal(document.getElementById('clienteModal'));
+      modal.show();
     });
-  }
-});
-</script>
+}
 
+document.getElementById('clienteForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const form = e.target;
+  const url = form.action;
+  const formData = new FormData(form);
+
+  fetch(url, {
+    method: 'POST',
+    body: formData,
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      actualizarTabla();
+      bootstrap.Modal.getInstance(document.getElementById('clienteModal')).hide();
+    } else {
+      alert('Error al guardar cliente');
+    }
+  })
+  .catch(() => alert('Error en la comunicación con el servidor'));
+});
+
+function actualizarTabla() {
+  fetch('/clientes/')
+    .then(response => response.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const nuevaTabla = doc.querySelector('#clientes-table').innerHTML;
+      document.querySelector('#clientes-table').innerHTML = nuevaTabla;
+    });
+}
+
+// Filtro por nombre
+document.getElementById('filtroNombre').addEventListener('keyup', function () {
+  const filtro = this.value.toLowerCase();
+  const filas = document.querySelectorAll('#clientes-table tr');
+
+  filas.forEach(fila => {
+    const nombre = fila.children[1]?.textContent.toLowerCase() || '';
+    fila.style.display = nombre.includes(filtro) ? '' : 'none';
+  });
+});
+
+</script>
 {% endblock %}
