@@ -1,0 +1,14 @@
+<tbody>
+  {% for cliente in clientes %}
+  <tr>
+    <td>{{ forloop.counter }}</td>
+    <td>{{ cliente.nombre }}</td>
+    <td>{{ cliente.cedula }}</td>
+    <td>{{ cliente.telefono }}</td>
+    <td>{{ cliente.status }}</td>
+    <td>
+      <button class="btn btn-sm btn-outline-primary" onclick="editarCliente({{ cliente.id }})">Editar</button>
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>
