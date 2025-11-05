@@ -22,13 +22,18 @@
     </div>
 
     <!-- Tabla -->
-    <table class="modern-table table align-middle w-100">
-      <thead>
+    <table class="modern-table table table-striped align-middle w-100">
+      <thead class="table-light">
         <tr>
           <th>Cédula</th>
           <th>Nombre</th>
           <th>Nacionalidad</th>
+          <th>Dirección</th>
           <th>Teléfono</th>
+          <th>Referencia 1</th>
+          <th>Teléfono Ref. 1</th>
+          <th>Referencia 2</th>
+          <th>Teléfono Ref. 2</th>
           <th>Tipo</th>
           <th>Status</th>
           <th>Acciones</th>
@@ -39,50 +44,122 @@
         <tr id="cliente-{{ cliente.id }}">
           <td>{{ cliente.cedula }}</td>
           <td>{{ cliente.nombre }}</td>
-          <td>{{ cliente.nacionalidad }}</td>
-          <td>{{ cliente.telefono }}</td>
-          <td>{{ cliente.tipo }}</td>
-          <td>{{ cliente.status }}</td>
+          <td>{{ cliente.nacionalidad|default:"—" }}</td>
+          <td>{{ cliente.direccion|default:"—" }}</td>
+          <td>{{ cliente.telefono|default:"—" }}</td>
+          <td>{{ cliente.referencia_1|default:"—" }}</td>
+          <td>{{ cliente.telefono_ref_1|default:"—" }}</td>
+          <td>{{ cliente.referencia_2|default:"—" }}</td>
+          <td>{{ cliente.telefono_ref_2|default:"—" }}</td>
           <td>
-            <button class="btn btn-sm btn-primary"
-                    onclick="editarCliente({{ cliente.id }})">
-              Editar
+            <span class="badge {% if cliente.tipo == 'inversionista' %}bg-success{% else %}bg-secondary{% endif %}">
+              {{ cliente.get_tipo_display }}
+            </span>
+          </td>
+          <td>
+            <span class="badge {% if cliente.status == 'lista_negra' %}bg-danger{% else %}bg-primary{% endif %}">
+              {{ cliente.get_status_display }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-primary" onclick="editarCliente({{ cliente.id }})">
+              ✏️ Editar
             </button>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="7" class="text-center text-muted">No hay clientes registrados.</td></tr>
+        <tr><td colspan="12" class="text-center text-muted">No hay clientes registrados.</td></tr>
         {% endfor %}
       </tbody>
     </table>
+
   </div>
 </div>
 
-<!-- 🐾 Modal Cliente - Estilo Bruno -->
-<div class="modal fade" id="clienteModal" tabindex="-1" aria-labelledby="clienteModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content bruno-modal shadow-lg border-0">
-      <form id="clienteForm" method="POST" class="p-2">
-        {% csrf_token %}
-        <div class="modal-header align-items-center border-0 pb-0">
-          <h4 class="modal-title fw-bold text-primary" id="clienteModalLabel">🐶 Nuevo Cliente</h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
+<div class="modal-content bruno-modal shadow-lg border-0">
+  <form id="clienteForm" method="POST" class="p-3">
+    {% csrf_token %}
 
-        <div class="modal-body">
-          <div class="bruno-form">
-            {{ form.as_p }}
-          </div>
-        </div>
-
-        <div class="modal-footer border-0 pt-0">
-          <button type="button" class="btn btn-light bruno-btn-cancel" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn bruno-btn-save">💾 Guardar</button>
-        </div>
-      </form>
+    <!-- 🐾 Header -->
+    <div class="modal-header align-items-center border-0 pb-0">
+      <h4 class="modal-title fw-bold text-primary d-flex align-items-center" id="clienteModalLabel">
+        🐶 Nuevo Cliente
+      </h4>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
     </div>
-  </div>
+
+    <!-- 🧾 Cuerpo del formulario -->
+    <div class="modal-body">
+      <div class="row g-3">
+
+        <!-- 🪪 Datos principales -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ form.cedula.label }}</label>
+          {{ form.cedula }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ form.nombre.label }}</label>
+          {{ form.nombre }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ form.nacionalidad.label }}</label>
+          {{ form.nacionalidad }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ form.direccion.label }}</label>
+          {{ form.direccion }}
+        </div>
+
+        <!-- 📞 Contacto -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ form.telefono.label }}</label>
+          {{ form.telefono }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ form.tipo.label }}</label>
+          {{ form.tipo }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ form.status.label }}</label>
+          {{ form.status }}
+        </div>
+
+        <!-- 👥 Referencias -->
+        <div class="col-12 mt-3">
+          <h6 class="fw-bold text-secondary border-bottom pb-1">Referencias</h6>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ form.referencia_1.label }}</label>
+          {{ form.referencia_1 }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ form.telefono_ref_1.label }}</label>
+          {{ form.telefono_ref_1 }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ form.referencia_2.label }}</label>
+          {{ form.referencia_2 }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ form.telefono_ref_2.label }}</label>
+          {{ form.telefono_ref_2 }}
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 🦴 Footer -->
+    <div class="modal-footer border-0 pt-0">
+      <button type="button" class="btn btn-light bruno-btn-cancel" data-bs-dismiss="modal">
+        Cancelar
+      </button>
+      <button type="submit" class="btn bruno-btn-save">
+        💾 Guardar
+      </button>
+    </div>
+  </form>
 </div>
+
 
 <!-- Bootstrap + AJAX -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
