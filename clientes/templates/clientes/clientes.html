@@ -106,56 +106,101 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const modal = new bootstrap.Modal(document.getElementById('clienteModal'));
-    const form = document.getElementById('clienteForm');
-    let clienteId = null;
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.getElementById('clienteForm');
+  const modalEl = document.getElementById('clienteModal');
+  const modal = new bootstrap.Modal(modalEl);
+  const filtroInput = document.getElementById('filtroNombre');
 
-    // 🐶 Nuevo cliente
-    document.getElementById('nuevoClienteBtn').addEventListener('click', () => {
-        clienteId = null;
-        form.reset();
-        document.getElementById('clienteModalLabel').textContent = 'Registrar Cliente';
-    });
+  // 🟢 Crear nuevo cliente
+  window.nuevoCliente = function () {
+    document.getElementById('clienteModalLabel').innerText = '🐶 Nuevo Cliente';
+    form.reset();
+    form.action = '/clientes/';
+  };
 
-    // ✏️ Editar cliente
-    document.querySelectorAll('.editarClienteBtn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            clienteId = btn.dataset.id;
-            const response = await fetch(`/clientes/${clienteId}/`, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            });
-            const data = await response.json();
+  // 🟡 Editar cliente
+  window.editarCliente = function (id) {
+    fetch(`/clientes/${id}/`, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('clienteModalLabel').innerText = '✏️ Editar Cliente';
+        form.action = `/clientes/${id}/`;
 
-            for (let key in data) {
-                if (form.elements[key]) form.elements[key].value = data[key];
-            }
-
-            document.getElementById('clienteModalLabel').textContent = 'Editar Cliente';
-            modal.show();
-        });
-    });
-
-    // 💾 Guardar o actualizar
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(form);
-        const url = clienteId ? `/clientes/${clienteId}/` : '/clientes/';
-
-        const response = await fetch(url, {
-            method: 'POST',
-            body: formData,
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            location.reload();
-        } else {
-            console.error(result.errors);
-            alert('❌ Error al guardar el cliente. Revisa los campos.');
+        for (const key in data) {
+          const field = document.getElementById(`id_${key}`);
+          if (field) field.value = data[key] ?? '';
         }
+
+        modal.show();
+      })
+      .catch(() => alert('Error al obtener datos del cliente.'));
+  };
+
+  // 💾 Enviar formulario por AJAX
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const url = form.action;
+    const formData = new FormData(form);
+
+    fetch(url, {
+      method: 'POST',
+      body: formData,
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          modal.hide();
+          form.reset();
+          actualizarTabla();
+        } else {
+          console.error(data.errors);
+          alert('Error al guardar cliente. Revisa los datos.');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Error al comunicar con el servidor.');
+      });
+  });
+
+  // 🔄 Actualizar tabla sin recargar la página
+  window.actualizarTabla = function () {
+    fetch('/clientes/', {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+      .then(response => response.text())
+      .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const nuevaTabla = doc.querySelector('#clientes-table');
+        const tablaActual = document.querySelector('#clientes-table');
+
+        if (nuevaTabla && tablaActual) {
+          tablaActual.innerHTML = nuevaTabla.innerHTML;
+          aplicarFiltro(); // 🔍 vuelve a aplicar el filtro actual
+        }
+      })
+      .catch(err => console.error('Error al actualizar tabla:', err));
+  };
+
+  // 🔍 Filtro por nombre
+  filtroInput.addEventListener('keyup', aplicarFiltro);
+
+  function aplicarFiltro() {
+    const filtro = filtroInput.value.toLowerCase();
+    const filas = document.querySelectorAll('#clientes-table tr');
+
+    filas.forEach(fila => {
+      const nombre = fila.children[1]?.textContent.toLowerCase() || '';
+      fila.style.display = nombre.includes(filtro) ? '' : 'none';
     });
+  }
 });
 </script>
+
 {% endblock %}
