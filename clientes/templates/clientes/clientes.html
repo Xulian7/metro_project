@@ -112,14 +112,14 @@ document.addEventListener('DOMContentLoaded', function () {
   const modal = new bootstrap.Modal(modalEl);
   const filtroInput = document.getElementById('filtroNombre');
 
-  // 🟢 Crear nuevo cliente
+  // Crear nuevo cliente
   window.nuevoCliente = function () {
     document.getElementById('clienteModalLabel').innerText = '🐶 Nuevo Cliente';
     form.reset();
     form.action = '/clientes/';
   };
 
-  // 🟡 Editar cliente
+  // Editar cliente
   window.editarCliente = function (id) {
     fetch(`/clientes/${id}/`, {
       headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .catch(() => alert('Error al obtener datos del cliente.'));
   };
 
-  // 💾 Enviar formulario por AJAX
+  //Enviar formulario por AJAX
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -168,27 +168,21 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   });
 
-  // 🔄 Actualizar tabla sin recargar la página
+  // Actualizar tabla sin recargar la página
   window.actualizarTabla = function () {
-    fetch('/clientes/', {
-      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  fetch('/clientes/', {
+    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  })
+    .then(response => response.json())
+    .then(data => {
+      const tablaActual = document.querySelector('#clientes-table');
+      tablaActual.innerHTML = data.html;
+      aplicarFiltro(); // vuelve a aplicar filtro
     })
-      .then(response => response.text())
-      .then(html => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const nuevaTabla = doc.querySelector('#clientes-table');
-        const tablaActual = document.querySelector('#clientes-table');
+    .catch(err => console.error('Error al actualizar tabla:', err));
+};
 
-        if (nuevaTabla && tablaActual) {
-          tablaActual.innerHTML = nuevaTabla.innerHTML;
-          aplicarFiltro(); // 🔍 vuelve a aplicar el filtro actual
-        }
-      })
-      .catch(err => console.error('Error al actualizar tabla:', err));
-  };
-
-  // 🔍 Filtro por nombre
+  //Filtro por nombre
   filtroInput.addEventListener('keyup', aplicarFiltro);
 
   function aplicarFiltro() {
