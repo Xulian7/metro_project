@@ -1,0 +1,153 @@
+{% extends 'accounts/home.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <!-- 🔹 Título -->
+  <h3 class="fw-bold mb-4">👥 Gestión de Clientes</h3>
+
+  <!-- 🔸 Mensajes Django -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- 🔹 Formulario para nuevo cliente -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title">➕ Nuevo Cliente</h5>
+      <form method="POST" id="formNuevoCliente">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" name="cliente_submit" class="btn btn-primary mt-2">
+          💾 Guardar Cliente
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 🔹 Tabla de clientes -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title mb-3">📋 Lista de Clientes</h5>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle" id="tablaClientes">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Cédula</th>
+              <th>Nombre</th>
+              <th>Teléfono</th>
+              <th>Tipo</th>
+              <th>Status</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for cliente in clientes %}
+              <tr id="cliente_{{ cliente.id }}">
+                <td>{{ forloop.counter }}</td>
+                <td>{{ cliente.cedula }}</td>
+                <td>{{ cliente.nombre }}</td>
+                <td>{{ cliente.telefono }}</td>
+                <td>{{ cliente.get_tipo_display }}</td>
+                <td>
+                  {% if cliente.status == 'lista_negra' %}
+                    <span class="badge bg-danger">Lista Negra</span>
+                  {% else %}
+                    <span class="badge bg-success">Normal</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-secondary"
+                          onclick="editarCliente({{ cliente.id }})">
+                    ✏️ Editar
+                  </button>
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="7" class="text-center text-muted">No hay clientes registrados.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🔹 Modal para edición -->
+<div class="modal fade" id="clienteModal" tabindex="-1" aria-labelledby="clienteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="formEditarCliente" method="POST">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="clienteModalLabel">Editar Cliente</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          {{ form.as_p }}
+          <input type="hidden" name="cliente_id" id="cliente_id">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-success">💾 Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 🔹 Script -->
+<script>
+  const modalCliente = new bootstrap.Modal(document.getElementById('clienteModal'));
+
+  // 🧠 Rellenar modal con datos
+  function editarCliente(id) {
+    fetch(`/clientes/${id}/get/`)
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('cliente_id').value = data.id;
+        document.getElementById('id_cedula').value = data.cedula || '';
+        document.getElementById('id_nombre').value = data.nombre || '';
+        document.getElementById('id_nacionalidad').value = data.nacionalidad || '';
+        document.getElementById('id_direccion').value = data.direccion || '';
+        document.getElementById('id_telefono').value = data.telefono || '';
+        document.getElementById('id_referencia_1').value = data.referencia_1 || '';
+        document.getElementById('id_telefono_ref_1').value = data.telefono_ref_1 || '';
+        document.getElementById('id_referencia_2').value = data.referencia_2 || '';
+        document.getElementById('id_telefono_ref_2').value = data.telefono_ref_2 || '';
+        document.getElementById('id_tipo').value = data.tipo || 'normal';
+        document.getElementById('id_status').value = data.status || 'normal';
+        modalCliente.show();
+      })
+      .catch(err => console.error(err));
+  }
+
+  // 🐾 Enviar cambios vía AJAX
+  document.getElementById('formEditarCliente').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch("{% url 'vehiculo_update' %}".replace('vehiculo', 'cliente'), {
+      method: "POST",
+      body: formData,
+      headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'ok') {
+        modalCliente.hide();
+        location.reload(); // O reemplazar por actualización dinámica
+      } else {
+        alert("Error al actualizar el cliente.");
+      }
+    });
+  });
+</script>
+
+{% endblock %}

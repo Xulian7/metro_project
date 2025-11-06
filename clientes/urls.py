@@ -1,11 +1,7 @@
 from django.urls import path
 from . import views
 
-#urlpatterns = [
-#    path('', views.clientes_view, name='clientes_view'),
-#]
-
 urlpatterns = [
-    path('clientes/', views.clientes_view, name='clientes_view'),
-    path('clientes/<int:pk>/', views.clientes_view, name='editar_cliente'),
+    path('', views.clientes_dashboard, name='vehiculos_dashboard'),
+    path('update/', views.cliente_update, name='vehiculo_update'),
 ]
