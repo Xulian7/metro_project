@@ -4,144 +4,140 @@
 
 <div class="card p-4 shadow-sm">
 
-    <h3 class="fw-bold mb-4">Clientes</h3>
+  <h3 class="fw-bold mb-4">Clientes</h3>
 
-    <!-- ========================= -->
-    <!-- Formulario Crear Cliente -->
-    <!-- ========================= -->
-    <form method="post" class="row g-3 mb-4">
-        {% csrf_token %}
-        <div class="col-md-4">
-            <label class="form-label">Cédula</label>
-            <input type="text" name="cedula" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Nombre</label>
-            <input type="text" name="nombre" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Teléfono</label>
-            <input type="text" name="telefono" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Nacionalidad</label>
-            <input type="text" name="nacionalidad" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Dirección</label>
-            <input type="text" name="direccion" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Tipo</label>
-            <select name="tipo" class="form-select">
-                <option value="normal">Normal</option>
-                <option value="inversionista">Inversionista</option>
-            </select>
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Referencia 1</label>
-            <input type="text" name="referencia_1" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Teléfono Ref. 1</label>
-            <input type="text" name="telefono_ref_1" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Referencia 2</label>
-            <input type="text" name="referencia_2" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Teléfono Ref. 2</label>
-            <input type="text" name="telefono_ref_2" class="form-control">
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Status</label>
-            <select name="status" class="form-select">
-                <option value="normal">Normal</option>
-                <option value="lista_negra">Lista Negra</option>
-            </select>
-        </div>
-        <div class="col-12">
-            <button type="submit" name="cliente_submit" class="btn btn-primary">Guardar Cliente</button>
-        </div>
-    </form>
-
-    <!-- ===================================== -->
-    <!-- Buscador -->
-    <!-- ===================================== -->
-    <div class="mb-3">
-        <input type="text" id="busquedaNombre" class="form-control" placeholder="Buscar por nombre...">
+  <!-- ========================= -->
+  <!-- Formulario Crear Cliente -->
+  <!-- ========================= -->
+  <form method="post" class="row g-3 mb-4">
+    {% csrf_token %}
+    <div class="col-md-3">
+      <label class="form-label">Cédula</label>
+      <input type="text" name="cedula" class="form-control">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Nombre</label>
+      <input type="text" name="nombre" class="form-control">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Nacionalidad</label>
+      <input type="text" name="nacionalidad" class="form-control">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Dirección</label>
+      <input type="text" name="direccion" class="form-control">
     </div>
 
-    <!-- ===================================== -->
-    <!-- Tabla de Clientes con Modal Dinámico -->
-    <!-- ===================================== -->
-    <table class="table table-striped table-bordered">
-        <thead class="table-dark">
-            <tr>
-                <th>Cédula</th>
-                <th>Nombre</th>
-                <th>Teléfono</th>
-                <th>Nacionalidad</th>
-                <th>Dirección</th>
-                <th>Tipo</th>
-                <th>Status</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for c in clientes %}
-            <tr>
-                <td>{{ c.cedula }}</td>
-                <td>{{ c.nombre }}</td>
-                <td>{{ c.telefono }}</td>
-                <td>{{ c.nacionalidad }}</td>
-                <td>{{ c.direccion }}</td>
-                <td>{{ c.tipo }}</td>
-                <td>{{ c.status }}</td>
-                <td>
-                    <button type="button" class="btn btn-sm btn-warning edit-cliente-btn"
-                        data-id="{{ c.id }}"
-                        data-cedula="{{ c.cedula }}"
-                        data-nombre="{{ c.nombre }}"
-                        data-telefono="{{ c.telefono }}"
-                        data-nacionalidad="{{ c.nacionalidad }}"
-                        data-direccion="{{ c.direccion }}"
-                        data-tipo="{{ c.tipo }}"
-                        data-ref1="{{ c.referencia_1 }}"
-                        data-telref1="{{ c.telefono_ref_1 }}"
-                        data-ref2="{{ c.referencia_2 }}"
-                        data-telref2="{{ c.telefono_ref_2 }}"
-                        data-status="{{ c.status }}"
-                        data-bs-toggle="modal"
-                        data-bs-target="#editarClienteModal">
-                        Editar
-                    </button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="col-md-3">
+      <label class="form-label">Teléfono</label>
+      <input type="text" name="telefono" class="form-control">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Referencia 1</label>
+      <input type="text" name="referencia_1" class="form-control">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Teléfono Ref. 1</label>
+      <input type="text" name="telefono_ref_1" class="form-control">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Referencia 2</label>
+      <input type="text" name="referencia_2" class="form-control">
+    </div>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const input = document.getElementById('busquedaNombre');
-        const filas = document.querySelectorAll('table tbody tr');
+    <div class="col-md-3">
+      <label class="form-label">Teléfono Ref. 2</label>
+      <input type="text" name="telefono_ref_2" class="form-control">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Tipo</label>
+      <select name="tipo" class="form-select">
+        <option value="Normal">Normal</option>
+        <option value="VIP">VIP</option>
+        <option value="Bloqueado">Bloqueado</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Status</label>
+      <select name="status" class="form-select">
+        <option value="Activo">Activo</option>
+        <option value="Inactivo">Inactivo</option>
+      </select>
+    </div>
 
-        input.addEventListener('keyup', function() {
-            const filtro = this.value.toLowerCase();
-            filas.forEach(fila => {
-                const nombre = fila.querySelectorAll('td')[1].textContent.toLowerCase();
-                fila.style.display = nombre.includes(filtro) ? '' : 'none';
-            });
-        });
-    });
-    </script>
+    <div class="col-12">
+      <button type="submit" name="cliente_submit" class="btn btn-primary">Guardar Cliente</button>
+    </div>
+  </form>
 
+  <!-- ========================= -->
+  <!-- Buscador -->
+  <!-- ========================= -->
+  <div class="mb-3">
+    <input type="text" id="busquedaCliente" class="form-control" placeholder="Buscar por nombre o cédula...">
+  </div>
+
+  <!-- ========================= -->
+  <!-- Tabla de Clientes -->
+  <!-- ========================= -->
+  <table class="table table-striped table-bordered">
+    <thead class="table-dark">
+      <tr>
+        <th>Cédula</th>
+        <th>Nombre</th>
+        <th>Nacionalidad</th>
+        <th>Dirección</th>
+        <th>Teléfono</th>
+        <th>Referencia 1</th>
+        <th>Tel. Ref 1</th>
+        <th>Referencia 2</th>
+        <th>Tel. Ref 2</th>
+        <th>Tipo</th>
+        <th>Status</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in clientes %}
+      <tr>
+        <td>{{ c.cedula }}</td>
+        <td>{{ c.nombre }}</td>
+        <td>{{ c.nacionalidad }}</td>
+        <td>{{ c.direccion }}</td>
+        <td>{{ c.telefono }}</td>
+        <td>{{ c.referencia_1 }}</td>
+        <td>{{ c.telefono_ref_1 }}</td>
+        <td>{{ c.referencia_2 }}</td>
+        <td>{{ c.telefono_ref_2 }}</td>
+        <td>{{ c.tipo }}</td>
+        <td>{{ c.status }}</td>
+        <td>
+          <button type="button" class="btn btn-sm btn-warning edit-cliente-btn"
+            data-id="{{ c.id }}"
+            data-cedula="{{ c.cedula }}"
+            data-nombre="{{ c.nombre }}"
+            data-nacionalidad="{{ c.nacionalidad }}"
+            data-direccion="{{ c.direccion }}"
+            data-telefono="{{ c.telefono }}"
+            data-ref1="{{ c.referencia_1 }}"
+            data-telref1="{{ c.telefono_ref_1 }}"
+            data-ref2="{{ c.referencia_2 }}"
+            data-telref2="{{ c.telefono_ref_2 }}"
+            data-tipo="{{ c.tipo }}"
+            data-status="{{ c.status }}"
+            data-bs-toggle="modal"
+            data-bs-target="#editarClienteModal">
+            Editar
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
 <!-- ============================ -->
-<!-- Modal Único para Editar -->
+<!-- Modal Editar Cliente -->
 <!-- ============================ -->
 <div class="modal fade" id="editarClienteModal" tabindex="-1" aria-labelledby="editarClienteLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -153,60 +149,31 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
 
-        <div class="modal-body">
+        <div class="modal-body row g-3">
           <input type="hidden" name="cliente_id" id="modal-cliente-id">
-
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Cédula</label>
-              <input type="text" name="cedula" id="modal-cedula" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Nombre</label>
-              <input type="text" name="nombre" id="modal-nombre" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Teléfono</label>
-              <input type="text" name="telefono" id="modal-telefono" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Nacionalidad</label>
-              <input type="text" name="nacionalidad" id="modal-nacionalidad" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Dirección</label>
-              <input type="text" name="direccion" id="modal-direccion" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Tipo</label>
-              <select name="tipo" id="modal-tipo" class="form-select">
-                <option value="normal">Normal</option>
-                <option value="inversionista">Inversionista</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Referencia 1</label>
-              <input type="text" name="referencia_1" id="modal-ref1" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Teléfono Ref 1</label>
-              <input type="text" name="telefono_ref_1" id="modal-telref1" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Referencia 2</label>
-              <input type="text" name="referencia_2" id="modal-ref2" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Teléfono Ref 2</label>
-              <input type="text" name="telefono_ref_2" id="modal-telref2" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Status</label>
-              <select name="status" id="modal-status" class="form-select">
-                <option value="normal">Normal</option>
-                <option value="lista_negra">Lista Negra</option>
-              </select>
-            </div>
+          <div class="col-md-3"><label class="form-label">Cédula</label><input type="text" id="modal-cedula" name="cedula" class="form-control"></div>
+          <div class="col-md-3"><label class="form-label">Nombre</label><input type="text" id="modal-nombre" name="nombre" class="form-control"></div>
+          <div class="col-md-3"><label class="form-label">Nacionalidad</label><input type="text" id="modal-nacionalidad" name="nacionalidad" class="form-control"></div>
+          <div class="col-md-3"><label class="form-label">Dirección</label><input type="text" id="modal-direccion" name="direccion" class="form-control"></div>
+          <div class="col-md-3"><label class="form-label">Teléfono</label><input type="text" id="modal-telefono" name="telefono" class="form-control"></div>
+          <div class="col-md-3"><label class="form-label">Referencia 1</label><input type="text" id="modal-ref1" name="referencia_1" class="form-control"></div>
+          <div class="col-md-3"><label class="form-label">Tel. Ref 1</label><input type="text" id="modal-telref1" name="telefono_ref_1" class="form-control"></div>
+          <div class="col-md-3"><label class="form-label">Referencia 2</label><input type="text" id="modal-ref2" name="referencia_2" class="form-control"></div>
+          <div class="col-md-3"><label class="form-label">Tel. Ref 2</label><input type="text" id="modal-telref2" name="telefono_ref_2" class="form-control"></div>
+          <div class="col-md-3">
+            <label class="form-label">Tipo</label>
+            <select id="modal-tipo" name="tipo" class="form-select">
+              <option value="Normal">Normal</option>
+              <option value="VIP">VIP</option>
+              <option value="Bloqueado">Bloqueado</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Status</label>
+            <select id="modal-status" name="status" class="form-select">
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
           </div>
         </div>
 
@@ -219,43 +186,38 @@
   </div>
 </div>
 
-<!-- ================================== -->
-<!-- JS: Rellenar Modal Dinámicamente -->
-<!-- ================================== -->
+<!-- ============================ -->
+<!-- JS -->
+<!-- ============================ -->
 <script>
-document.querySelectorAll('.edit-cliente-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.getElementById('modal-cliente-id').value = btn.dataset.id;
-        document.getElementById('modal-cedula').value = btn.dataset.cedula;
-        document.getElementById('modal-nombre').value = btn.dataset.nombre;
-        document.getElementById('modal-telefono').value = btn.dataset.telefono;
-        document.getElementById('modal-nacionalidad').value = btn.dataset.nacionalidad;
-        document.getElementById('modal-direccion').value = btn.dataset.direccion;
-        document.getElementById('modal-tipo').value = btn.dataset.tipo;
-        document.getElementById('modal-ref1').value = btn.dataset.ref1;
-        document.getElementById('modal-telref1').value = btn.dataset.telref1;
-        document.getElementById('modal-ref2').value = btn.dataset.ref2;
-        document.getElementById('modal-telref2').value = btn.dataset.telref2;
-        document.getElementById('modal-status').value = btn.dataset.status;
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('busquedaCliente');
+  const filas = document.querySelectorAll('table tbody tr');
+
+  input.addEventListener('keyup', function() {
+    const filtro = this.value.toLowerCase();
+    filas.forEach(fila => {
+      const texto = fila.textContent.toLowerCase();
+      fila.style.display = texto.includes(filtro) ? '' : 'none';
     });
-});
-
-document.querySelector('#editarClienteModal form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const form = e.target;
-  const formData = new FormData(form);
-
-  const response = await fetch('/clientes/update/', {
-    method: 'POST',
-    body: formData,
-    headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') },
   });
 
-  if (response.ok) {
-    location.reload();
-  } else {
-    alert('Error al actualizar el cliente.');
-  }
+  document.querySelectorAll('.edit-cliente-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('modal-cliente-id').value = btn.dataset.id;
+      document.getElementById('modal-cedula').value = btn.dataset.cedula;
+      document.getElementById('modal-nombre').value = btn.dataset.nombre;
+      document.getElementById('modal-nacionalidad').value = btn.dataset.nacionalidad;
+      document.getElementById('modal-direccion').value = btn.dataset.direccion;
+      document.getElementById('modal-telefono').value = btn.dataset.telefono;
+      document.getElementById('modal-ref1').value = btn.dataset.ref1;
+      document.getElementById('modal-telref1').value = btn.dataset.telref1;
+      document.getElementById('modal-ref2').value = btn.dataset.ref2;
+      document.getElementById('modal-telref2').value = btn.dataset.telref2;
+      document.getElementById('modal-tipo').value = btn.dataset.tipo;
+      document.getElementById('modal-status').value = btn.dataset.status;
+    });
+  });
 });
 </script>
 
