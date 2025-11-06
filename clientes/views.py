@@ -76,3 +76,26 @@ def clientes_update(request):
         })
 
     return HttpResponseBadRequest('Método no permitido.')
+
+# ==========================================================
+# OBTENER CLIENTE (AJAX GET para modal)
+# ==========================================================
+def cliente_get(request, pk):
+    if request.method == "GET":
+        cliente = get_object_or_404(Cliente, pk=pk)
+        data = {
+            'id': cliente.id,
+            'cedula': cliente.cedula,
+            'nombre': cliente.nombre,
+            'nacionalidad': cliente.nacionalidad,
+            'direccion': cliente.direccion,
+            'telefono': cliente.telefono,
+            'referencia_1': cliente.referencia_1,
+            'telefono_ref_1': cliente.telefono_ref_1,
+            'referencia_2': cliente.referencia_2,
+            'telefono_ref_2': cliente.telefono_ref_2,
+            'tipo': cliente.tipo,
+            'status': cliente.status,
+        }
+        return JsonResponse(data)
+    return HttpResponseBadRequest("Método no permitido.")

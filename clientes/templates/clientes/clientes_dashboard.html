@@ -103,51 +103,51 @@
   </div>
 </div>
 
-<!-- 🔹 Script -->
 <script>
-  const modalCliente = new bootstrap.Modal(document.getElementById('clienteModal'));
+const modalCliente = new bootstrap.Modal(document.getElementById('clienteModal'));
 
-  // 🧠 Rellenar modal con datos
-  function editarCliente(id) {
-    fetch(`/clientes/${id}/get/`)
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('cliente_id').value = data.id;
-        document.getElementById('id_cedula').value = data.cedula || '';
-        document.getElementById('id_nombre').value = data.nombre || '';
-        document.getElementById('id_nacionalidad').value = data.nacionalidad || '';
-        document.getElementById('id_direccion').value = data.direccion || '';
-        document.getElementById('id_telefono').value = data.telefono || '';
-        document.getElementById('id_referencia_1').value = data.referencia_1 || '';
-        document.getElementById('id_telefono_ref_1').value = data.telefono_ref_1 || '';
-        document.getElementById('id_referencia_2').value = data.referencia_2 || '';
-        document.getElementById('id_telefono_ref_2').value = data.telefono_ref_2 || '';
-        document.getElementById('id_tipo').value = data.tipo || 'normal';
-        document.getElementById('id_status').value = data.status || 'normal';
-        modalCliente.show();
-      })
-      .catch(err => console.error(err));
-  }
-
-  // 🐾 Enviar cambios vía AJAX
-  document.getElementById('formEditarCliente').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    fetch("{% url 'vehiculo_update' %}".replace('vehiculo', 'cliente'), {
-      method: "POST",
-      body: formData,
-      headers: { 'X-CSRFToken': '{{ csrf_token }}' },
-    })
+// 🧠 Rellenar modal con datos
+function editarCliente(id) {
+  fetch(`/clientes/${id}/get/`)
     .then(response => response.json())
     .then(data => {
-      if (data.status === 'ok') {
-        modalCliente.hide();
-        location.reload(); // O reemplazar por actualización dinámica
-      } else {
-        alert("Error al actualizar el cliente.");
-      }
-    });
+      document.getElementById('cliente_id').value = data.id;
+      document.getElementById('id_cedula').value = data.cedula || '';
+      document.getElementById('id_nombre').value = data.nombre || '';
+      document.getElementById('id_nacionalidad').value = data.nacionalidad || '';
+      document.getElementById('id_direccion').value = data.direccion || '';
+      document.getElementById('id_telefono').value = data.telefono || '';
+      document.getElementById('id_referencia_1').value = data.referencia_1 || '';
+      document.getElementById('id_telefono_ref_1').value = data.telefono_ref_1 || '';
+      document.getElementById('id_referencia_2').value = data.referencia_2 || '';
+      document.getElementById('id_telefono_ref_2').value = data.telefono_ref_2 || '';
+      document.getElementById('id_tipo').value = data.tipo || 'normal';
+      document.getElementById('id_status').value = data.status || 'normal';
+      modalCliente.show();
+    })
+    .catch(err => console.error(err));
+}
+
+// 🐾 Enviar cambios vía AJAX
+document.getElementById('formEditarCliente').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  fetch("{% url 'clientes_update' %}", {   // <-- CORREGIDO
+    method: "POST",
+    body: formData,
+    headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      modalCliente.hide();
+      location.reload(); // O reemplazar por actualización dinámica
+    } else {
+      alert("Error al actualizar el cliente.");
+    }
   });
+});
 </script>
+
 
 {% endblock %}
