@@ -34,7 +34,7 @@ def clientes_dashboard(request):
 # ==========================================================
 # ACTUALIZAR CLIENTE (AJAX)
 # ==========================================================
-def cliente_update(request):
+def clientes_update(request):
     if request.method == 'POST':
         cliente_id = request.POST.get('cliente_id')
         if not cliente_id:
