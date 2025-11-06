@@ -53,15 +53,14 @@
       <label class="form-label">Tipo</label>
       <select name="tipo" class="form-select">
         <option value="Normal">Normal</option>
-        <option value="VIP">VIP</option>
-        <option value="Bloqueado">Bloqueado</option>
+        <option value="Inversionista">Inversionista</option>
       </select>
     </div>
     <div class="col-md-3">
       <label class="form-label">Status</label>
       <select name="status" class="form-select">
         <option value="Activo">Activo</option>
-        <option value="Inactivo">Inactivo</option>
+        <option value="Lista Negra">Lista Negra</option>
       </select>
     </div>
 
@@ -239,7 +238,7 @@
     // Cierra el modal y recarga solo la tabla (puedes hacerlo con fetch o simplemente reload)
     location.reload();
   } else {
-    alert('Error al actualizar el vehículo.');
+    alert('Error al actualizar el cliente.');
   }
 });
 
