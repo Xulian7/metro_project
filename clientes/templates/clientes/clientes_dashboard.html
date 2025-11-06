@@ -134,6 +134,23 @@
       {% endfor %}
     </tbody>
   </table>
+  <script>
+  // Script para filtrar la tabla de clientes
+  document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('busquedaCliente');
+    const filas = document.querySelectorAll('table tbody tr');
+
+    input.addEventListener('keyup', function() {
+      const filtro = this.value.toLowerCase();
+      filas.forEach(fila => {
+        const texto = fila.textContent.toLowerCase();
+        fila.style.display = texto.includes(filtro) ? '' : 'none';
+      });
+    });
+  });
+  </script>
+
+
 </div>
 
 <!-- ============================ -->
@@ -190,18 +207,6 @@
 <!-- JS -->
 <!-- ============================ -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const input = document.getElementById('busquedaCliente');
-  const filas = document.querySelectorAll('table tbody tr');
-
-  input.addEventListener('keyup', function() {
-    const filtro = this.value.toLowerCase();
-    filas.forEach(fila => {
-      const texto = fila.textContent.toLowerCase();
-      fila.style.display = texto.includes(filtro) ? '' : 'none';
-    });
-  });
-
   document.querySelectorAll('.edit-cliente-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.getElementById('modal-cliente-id').value = btn.dataset.id;
@@ -218,7 +223,26 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('modal-status').value = btn.dataset.status;
     });
   });
+
+  document.querySelector('#editarClienteModal form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+
+  const formData = new FormData(form);
+  const response = await fetch('/clientes/update/', {
+    method: 'POST',
+    body: formData,
+    headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') },
+  });
+
+  if (response.ok) {
+    // Cierra el modal y recarga solo la tabla (puedes hacerlo con fetch o simplemente reload)
+    location.reload();
+  } else {
+    alert('Error al actualizar el vehículo.');
+  }
 });
+
 </script>
 
 {% endblock %}
