@@ -9,7 +9,7 @@
   <!-- ========================= -->
   <!-- Formulario Crear Cliente -->
   <!-- ========================= -->
-  <form method="post" class="row g-3 mb-4">
+  <form method="post" class="row g-3 align-items-end mb-4">
     {% csrf_token %}
 
     <div class="col-md-2">
@@ -73,12 +73,13 @@
       </select>
     </div>
 
-    <div class="col-12 text-end mt-2">
-      <button type="submit" name="cliente_submit" class="btn btn-primary px-4">
+    <div class="col-md-2 d-flex justify-content-end">
+      <button type="submit" name="cliente_submit" class="btn btn-primary px-4 mt-2">
         Guardar Cliente
       </button>
     </div>
   </form>
+
 
   <!-- ========================= -->
   <!-- Buscador -->
