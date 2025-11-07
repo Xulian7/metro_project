@@ -3,13 +3,13 @@ from django.contrib.auth.models import User
 
 class Cliente(models.Model):
     TIPO_CHOICES = [
-        ('normal', 'Normal'),
-        ('inversionista', 'Inversionista'),
+        ('Normal', 'Normal'),
+        ('Inversionista', 'Inversionista'),
     ]
 
     STATUS_CHOICES = [
-        ('normal', 'Normal'),
-        ('lista negra', 'Lista Negra'),
+        ('Normal', 'Normal'),
+        ('Lista Negra', 'Lista Negra'),
     ]
 
     cedula = models.CharField(max_length=20, unique=True)
@@ -21,8 +21,9 @@ class Cliente(models.Model):
     telefono_ref_1 = models.CharField(max_length=20, blank=True, null=True)
     referencia_2 = models.CharField(max_length=100, blank=True, null=True)
     telefono_ref_2 = models.CharField(max_length=20, blank=True, null=True)
-    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default='normal')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='normal', blank=True, null=True)
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default='Normal')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Normal', blank=True, null=True)
 
     def __str__(self):
         return f"{self.nombre} ({self.cedula})"
+
