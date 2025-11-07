@@ -1,7 +1,8 @@
 from django import forms
 from .models import Cliente
+from core.forms_mixins import SmartCleanMixin
 
-class ClienteForm(forms.ModelForm):
+class ClienteForm(SmartCleanMixin, forms.ModelForm):
     class Meta:
         model = Cliente
         fields = '__all__'
