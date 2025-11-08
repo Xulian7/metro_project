@@ -50,6 +50,7 @@ def vehiculo_update(request):
         vehiculo.propietario = request.POST.get('propietario')
         vehiculo.numero_motor = request.POST.get('numero_motor')
         vehiculo.numero_chasis = request.POST.get('numero_chasis')
+        vehiculo.linea_gps = request.POST.get('linea_gps')  # 🛰️ nuevo campo
         vehiculo.actualizacion_soat = request.POST.get('actualizacion_soat')
         vehiculo.estado = request.POST.get('estado')
         vehiculo.save()
@@ -66,6 +67,7 @@ def vehiculo_update(request):
                 'propietario': vehiculo.propietario,
                 'numero_motor': vehiculo.numero_motor,
                 'numero_chasis': vehiculo.numero_chasis,
+                'linea_gps': vehiculo.linea_gps,  # 🛰️ devuelto al frontend
                 'actualizacion_soat': vehiculo.actualizacion_soat,
                 'estado': vehiculo.estado,
             }

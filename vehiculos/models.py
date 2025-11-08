@@ -17,11 +17,11 @@ class Vehiculo(models.Model):
     numero_chasis = models.CharField(max_length=50, blank=True, null=True)
     actualizacion_soat = models.DateField()
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='Activo')
+    linea_gps = models.CharField(max_length=50, blank=True, null=True)  # 🛰️ nuevo campo
 
     def __str__(self):
         return f"{self.placa} - {self.marca} {self.modelo}"
-    
-    # 🔹 Placeholder para la relación futura con contratos
+
     @property
     def cliente_actual(self):
         return None
