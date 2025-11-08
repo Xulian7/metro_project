@@ -346,6 +346,18 @@ border-radius: 8px;
   box-shadow: 0 0 4px rgba(13, 110, 253, 0.3);
 }
 
+/* Evita que Bootstrap pinte azul los botones de tipo submit */
+.btn-app-action.btn-primary:focus,
+.btn-app-action.btn-primary:active,
+.btn-app-action:focus,
+.btn-app-action:active {
+  background-color: var(--bs-primary) !important;
+  color: #fff !important;
+  box-shadow: 0 0 8px rgba(13, 110, 253, 0.5);
+  transform: translateY(0);
+}
+
+
 
 /* === Widget de Pico y Placa === */
 .widget-box {
