@@ -317,11 +317,16 @@ border-radius: 8px;
   white-space: nowrap; /* ✅ evita salto de línea */
 }
 
-/*Botones de acción de la app */
-/*Botones de acción de la app */
-/*Botones de acción de la app */
+/* === Botones de acción de aplicación === */
 .btn-app-action {
   white-space: nowrap; /* evita que el texto salte de línea */
+  background-color: var(--bs-primary);
+  color: #fff;
+  border: none;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .btn-app-action i {
@@ -329,6 +334,7 @@ border-radius: 8px;
   transition: transform 0.25s ease;
 }
 
+/* ✨ Hover: levanta el botón y resalta */
 .btn-app-action:hover {
   background-color: var(--bs-primary);
   color: #fff;
@@ -340,13 +346,13 @@ border-radius: 8px;
   transform: translateY(-1px);
 }
 
-/* 🎬 Efecto de clic sutil y responsivo */
+/* 🎬 Efecto de clic sutil */
 .btn-app-action:active {
   transform: translateY(1px);
   box-shadow: 0 0 4px rgba(13, 110, 253, 0.3);
 }
 
-/* Evita que Bootstrap pinte azul los botones de tipo submit */
+/* 🚫 Evita que Bootstrap cambie color en botones submit */
 .btn-app-action.btn-primary:focus,
 .btn-app-action.btn-primary:active,
 .btn-app-action:focus,
@@ -354,7 +360,7 @@ border-radius: 8px;
   background-color: var(--bs-primary) !important;
   color: #fff !important;
   box-shadow: 0 0 8px rgba(13, 110, 253, 0.5);
-  transform: translateY(0);
+  transform: none;
 }
 
 
