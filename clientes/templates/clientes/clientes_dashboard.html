@@ -77,7 +77,18 @@
       <button 
         type="submit" 
         name="cliente_submit" 
-        class="btn btn-primary btn-app-action mt-2">
+        class="btn btn-primary btn-app-action mt-2"
+        style="
+          background-color: var(--bs-primary) !important; 
+          color: #fff !important; 
+          border: none !important; 
+          box-shadow: 0 0 8px rgba(13, 110, 253, 0.3);
+          transition: all 0.25s ease;
+        "
+        onmouseover="this.style.boxShadow='0 0 10px rgba(13,110,253,0.5)'; this.style.transform='translateY(-1px)';"
+        onmouseout="this.style.boxShadow='0 0 8px rgba(13,110,253,0.3)'; this.style.transform='translateY(0)';"
+        onmousedown="this.style.transform='translateY(1px)';"
+        onmouseup="this.style.transform='translateY(0)';">
         <i class="bi bi-save"></i> Guardar Cliente
       </button>
     </div>
