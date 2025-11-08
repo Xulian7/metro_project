@@ -13,6 +13,116 @@ height: 100vh;
 overflow: hidden;
 }
 
+/* Sidebar oscuro */
+/* Sidebar oscuro */
+/* Sidebar oscuro */
+.sidebar {
+width: 260px;
+background: #1e1e2f;
+border-right: 1px solid #3f3f5a;
+display: flex;
+flex-direction: column;
+box-shadow: inset -3px 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar .brand {
+padding: 18px;
+font-weight: 700;
+display: flex;
+gap: 10px;
+align-items: center;
+}
+
+.sidebar .nav-section {
+flex: 1;
+overflow: auto;
+padding: 8px;
+}
+
+.sidebar .nav-item {
+margin: 8px 6px;
+border-radius: 10px;
+border: 1px solid transparent;
+transition: all 0.2s ease;
+}
+
+.sidebar .nav-link {
+color: #ffffff;
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 12px;
+text-decoration: none;
+cursor: pointer;
+border-radius: 8px;
+transition: all 0.2s ease;
+}
+
+.sidebar .nav-link:hover {
+background: #2a2a3d;
+color: #4dabf7;
+border-color: #3f3f5a;
+}
+
+.sidebar .parent-link.active-parent {
+background: #3b3b5a;
+color: #4dabf7;
+font-weight: 600;
+border: 1px solid #4dabf7;
+}
+
+/* === Sidebar colapsable === */
+/* === Sidebar colapsable === */
+/* === Sidebar colapsable === */
+.sidebar {
+  width: 260px;
+  background: #1e1e2f;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 80px; /* ancho reducido */
+}
+
+/* Ocultar texto y logo al colapsar */
+.sidebar.collapsed .brand,
+.sidebar.collapsed .text-label {
+  display: none !important;
+}
+
+/* Centrar los iconos cuando está colapsado */
+.sidebar.collapsed .nav-link {
+  justify-content: center;
+}
+
+.sidebar.collapsed .icon {
+  margin-right: 0;
+}
+
+.sidebar .icon {
+  margin-right: 8px;
+}
+
+/* Transiciones suaves */
+.sidebar .nav-link,
+.sidebar .icon {
+  transition: all 0.3s ease;
+}
+
+/* Ajusta el contenido principal para que no se oculte */
+.content {
+  flex: 1;
+  transition: margin-left 0.3s ease;
+}
+
+.app-shell {
+  display: flex;
+  height: 100vh;
+}
 
 /* Sublistas con animación fade-in */
 /* Sublistas con animación fade-in */
@@ -153,59 +263,6 @@ background: repeating-linear-gradient(
     #eaecef 20px
 );
 border-radius: 8px;
-}
-
-/* === Sidebar colapsable === */
-/* === Sidebar colapsable === */
-/* === Sidebar colapsable === */
-.sidebar {
-  width: 260px;
-  background: #1e1e2f;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  transition: width 0.3s ease;
-  overflow: hidden;
-}
-
-.sidebar.collapsed {
-  width: 80px; /* ancho reducido */
-}
-
-/* Ocultar texto y logo al colapsar */
-.sidebar.collapsed .brand,
-.sidebar.collapsed .text-label {
-  display: none !important;
-}
-
-/* Centrar los iconos cuando está colapsado */
-.sidebar.collapsed .nav-link {
-  justify-content: center;
-}
-
-.sidebar.collapsed .icon {
-  margin-right: 0;
-}
-
-.sidebar .icon {
-  margin-right: 8px;
-}
-
-/* Transiciones suaves */
-.sidebar .nav-link,
-.sidebar .icon {
-  transition: all 0.3s ease;
-}
-
-/* Ajusta el contenido principal para que no se oculte */
-.content {
-  flex: 1;
-  transition: margin-left 0.3s ease;
-}
-
-.app-shell {
-  display: flex;
-  height: 100vh;
 }
 
 /* === Barra superior personalizada === */
