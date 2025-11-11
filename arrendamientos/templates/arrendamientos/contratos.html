@@ -1,0 +1,97 @@
+{% extends "accounts/home.html" %}
+{% load static %}
+
+{% block content %}
+<div class="card p-4 shadow-sm">
+
+  <h3 class="fw-bold mb-4">Contratos</h3>
+
+  <form method="post" class="row g-3 mb-4">
+    {% csrf_token %}
+
+    <div class="col-md-4">
+      <label class="form-label">Cliente</label>
+      {{ form.cliente }}
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Vehículo</label>
+      {{ form.vehiculo }}
+    </div>
+
+    <div class="col-md-2">
+      <label class="form-label">Fecha inicio</label>
+      {{ form.fecha_inicio }}
+    </div>
+
+    <div class="col-md-2">
+      <label class="form-label">Cuota inicial</label>
+      {{ form.cuota_inicial }}
+    </div>
+
+    <div class="col-md-2">
+      <label class="form-label">Tarifa</label>
+      {{ form.tarifa }}
+    </div>
+
+    <div class="col-md-2">
+      <label class="form-label">Días contrato</label>
+      {{ form.dias_contrato }}
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Visitador</label>
+      {{ form.visitador }}
+    </div>
+
+    <div class="col-12 text-end mt-4">
+      <button type="submit" class="btn btn-primary px-4">Guardar Contrato</button>
+    </div>
+  </form>
+
+  <table class="table modern-table mt-4">
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Vehículo</th>
+        <th>Fecha inicio</th>
+        <th>Tarifa</th>
+        <th>Días</th>
+        <th>Visitador</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in contratos %}
+      <tr>
+        <td>{{ c.cliente }}</td>
+        <td>{{ c.vehiculo }}</td>
+        <td>{{ c.fecha_inicio }}</td>
+        <td>{{ c.tarifa }}</td>
+        <td>{{ c.dias_contrato }}</td>
+        <td>{{ c.visitador }}</td>
+        <td>{{ c.estado }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="text-center">Sin contratos registrados</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet"/>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  $('.select2').select2({
+    width: '100%',
+    placeholder: 'Buscar cliente...',
+    allowClear: true
+  });
+});
+</script>
+{% endblock %}
