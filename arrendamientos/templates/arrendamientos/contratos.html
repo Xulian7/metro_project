@@ -6,6 +6,7 @@
 
   <h3 class="fw-bold mb-4">Contratos</h3>
 
+  <!-- 🧾 Formulario para crear contrato -->
   <form method="post" class="row g-3 mb-4">
     {% csrf_token %}
 
@@ -49,7 +50,13 @@
     </div>
   </form>
 
-  <table class="table modern-table mt-4">
+  <!-- 🔍 Filtro dinámico -->
+  <div class="mb-3">
+    <input type="text" id="filtroTabla" class="form-control" placeholder="Filtrar contratos..." />
+  </div>
+
+  <!-- 📋 Tabla de contratos -->
+  <table class="table modern-table mt-3" id="tablaContratos">
     <thead>
       <tr>
         <th>Cliente</th>
@@ -82,15 +89,66 @@
 
 </div>
 
+<!-- 🎨 Estilos -->
+<style>
+  .modern-table {
+    border-collapse: separate;
+    border-spacing: 0 0.4rem;
+    font-size: 0.9rem;
+  }
+
+  .modern-table thead {
+    background: linear-gradient(90deg, #1e3c72, #2a5298);
+    color: white;
+  }
+
+  .modern-table tbody tr {
+    background: #fff;
+    transition: all 0.2s ease;
+  }
+
+  .modern-table tbody tr:hover {
+    background: #f3f6ff;
+    transform: scale(1.01);
+  }
+
+  #filtroTabla {
+    border: 2px solid #2a5298;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+  }
+
+  #filtroTabla:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(42, 82, 152, 0.25);
+  }
+</style>
+
+<!-- 🧠 Script: filtro dinámico y Select2 -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Inicializa Select2 si hay campos con esa clase
   $('.select2').select2({
     width: '100%',
-    placeholder: 'Buscar cliente...',
+    placeholder: 'Buscar...',
     allowClear: true
+  });
+
+  // 🔍 Filtro dinámico nativo
+  const input = document.getElementById("filtroTabla");
+  const tabla = document.getElementById("tablaContratos").getElementsByTagName("tbody")[0];
+
+  input.addEventListener("keyup", () => {
+    const filtro = input.value.toLowerCase().trim();
+    const filas = tabla.getElementsByTagName("tr");
+
+    for (let fila of filas) {
+      const textoFila = fila.textContent.toLowerCase();
+      fila.style.display = textoFila.includes(filtro) ? "" : "none";
+    }
   });
 });
 </script>
