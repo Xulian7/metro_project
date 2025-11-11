@@ -133,19 +133,18 @@
               <span class="text-label">Arrendamientos</span>
             </a>
             <div class="sublist" data-parent="arrendamientos">
-              <a href="arrendamientos-cobros.html" class="nav-link child-link"
-                >Lista de Cobros</a
-              >
-              <a
-                href="arrendamientos-contratos.html"
-                class="nav-link child-link"
-                >Contratos</a
-              >
-              <a href="arrendamientos-reportes.html" class="nav-link child-link"
-                >Reportes</a
-              >
+              <a href="{% url 'arrendamientos:lista_cobros' %}" class="nav-link child-link">
+                Lista de Cobros
+              </a>
+              <a href="{% url 'arrendamientos:contratos' %}" class="nav-link child-link">
+                Contratos
+              </a>
+              <a href="{% url 'arrendamientos:reportes' %}" class="nav-link child-link">
+                Reportes
+              </a>
             </div>
           </div>
+
 
           <!-- Terminal de pagos -->
           <div class="nav-item">
