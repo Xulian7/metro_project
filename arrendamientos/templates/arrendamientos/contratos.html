@@ -95,19 +95,56 @@
 
 </div>
 
-<!-- 🧠 Script: filtro dinámico y Select2 -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- ============================= -->
+<!-- 🧠 Select2 + jQuery + estilos -->
+<!-- ============================= -->
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<style>
+/* 🎨 Ajustes visuales para que Select2 combine con Bootstrap 5 */
+.select2-container--default .select2-selection--single {
+  height: calc(2.25rem + 2px);
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  background-color: #fff;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.select2-container--default .select2-selection--single:focus,
+.select2-container--default .select2-selection--single:hover {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.select2-selection__rendered {
+  color: #212529 !important;
+  line-height: 1.5 !important;
+}
+
+.select2-selection__arrow {
+  height: 100% !important;
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Inicializar Select2 con búsqueda activa
   $('.select2').select2({
     width: '100%',
     placeholder: 'Buscar...',
-    allowClear: true
+    allowClear: true,
+    language: {
+      noResults: function() {
+        return "Sin resultados";
+      }
+    }
   });
 
-  // 🔍 Filtro dinámico nativo
+  // 🔍 Filtro dinámico nativo para la tabla
   const input = document.getElementById("filtroTabla");
   const tabla = document.getElementById("tablaContratos").getElementsByTagName("tbody")[0];
 
