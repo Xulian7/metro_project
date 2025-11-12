@@ -3,6 +3,11 @@ from clientes.models import Cliente
 from vehiculos.models import Vehiculo
 
 class Contrato(models.Model):
+    TIPO_CONTRATO_CHOICES = [
+        ('opcion_compra', 'Opción de compra'),
+        ('alquiler', 'Alquiler'),
+    ]
+
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     vehiculo = models.ForeignKey(Vehiculo, on_delete=models.PROTECT, limit_choices_to={'estado': 'Inactivo'})
     fecha_inicio = models.DateField()
@@ -10,6 +15,7 @@ class Contrato(models.Model):
     tarifa = models.DecimalField(max_digits=12, decimal_places=2)
     dias_contrato = models.PositiveIntegerField()
     visitador = models.CharField(max_length=100)
+    tipo_contrato = models.CharField(max_length=20, choices=TIPO_CONTRATO_CHOICES)
     estado = models.CharField(max_length=20, default='Activo')
 
     def __str__(self):

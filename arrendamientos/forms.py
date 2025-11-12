@@ -15,11 +15,15 @@ class ContratoForm(forms.ModelForm):
 
     class Meta:
         model = Contrato
-        fields = ['cliente', 'vehiculo', 'fecha_inicio', 'cuota_inicial', 'tarifa', 'dias_contrato', 'visitador']
+        fields = [
+            'cliente', 'vehiculo', 'fecha_inicio', 'cuota_inicial',
+            'tarifa', 'dias_contrato', 'visitador', 'tipo_contrato'
+        ]
         widgets = {
             'fecha_inicio': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'cuota_inicial': forms.NumberInput(attrs={'class': 'form-control'}),
             'tarifa': forms.NumberInput(attrs={'class': 'form-control'}),
             'dias_contrato': forms.NumberInput(attrs={'class': 'form-control'}),
             'visitador': forms.TextInput(attrs={'class': 'form-control'}),
+            'tipo_contrato': forms.Select(attrs={'class': 'form-select'}),
         }
