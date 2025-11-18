@@ -27,7 +27,12 @@
     </div>
     <div class="col-md-2">
       <label class="form-label">Propietario</label>
-      <input type="text" name="propietario" class="form-control">
+      <select name="propietario" class="form-select">
+        <option value="">Seleccione…</option>
+        {% for inv in inversionistas %}
+            <option value="{{ inv.id }}">{{ inv.nombre }}</option>
+        {% endfor %}
+      </select>
     </div>
     <div class="col-md-2">
       <label class="form-label"># Motor</label>

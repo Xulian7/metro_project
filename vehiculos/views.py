@@ -3,6 +3,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib import messages
 from .models import Vehiculo
 from .forms import VehiculoForm
+from clientes.models import Cliente
 
 # ==========================================================
 # DASHBOARD PRINCIPAL (listar y crear vehículos)
@@ -10,6 +11,9 @@ from .forms import VehiculoForm
 def vehiculos_dashboard(request):
     vehiculos = Vehiculo.objects.all().order_by('placa')
     form = VehiculoForm()
+    
+    # inversionistas para el dropdown
+    inversionistas = Cliente.objects.filter(tipo="Inversionista").order_by("nombre")
 
     if request.method == "POST":
         # ========================
@@ -27,7 +31,9 @@ def vehiculos_dashboard(request):
     context = {
         'vehiculos': vehiculos,
         'form': form,
+        'inversionistas': inversionistas,
     }
+
     return render(request, "vehiculos/vehiculos_dashboard.html", context)
 
 
