@@ -491,7 +491,8 @@ border-radius: 8px;
 .modern-table {
   border-collapse: separate;
   border-spacing: 0 0.4rem;
-  font-size: 0.9rem;
+  font-size: 0.75rem !important;   /* 🔥 Fuente más pequeña */
+  text-align: center;              /* 🔥 Centrado global */
 }
 
 /* 🧩 Encabezado elegante */
@@ -506,6 +507,7 @@ border-radius: 8px;
 .modern-table thead th {
   border: none;
   padding: 0.6rem 0.75rem;
+  text-align: center !important;  /* 🔥 Centrado en encabezado */
 }
 
 /* 🔹 Filas compactas y sutilmente elevadas */
@@ -520,6 +522,7 @@ border-radius: 8px;
   border: none;
   padding: 0.45rem 0.75rem;
   vertical-align: middle;
+  text-align: center !important;  /* 🔥 Centrado en celdas */
 }
 
 /* 🧊 Efecto hover: fila flotante */
