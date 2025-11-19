@@ -5,7 +5,7 @@ from vehiculos.models import Vehiculo
 
 class ContratoForm(forms.ModelForm):
     cliente = forms.ModelChoiceField(
-        queryset=Cliente.objects.exclude(tipo='Inversionista'),
+        queryset=Cliente.objects.all(),
         widget=forms.Select(attrs={'class': 'form-select select2', 'data-placeholder': 'Buscar cliente...'})
     )
     vehiculo = forms.ModelChoiceField(
