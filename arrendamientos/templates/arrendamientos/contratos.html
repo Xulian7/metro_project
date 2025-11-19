@@ -7,10 +7,10 @@
 
   <h3 class="fw-bold mb-4">Contratos</h3>
 
-  <!-- 🧾 Formulario para crear contrato -->
   <form method="post" class="row g-3 mb-4">
     {% csrf_token %}
 
+    <!-- Fila 1 -->
     <div class="col-md-4">
       <label class="form-label">Cliente</label>
       {{ form.cliente|add_class:"select2" }}
@@ -21,40 +21,44 @@
       {{ form.vehiculo|add_class:"select2" }}
     </div>
 
-    <div class="col-md-2">
+    <div class="col-md-4">
       <label class="form-label">Fecha inicio</label>
       {{ form.fecha_inicio }}
     </div>
 
-    <div class="col-md-2">
+    <!-- Fila 2 -->
+    <div class="col-md-4">
       <label class="form-label">Cuota inicial</label>
       {{ form.cuota_inicial }}
     </div>
 
-    <div class="col-md-2">
+    <div class="col-md-4">
       <label class="form-label">Tarifa</label>
       {{ form.tarifa }}
     </div>
 
-    <div class="col-md-2">
+    <div class="col-md-4">
       <label class="form-label">Días contrato</label>
       {{ form.dias_contrato }}
     </div>
 
-    <div class="col-md-3">
+    <!-- Fila 3 -->
+    <div class="col-md-6">
       <label class="form-label">Visitador</label>
       {{ form.visitador }}
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-6">
       <label class="form-label">Tipo de contrato</label>
       {{ form.tipo_contrato }}
     </div>
 
+    <!-- Botón -->
     <div class="col-12 text-end mt-4">
       <button type="submit" class="btn btn-primary px-4">Guardar Contrato</button>
     </div>
   </form>
+
 
   <!-- 🔍 Filtro dinámico -->
   <div class="mb-3">
