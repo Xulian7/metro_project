@@ -1,6 +1,6 @@
 {% extends 'accounts/home.html' %}
 {% load static %}
-{% load widget_tweaks %}
+
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-3">Terminal de Pagos</h2>
@@ -17,7 +17,7 @@
                     </div>
                     <div class="col-md-3">
                         {{ form.placa.label_tag }}
-                        {{ form.placa|add_class:"select2" }}
+                        {{ form.placa }}
                     </div>
                     <div class="col-md-6">
                         {{ form.cliente.label_tag }}
@@ -25,30 +25,8 @@
                     </div>
                 </div>
 
-                <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    $(".select2").select2();
-
-                    $("#id_placa").on("change", function () {
-                        let vehiculo_id = $(this).val();
-
-                        if (!vehiculo_id) return;
-
-                        fetch(`/terminal_pagos/api/get_info_por_placa/${vehiculo_id}/`)
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.ok) {
-                                    $("#id_cedula").val(data.cedula);
-                                    $("#id_cliente").val(data.cliente_nombre);
-                                } else {
-                                    console.warn("No se encontró contrato.");
-                                }
-                            });
-                    });
-                });
-                </script>
-
                 <hr>
+
                 <!-- DETALLES DE FACTURA -->
                 <h5 class="mt-3">Detalles de Factura</h5>
                 <table class="table table-sm align-middle text-center" id="tablaDetalles">
@@ -199,7 +177,5 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
-
-
 </script>
 {% endblock %}
