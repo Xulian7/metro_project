@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect
 from django.db import transaction
 from .forms import FacturaForm
 from .models import Factura, DetalleFactura, Pago
+from django.http import JsonResponse
+from arrendamientos.models import Contrato
+from vehiculos.models import Vehiculo
+from clientes.models import Cliente
 
 def terminal_pagos_view(request):
     """
@@ -60,3 +64,18 @@ def terminal_pagos_view(request):
         'form': form,
         'facturas': facturas
     })
+
+def get_info_por_placa(request, vehiculo_id):
+    try:
+        contrato = Contrato.objects.select_related(
+            "cliente", "vehiculo"
+        ).get(vehiculo_id=vehiculo_id)
+
+        return JsonResponse({
+            "ok": True,
+            "cedula": contrato.cliente.cedula,
+            "cliente_nombre": contrato.cliente.nombre,
+        })
+
+    except Contrato.DoesNotExist:
+        return JsonResponse({"ok": False})
