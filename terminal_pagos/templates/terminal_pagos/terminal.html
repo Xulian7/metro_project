@@ -16,8 +16,13 @@
                         {{ form.cedula }}
                     </div>
                     <div class="col-md-3">
-                        {{ form.placa.label_tag }}
-                        {{ form.placa }}
+                        <label class="form-label">Placa</label>
+                        <select name="placa" class="form-select">
+                            <option value="">Seleccione placa...</option>
+                            {% for p in placas %}
+                                <option value="{{ p }}">{{ p }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="col-md-6">
                         {{ form.cliente.label_tag }}
