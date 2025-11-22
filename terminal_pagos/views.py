@@ -50,18 +50,16 @@ def terminal_pagos_view(request):
         form = FacturaForm()
 
     # 🆕 NUEVO: traer placas de ambas tablas
-    placas_vehiculos = Vehiculo.objects.values_list("placa", flat=True)
     vehiculos_ids = Contrato.objects.values_list("vehiculo_id", flat=True)
-    placas_contratos = Vehiculo.objects.filter(id__in=vehiculos_ids).values_list("placa", flat=True)
+    placas = Vehiculo.objects.filter(id__in=vehiculos_ids).values_list("placa", flat=True)
+
 
     # Quitar duplicados y ordenar
-    placas = sorted(set(placas_vehiculos) | set(placas_contratos))
+    placas = sorted(set(placas))
 
-    # Listado de facturas recientes (no lo usamos pero lo dejo igual)
-    facturas = Factura.objects.order_by('-fecha_creacion')[:10]
+
 
     return render(request, 'terminal_pagos/terminal.html', {
         'form': form,
-        'facturas': facturas,
         'placas': placas,  # ← IMPORTANTE
     })
