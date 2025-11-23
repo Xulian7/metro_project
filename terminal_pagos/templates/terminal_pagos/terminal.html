@@ -17,7 +17,9 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Placa</label>
-                        <select name="placa" class="form-select">
+
+                        <!-- ✔️ Agregamos id para poder capturarlo -->
+                        <select name="placa" id="selectPlaca" class="form-select">
                             <option value="">Seleccione placa...</option>
                             {% for p in placas %}
                                 <option value="{{ p }}">{{ p }}</option>
@@ -91,7 +93,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const detalleBody = document.getElementById("detalleBody");
     const pagoBody = document.getElementById("pagoBody");
 
-    // Agregar fila de detalle
+    // ============================
+    // ✔️ AUTOCOMPLETADO POR PLACA
+    // ============================
+    document.getElementById("selectPlaca").addEventListener("change", function() {
+        const placa = this.value;
+        if (!placa) return;
+
+        fetch(`/pagos/get-datos?placa=${placa}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) return;
+
+                // Rellenar datos en formulario
+                document.getElementById("id_cedula").value = data.cedula;
+                document.getElementById("id_cliente").value = data.nombre;
+            })
+            .catch(err => console.error("Error AJAX:", err));
+    });
+
+    // ============================
+    // AGREGAR DETALLE
+    // ============================
     document.getElementById("agregarDetalle").addEventListener("click", () => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -114,7 +137,9 @@ document.addEventListener("DOMContentLoaded", () => {
         detalleBody.appendChild(row);
     });
 
-    // Agregar fila de pago
+    // ============================
+    // AGREGAR PAGO
+    // ============================
     document.getElementById("agregarPago").addEventListener("click", () => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -143,7 +168,9 @@ document.addEventListener("DOMContentLoaded", () => {
         pagoBody.appendChild(row);
     });
 
-    // Eliminar fila genérica
+    // ============================
+    // ELIMINAR FILAS
+    // ============================
     document.addEventListener("click", (e) => {
         if (e.target.classList.contains("eliminarFila")) {
             e.target.closest("tr").remove();

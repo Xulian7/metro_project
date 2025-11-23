@@ -7,10 +7,27 @@ class FacturaForm(forms.ModelForm):
         model = Factura
         fields = ['cedula', 'placa', 'cliente']
         widgets = {
-            'cedula': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cédula del cliente'}),
-            'placa': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Placa del vehículo (opcional)'}),
-            'cliente': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del cliente'}),
+            'cedula': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Cédula del cliente'
+            }),
+            'placa': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Placa del vehículo (opcional)'
+            }),
+            'cliente': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nombre del cliente'
+            }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Bloquear campos (pero enviables)
+        self.fields['cedula'].widget.attrs['readonly'] = True
+        self.fields['cliente'].widget.attrs['readonly'] = True
+
 
 
 class DetalleFacturaForm(forms.ModelForm):

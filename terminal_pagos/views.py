@@ -4,6 +4,7 @@ from .forms import FacturaForm
 from .models import Factura, DetalleFactura, Pago
 from vehiculos.models import Vehiculo
 from arrendamientos.models import Contrato
+from django.http import JsonResponse   # ← necesario para la nueva vista
 
 
 def terminal_pagos_view(request):
@@ -53,13 +54,44 @@ def terminal_pagos_view(request):
     vehiculos_ids = Contrato.objects.values_list("vehiculo_id", flat=True)
     placas = Vehiculo.objects.filter(id__in=vehiculos_ids).values_list("placa", flat=True)
 
-
     # Quitar duplicados y ordenar
     placas = sorted(set(placas))
-
-
 
     return render(request, 'terminal_pagos/terminal.html', {
         'form': form,
         'placas': placas,  # ← IMPORTANTE
     })
+
+
+# ========================================
+# 🚀 NUEVA VISTA AJAX PARA AUTORELLENAR
+# ========================================
+def get_cliente_by_placa(request):
+    placa = request.GET.get("placa")
+
+    if not placa:
+        return JsonResponse({"error": "Placa no enviada"}, status=400)
+
+    try:
+        # 1. Buscar vehículo
+        vehiculo = Vehiculo.objects.get(placa=placa)
+
+        # 2. Buscar contrato único
+        contrato = Contrato.objects.get(vehiculo_id=vehiculo.id)
+
+        # 3. Cliente asociado
+        cliente = contrato.cliente
+
+        return JsonResponse({
+            "cedula": cliente.cedula,
+            "nombre": cliente.nombre,
+        })
+
+    except Vehiculo.DoesNotExist:
+        return JsonResponse({"error": "Vehículo no encontrado"}, status=404)
+
+    except Contrato.DoesNotExist:
+        return JsonResponse({"error": "Este vehículo no tiene contrato registrado"}, status=404)
+
+    except Exception as e:
+        return JsonResponse({"error": f"Error interno: {str(e)}"}, status=500)
