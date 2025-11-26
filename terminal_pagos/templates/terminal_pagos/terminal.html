@@ -10,31 +10,23 @@
         <div class="card-body">
             <form method="post" id="facturaForm">
                 {% csrf_token %}
-                <div class="row g-3 align-items-end">
+                <div class="row g-3">
                     <div class="col-md-3">
-                        <div class="form-group">
-                            {{ form.cedula.label_tag }}
-                            {{ form.cedula }}
-                        </div>
+                        {{ form.cedula.label_tag }}
+                        {{ form.cedula }}
                     </div>
-
                     <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="form-label">Placa</label>
-                            <select name="placa" id="selectPlaca" class="form-select">
-                                <option value="">Seleccione placa...</option>
-                                {% for p in placas %}
-                                    <option value="{{ p }}">{{ p }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                        <label class="form-label">Placa</label>
+                        <select name="placa" id="selectPlaca" class="form-select">
+                            <option value="">Seleccione placa...</option>
+                            {% for p in placas %}
+                                <option value="{{ p }}">{{ p }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-
                     <div class="col-md-6">
-                        <div class="form-group">
-                            {{ form.cliente.label_tag }}
-                            {{ form.cliente }}
-                        </div>
+                        {{ form.cliente.label_tag }}
+                        {{ form.cliente }}
                     </div>
                 </div>
 
@@ -93,8 +85,11 @@
 
 </div>
 
+<!-- JS: Dinámica de agregar filas -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+    const detalleBody = document.getElementById("detalleBody");
+    const pagoBody = document.getElementById("pagoBody");
 
     // ============================
     // ✔️ AUTOCOMPLETADO POR PLACA
@@ -103,17 +98,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const placa = this.value;
         if (!placa) return;
 
-        fetch("{% url 'get_datos_vehiculo' %}?placa=" + placa)
+        fetch(`/pagos/get-datos?placa=${placa}`)
             .then(res => res.json())
             .then(data => {
-                if (data.error) {
-                    console.warn("Error:", data.error);
-                    return;
-                }
+                if (data.error) return;
 
-                // Campos del formulario Django
+                // Rellenar datos en formulario
                 document.getElementById("id_cedula").value = data.cedula;
-                document.getElementById("id_cliente").value = data.cliente;
+                document.getElementById("id_cliente").value = data.nombre;
             })
             .catch(err => console.error("Error AJAX:", err));
     });
@@ -121,7 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // ============================
     // AGREGAR DETALLE
     // ============================
-    const detalleBody = document.getElementById("detalleBody");
     document.getElementById("agregarDetalle").addEventListener("click", () => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -147,7 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // ============================
     // AGREGAR PAGO
     // ============================
-    const pagoBody = document.getElementById("pagoBody");
     document.getElementById("agregarPago").addEventListener("click", () => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -184,8 +174,6 @@ document.addEventListener("DOMContentLoaded", () => {
             e.target.closest("tr").remove();
         }
     });
-
 });
 </script>
-
 {% endblock %}
