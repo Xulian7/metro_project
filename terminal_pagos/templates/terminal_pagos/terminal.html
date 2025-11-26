@@ -93,11 +93,8 @@
 
 </div>
 
-<!-- JS: Dinámica de agregar filas -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    const detalleBody = document.getElementById("detalleBody");
-    const pagoBody = document.getElementById("pagoBody");
 
     // ============================
     // ✔️ AUTOCOMPLETADO POR PLACA
@@ -106,14 +103,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const placa = this.value;
         if (!placa) return;
 
-        fetch(`/pagos/get-datos?placa=${placa}`)
+        fetch("{% url 'get_datos_vehiculo' %}?placa=" + placa)
             .then(res => res.json())
             .then(data => {
-                if (data.error) return;
+                if (data.error) {
+                    console.warn("Error:", data.error);
+                    return;
+                }
 
-                // Rellenar datos en formulario
+                // Campos del formulario Django
                 document.getElementById("id_cedula").value = data.cedula;
-                document.getElementById("id_cliente").value = data.nombre;
+                document.getElementById("id_cliente").value = data.cliente;
             })
             .catch(err => console.error("Error AJAX:", err));
     });
@@ -121,6 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ============================
     // AGREGAR DETALLE
     // ============================
+    const detalleBody = document.getElementById("detalleBody");
     document.getElementById("agregarDetalle").addEventListener("click", () => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -146,6 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ============================
     // AGREGAR PAGO
     // ============================
+    const pagoBody = document.getElementById("pagoBody");
     document.getElementById("agregarPago").addEventListener("click", () => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -182,33 +184,8 @@ document.addEventListener("DOMContentLoaded", () => {
             e.target.closest("tr").remove();
         }
     });
-});
-
-document.addEventListener("DOMContentLoaded", function() {
-
-    $('#selectPlaca').on('change', function () {
-        const placa = $(this).val();
-
-        if (!placa) return;
-
-        $.ajax({
-            url: "{% url 'get_datos_vehiculo' %}",
-            type: "GET",
-            data: { placa: placa },
-            success: function (response) {
-                if (response.error) {
-                    console.error(response.error);
-                    return;
-                }
-
-                $('#id_cedula').val(response.cedula);
-                $('#id_cliente').val(response.cliente);
-            }
-        });
-    });
 
 });
-
-
 </script>
+
 {% endblock %}

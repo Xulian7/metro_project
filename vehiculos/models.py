@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from arrendamientos.models import Contrato   # ← AQUÍ SE IMPORTA
 
 class Vehiculo(models.Model):
     ESTADO_CHOICES = [
@@ -24,4 +25,7 @@ class Vehiculo(models.Model):
 
     @property
     def cliente_actual(self):
+        contrato = Contrato.objects.filter(vehiculo=self).first()
+        if contrato:
+            return contrato.cliente
         return None
