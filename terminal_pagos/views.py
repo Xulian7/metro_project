@@ -76,8 +76,15 @@ def get_datos_vehiculo(request):
         # 1. Buscar vehículo
         vehiculo = Vehiculo.objects.get(placa=placa)
 
-        # 2. Buscar contrato único
-        contrato = Contrato.objects.get(vehiculo_id=vehiculo.id)
+        # 2. Buscar el contrato más reciente de ese vehículo
+        contrato = (
+            Contrato.objects.filter(vehiculo_id=vehiculo.id)
+            .order_by("-id")
+            .first()
+        )
+
+        if not contrato:
+            return JsonResponse({"error": "Este vehículo no tiene contrato registrado"}, status=404)
 
         # 3. Cliente asociado
         cliente = contrato.cliente
@@ -89,9 +96,6 @@ def get_datos_vehiculo(request):
 
     except Vehiculo.DoesNotExist:
         return JsonResponse({"error": "Vehículo no encontrado"}, status=404)
-
-    except Contrato.DoesNotExist:
-        return JsonResponse({"error": "Este vehículo no tiene contrato registrado"}, status=404)
 
     except Exception as e:
         return JsonResponse({"error": f"Error interno: {str(e)}"}, status=500)
