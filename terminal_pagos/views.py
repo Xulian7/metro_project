@@ -1,21 +1,21 @@
 from django.http import JsonResponse
 from vehiculos.models import Vehiculo
+from arrendamientos.models import Contrato
+from clientes.models import Cliente
 
 def get_datos_vehiculo(request):
-    placa = request.GET.get("placa", "").strip()
-
-    if not placa:
-        return JsonResponse({"error": "No se envió la placa."}, status=400)
+    placa = request.GET.get('placa')
 
     try:
         vehiculo = Vehiculo.objects.get(placa=placa)
     except Vehiculo.DoesNotExist:
-        return JsonResponse({"error": "Vehículo no encontrado."}, status=404)
+        return JsonResponse({"error": "Vehículo no encontrado"})
 
-    cliente = vehiculo.cliente_actual  # ← magia negra Django-style
+    contrato = Contrato.objects.filter(vehiculo=vehiculo).first()
+    if not contrato:
+        return JsonResponse({"error": "No hay contrato asociado a este vehículo"})
 
-    if not cliente:
-        return JsonResponse({"error": "El vehículo no tiene contrato activo."}, status=404)
+    cliente = Cliente.objects.get(id=contrato.cliente_id)
 
     return JsonResponse({
         "cedula": cliente.cedula,
