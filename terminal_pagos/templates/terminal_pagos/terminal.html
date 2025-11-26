@@ -10,23 +10,31 @@
         <div class="card-body">
             <form method="post" id="facturaForm">
                 {% csrf_token %}
-                <div class="row g-3">
+                <div class="row g-3 align-items-end">
                     <div class="col-md-3">
-                        {{ form.cedula.label_tag }}
-                        {{ form.cedula }}
+                        <div class="form-group">
+                            {{ form.cedula.label_tag }}
+                            {{ form.cedula }}
+                        </div>
                     </div>
+
                     <div class="col-md-3">
-                        <label class="form-label">Placa</label>
-                        <select name="placa" id="selectPlaca" class="form-select">
-                            <option value="">Seleccione placa...</option>
-                            {% for p in placas %}
-                                <option value="{{ p }}">{{ p }}</option>
-                            {% endfor %}
-                        </select>
+                        <div class="form-group">
+                            <label class="form-label">Placa</label>
+                            <select name="placa" id="selectPlaca" class="form-select">
+                                <option value="">Seleccione placa...</option>
+                                {% for p in placas %}
+                                    <option value="{{ p }}">{{ p }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
+
                     <div class="col-md-6">
-                        {{ form.cliente.label_tag }}
-                        {{ form.cliente }}
+                        <div class="form-group">
+                            {{ form.cliente.label_tag }}
+                            {{ form.cliente }}
+                        </div>
                     </div>
                 </div>
 
