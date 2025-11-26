@@ -66,7 +66,7 @@ def terminal_pagos_view(request):
 # ========================================
 # 🚀 NUEVA VISTA AJAX PARA AUTORELLENAR
 # ========================================
-def get_cliente_by_placa(request):
+def get_datos_vehiculo(request):
     placa = request.GET.get("placa")
 
     if not placa:
