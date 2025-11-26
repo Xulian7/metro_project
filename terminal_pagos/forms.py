@@ -1,25 +1,27 @@
 from django import forms
 from .models import Factura, DetalleFactura, Pago
 
-
 class FacturaForm(forms.ModelForm):
     class Meta:
         model = Factura
-        fields = ['cedula', 'placa', 'cliente']
+        fields = ['placa', 'cedula', 'cliente']
         widgets = {
+            'placa': forms.Select(attrs={
+                'class': 'form-control select2',
+                'id': 'id_placa'
+            }),
             'cedula': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Cédula del cliente'
-            }),
-            'placa': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Placa del vehículo (opcional)'
+                'placeholder': 'Cédula del cliente',
+                'id': 'id_cedula'
             }),
             'cliente': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Nombre del cliente'
+                'placeholder': 'Nombre del cliente',
+                'id': 'id_cliente'
             }),
         }
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -36,9 +38,18 @@ class DetalleFacturaForm(forms.ModelForm):
         fields = ['concepto', 'descripcion', 'valor_unitario', 'cantidad']
         widgets = {
             'concepto': forms.Select(attrs={'class': 'form-select'}),
-            'descripcion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Descripción o nota'}),
-            'valor_unitario': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'cantidad': forms.NumberInput(attrs={'class': 'form-control', 'min': '1'}),
+            'descripcion': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Descripción o nota'
+            }),
+            'valor_unitario': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01'
+            }),
+            'cantidad': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '1'
+            }),
         }
 
     def clean(self):
@@ -47,10 +58,16 @@ class DetalleFacturaForm(forms.ModelForm):
         factura = self.instance.factura if self.instance.pk else self.initial.get('factura')
 
         if concepto == 'abono_inicial' and factura:
-            existe = DetalleFactura.objects.filter(factura=factura, concepto='abono_inicial').exclude(pk=self.instance.pk).exists()
+            existe = DetalleFactura.objects.filter(
+                factura=factura,
+                concepto='abono_inicial'
+            ).exclude(pk=self.instance.pk).exists()
+
             if existe:
                 raise forms.ValidationError("Ya existe un abono inicial en esta factura.")
+
         return cleaned_data
+
 
 
 class PagoForm(forms.ModelForm):
@@ -60,8 +77,15 @@ class PagoForm(forms.ModelForm):
         widgets = {
             'medio_pago': forms.Select(attrs={'class': 'form-select'}),
             'origen_nequi': forms.Select(attrs={'class': 'form-select'}),
-            'valor': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
-            'referencia': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Número de referencia o nota'}),
+            'valor': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0'
+            }),
+            'referencia': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Número de referencia o nota'
+            }),
         }
 
     def clean(self):
@@ -71,4 +95,5 @@ class PagoForm(forms.ModelForm):
 
         if medio == 'nequi' and not origen:
             raise forms.ValidationError("Debe seleccionar el origen si el medio de pago es Nequi.")
+
         return cleaned_data

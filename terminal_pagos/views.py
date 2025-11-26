@@ -1,97 +1,32 @@
-from django.shortcuts import render, redirect
-from django.db import transaction
-from .forms import FacturaForm
-from .models import Factura, DetalleFactura, Pago
+from django.http import JsonResponse
 from vehiculos.models import Vehiculo
 from arrendamientos.models import Contrato
-from django.http import JsonResponse   # ← necesario para la nueva vista
+from clientes.models import Cliente
 
 
-def terminal_pagos_view(request):
-
-    if request.method == 'POST':
-        form = FacturaForm(request.POST)
-        # 👇 NO tocamos nada del guardado
-        if form.is_valid():
-            try:
-                with transaction.atomic():
-                    factura = form.save(commit=False)
-                    factura.save()
-
-                    items_nombres = request.POST.getlist('item_nombre[]')
-                    items_cantidades = request.POST.getlist('item_cantidad[]')
-                    items_valores = request.POST.getlist('item_valor[]')
-
-                    for nombre, cantidad, valor in zip(items_nombres, items_cantidades, items_valores):
-                        if nombre.strip():
-                            DetalleFactura.objects.create(
-                                factura=factura,
-                                descripcion=nombre,
-                                cantidad=int(cantidad),
-                                valor_unitario=float(valor)
-                            )
-
-                    pagos_tipos = request.POST.getlist('pago_tipo[]')
-                    pagos_valores = request.POST.getlist('pago_valor[]')
-
-                    for tipo, valor in zip(pagos_tipos, pagos_valores):
-                        if tipo.strip() and valor.strip():
-                            Pago.objects.create(
-                                factura=factura,
-                                tipo=tipo,
-                                valor=float(valor)
-                            )
-
-                return redirect('terminal_pagos')
-
-            except Exception as e:
-                form.add_error(None, f"Ocurrió un error al guardar la factura: {str(e)}")
-
-    else:
-        form = FacturaForm()
-
-    # 🆕 NUEVO: traer placas de ambas tablas
-    vehiculos_ids = Contrato.objects.values_list("vehiculo_id", flat=True)
-    placas = Vehiculo.objects.filter(id__in=vehiculos_ids).values_list("placa", flat=True)
-
-    # Quitar duplicados y ordenar
-    placas = sorted(set(placas))
-
-    return render(request, 'terminal_pagos/terminal.html', {
-        'form': form,
-        'placas': placas,  # ← IMPORTANTE
-    })
-
-
-# ========================================
-# 🚀 NUEVA VISTA AJAX PARA AUTORELLENAR
-# ========================================
-def get_cliente_by_placa(request):
-    placa = request.GET.get("placa")
-
-    if not placa:
-        return JsonResponse({"error": "Placa no enviada"}, status=400)
+def get_datos_vehiculo(request):
+    placa = request.GET.get('placa', '').strip()
 
     try:
-        # 1. Buscar vehículo
+        # 1️⃣ Buscar el vehículo por placa
         vehiculo = Vehiculo.objects.get(placa=placa)
 
-        # 2. Buscar contrato único
-        contrato = Contrato.objects.get(vehiculo_id=vehiculo.id)
+        # 2️⃣ Buscar contrato asociado al vehículo
+        contrato = Contrato.objects.filter(vehiculo_id=vehiculo.id).first()
+        if not contrato:
+            return JsonResponse({'error': 'Contrato no encontrado para este vehículo'})
 
-        # 3. Cliente asociado
-        cliente = contrato.cliente
+        # 3️⃣ Buscar el cliente del contrato
+        cliente = Cliente.objects.get(id=contrato.cliente_id)
 
-        return JsonResponse({
-            "cedula": cliente.cedula,
-            "nombre": cliente.nombre,
-        })
+        data = {
+            'cedula': cliente.cedula,
+            'cliente': cliente.nombre,     # ajusta si tu campo se llama diferente
+        }
+
+        return JsonResponse(data)
 
     except Vehiculo.DoesNotExist:
-        return JsonResponse({"error": "Vehículo no encontrado"}, status=404)
-
-    except Contrato.DoesNotExist:
-        return JsonResponse({"error": "Este vehículo no tiene contrato registrado"}, status=404)
-
-    except Exception as e:
-        return JsonResponse({"error": f"Error interno: {str(e)}"}, status=500)
+        return JsonResponse({'error': 'Vehículo no encontrado'})
+    except Cliente.DoesNotExist:
+        return JsonResponse({'error': 'Cliente no encontrado'})

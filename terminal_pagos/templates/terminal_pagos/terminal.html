@@ -183,5 +183,32 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    $('#selectPlaca').on('change', function () {
+        const placa = $(this).val();
+
+        if (!placa) return;
+
+        $.ajax({
+            url: "{% url 'get_datos_vehiculo' %}",
+            type: "GET",
+            data: { placa: placa },
+            success: function (response) {
+                if (response.error) {
+                    console.error(response.error);
+                    return;
+                }
+
+                $('#id_cedula').val(response.cedula);
+                $('#id_cliente').val(response.cliente);
+            }
+        });
+    });
+
+});
+
+
 </script>
 {% endblock %}
