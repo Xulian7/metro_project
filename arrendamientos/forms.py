@@ -9,7 +9,7 @@ class ContratoForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-select select2', 'data-placeholder': 'Buscar cliente...'})
     )
     vehiculo = forms.ModelChoiceField(
-        queryset=Vehiculo.objects.filter(estado='Inactivo'),
+        queryset=Vehiculo.objects.filter(estado='Vitrina'),
         widget=forms.Select(attrs={'class': 'form-select'})
     )
 
