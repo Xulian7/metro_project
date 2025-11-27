@@ -106,17 +106,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const placa = this.value;
         if (!placa) return;
 
-        fetch(`/pagos/get-datos?placa=${placa}`)
+        fetch(`/pagos/get-datos-por-placa?placa=${placa}`)
             .then(res => res.json())
             .then(data => {
-                if (data.error) return;
+                if (data.error) {
+                    console.warn("Error:", data.error);
+                    return;
+                }
 
-                // Rellenar datos en formulario
                 document.getElementById("id_cedula").value = data.cedula;
                 document.getElementById("id_cliente").value = data.nombre;
             })
             .catch(err => console.error("Error AJAX:", err));
     });
+
 
     // ============================
     // AGREGAR DETALLE

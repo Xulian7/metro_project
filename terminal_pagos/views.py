@@ -3,9 +3,9 @@ from django.db import transaction
 from .forms import FacturaForm
 from .models import Factura, DetalleFactura, Pago
 from vehiculos.models import Vehiculo
+from clientes.models import Cliente
 from arrendamientos.models import Contrato
-from django.http import JsonResponse   # ← necesario para la nueva vista
-
+from django.http import JsonResponse
 
 def terminal_pagos_view(request):
 
@@ -63,10 +63,7 @@ def terminal_pagos_view(request):
     })
 
 
-# ========================================
-# 🚀 NUEVA VISTA AJAX PARA AUTORELLENAR
-# ========================================
-def get_datos_vehiculo(request):
+def get_datos_por_placa(request):
     placa = request.GET.get("placa")
 
     if not placa:
@@ -76,17 +73,18 @@ def get_datos_vehiculo(request):
         # 1. Buscar vehículo
         vehiculo = Vehiculo.objects.get(placa=placa)
 
-        # 2. Buscar el contrato más reciente de ese vehículo
+        # 2. Buscar el contrato más reciente (por fecha_inicio)
         contrato = (
-            Contrato.objects.filter(vehiculo_id=vehiculo.id)
-            .order_by("-id")
+            Contrato.objects
+            .filter(vehiculo_id=vehiculo.pk)
+            .order_by('-fecha_inicio')
             .first()
         )
 
         if not contrato:
-            return JsonResponse({"error": "Este vehículo no tiene contrato registrado"}, status=404)
+            return JsonResponse({"error": "No hay contratos para este vehículo"}, status=404)
 
-        # 3. Cliente asociado
+        # 3. Obtener cliente
         cliente = contrato.cliente
 
         return JsonResponse({
