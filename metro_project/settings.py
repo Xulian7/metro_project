@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'almacen',
     'vehiculos',
     'arrendamientos',
-    'terminal_pagos',
     
 ]
 
