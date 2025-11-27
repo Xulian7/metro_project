@@ -70,21 +70,18 @@ def get_datos_por_placa(request):
         return JsonResponse({"error": "Placa no enviada"}, status=400)
 
     try:
-        # 1. Buscar vehículo
         vehiculo = Vehiculo.objects.get(placa=placa)
 
-        # 2. Buscar el contrato más reciente (por fecha_inicio)
         contrato = (
             Contrato.objects
-            .filter(vehiculo_id=vehiculo.pk)
-            .order_by('-fecha_inicio')
+            .filter(vehiculo_id=vehiculo)
+            .order_by('-id')
             .first()
         )
 
         if not contrato:
             return JsonResponse({"error": "No hay contratos para este vehículo"}, status=404)
 
-        # 3. Obtener cliente
         cliente = contrato.cliente
 
         return JsonResponse({
@@ -94,6 +91,3 @@ def get_datos_por_placa(request):
 
     except Vehiculo.DoesNotExist:
         return JsonResponse({"error": "Vehículo no encontrado"}, status=404)
-
-    except Exception as e:
-        return JsonResponse({"error": f"Error interno: {str(e)}"}, status=500)

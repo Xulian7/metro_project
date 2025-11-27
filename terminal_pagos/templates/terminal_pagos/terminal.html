@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ============================
     // ✔️ AUTOCOMPLETADO POR PLACA
     // ============================
-    document.addEventListener("change", function(e) {
+    document.addEventListener("change", function (e) {
         if (e.target.id !== "selectPlaca") return;
 
         const placa = e.target.value;
@@ -114,8 +114,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (data.error) return;
                 document.getElementById("id_cedula").value = data.cedula;
                 document.getElementById("id_cliente").value = data.nombre;
-            });
+            })
+            .catch(err => console.error("Error AJAX:", err));
     });
+
 
 
     // ============================
