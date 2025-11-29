@@ -111,14 +111,18 @@
           </div>
 
           <!-- Taller -->
-          <div class="col-md-3 mb-3">
-              <a href="{% url 'taller_panel' %}" class="card shadow-sm text-decoration-none">
-                  <div class="card-body text-center">
-                      <h5 class="card-title mb-2">Taller</h5>
-                      <p class="card-text">Gestión de servicios y mecánicos</p>
-                  </div>
+          <div class="nav-item">
+            <a class="nav-link parent-link" data-parent="taller">
+              <span class="icon"><i class="bi bi-tools"></i></span>
+              <span class="text-label">Taller</span>
+            </a>
+            <div class="sublist" data-parent="taller">
+              <a href="{% url 'taller_panel' %}" class="nav-link child-link">
+                Servicios
               </a>
+            </div>
           </div>
+
 
           <!-- Arrendamientos -->
           <div class="nav-item">
