@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'almacen',
     'vehiculos',
     'arrendamientos',
+    'taller',
     
 ]
 

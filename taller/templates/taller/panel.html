@@ -1,0 +1,223 @@
+{% extends "accounts/home.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">⚙ Gestión del Taller</h2>
+
+    <div class="row">
+
+        <!-- ==================== FORM SERVICIOS ==================== -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    Agregar Servicio
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ servicio_form.as_p }}
+                        <button type="submit" name="crear_servicio" class="btn btn-primary w-100">
+                            Guardar Servicio
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== FORM MECÁNICOS ==================== -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    Agregar Mecánico
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ mecanico_form.as_p }}
+                        <button type="submit" name="crear_mecanico" class="btn btn-success w-100">
+                            Guardar Mecánico
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ==================== TABLA DE SERVICIOS ==================== -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-secondary text-white">
+            Servicios Registrados
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead>
+                <tr>
+                    <th>Servicio</th>
+                    <th>Valor</th>
+                    <th width="120">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for s in servicios %}
+                    <tr>
+                        <td>{{ s.nombre_servicio }}</td>
+                        <td>${{ s.valor }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning"
+                                    onclick="editarServicio({{ s.id }}, '{{ s.nombre_servicio }}', '{{ s.valor }}')">
+                                Editar
+                            </button>
+
+                            <form method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="id_delete" value="{{ s.id }}">
+                                <button name="eliminar_servicio" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('¿Eliminar servicio?');">
+                                    X
+                                </button>
+                            </form>
+
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3" class="text-center">No hay servicios registrados</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- ==================== TABLA DE MECÁNICOS ==================== -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white">
+            Mecánicos Registrados
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Identificación</th>
+                    <th width="120">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for m in mecanicos %}
+                    <tr>
+                        <td>{{ m.nombre }}</td>
+                        <td>{{ m.identificacion }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning"
+                                    onclick="editarMecanico({{ m.id }}, '{{ m.nombre }}', '{{ m.identificacion }}')">
+                                Editar
+                            </button>
+
+                            <form method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="id_delete" value="{{ m.id }}">
+                                <button name="eliminar_mecanico" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('¿Eliminar mecánico?');">
+                                    X
+                                </button>
+                            </form>
+
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3" class="text-center">No hay mecánicos registrados</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+
+
+<!-- ============================== MODAL EDITAR SERVICIO ============================== -->
+<div class="modal fade" id="modalEditarServicio" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Servicio</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" id="idServicioEdit" name="id_edit">
+
+                    <label>Nombre del Servicio</label>
+                    <input type="text" id="nombreServicioEdit" name="nombre_servicio" class="form-control">
+
+                    <label class="mt-2">Valor</label>
+                    <input type="number" id="valorServicioEdit" name="valor" class="form-control">
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary" name="editar_servicio">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- ============================== MODAL EDITAR MECÁNICO ============================== -->
+<div class="modal fade" id="modalEditarMecanico" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Mecánico</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" id="idMecanicoEdit" name="id_edit">
+
+                    <label>Nombre</label>
+                    <input type="text" id="nombreMecanicoEdit" name="nombre" class="form-control">
+
+                    <label class="mt-2">Identificación</label>
+                    <input type="text" id="identificacionMecanicoEdit" name="identificacion" class="form-control">
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary" name="editar_mecanico">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- ============================== JS PARA ABRIR MODALES ============================== -->
+<script>
+    function editarServicio(id, nombre, valor) {
+        document.getElementById("idServicioEdit").value = id;
+        document.getElementById("nombreServicioEdit").value = nombre;
+        document.getElementById("valorServicioEdit").value = valor;
+
+        new bootstrap.Modal(document.getElementById("modalEditarServicio")).show();
+    }
+
+    function editarMecanico(id, nombre, identificacion) {
+        document.getElementById("idMecanicoEdit").value = id;
+        document.getElementById("nombreMecanicoEdit").value = nombre;
+        document.getElementById("identificacionMecanicoEdit").value = identificacion;
+
+        new bootstrap.Modal(document.getElementById("modalEditarMecanico")).show();
+    }
+</script>
+
+{% endblock %}
