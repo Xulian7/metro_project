@@ -4,27 +4,36 @@
 
 <div class="card p-4 shadow-sm">
   <h3 class="fw-bold fs-5 mb-4">Vehículos</h3>
+
   <!-- ========================= -->
   <!-- Formulario Crear Vehículo -->
   <!-- ========================= -->
   <form method="post" class="row g-3 mb-4">
     {% csrf_token %}
+
+    <!-- Render automático de inputs + widgets -->
+    {{ form.non_field_errors }}
+
     <div class="col-md-2">
       <label class="form-label">Placa</label>
-      <input type="text" name="placa" class="form-control">
+      {{ form.placa }}
     </div>
+
     <div class="col-md-2">
       <label class="form-label">Marca</label>
-      <input type="text" name="marca" class="form-control">
+      {{ form.marca }}
     </div>
+
     <div class="col-md-2">
       <label class="form-label">Modelo</label>
-      <input type="text" name="modelo" class="form-control">
+      {{ form.modelo }}
     </div>
+
     <div class="col-md-2">
       <label class="form-label">Serie</label>
-      <input type="text" name="serie" class="form-control">
+      {{ form.serie }}
     </div>
+
     <div class="col-md-2">
       <label class="form-label">Propietario</label>
       <select name="propietario" class="form-select">
@@ -34,28 +43,34 @@
         {% endfor %}
       </select>
     </div>
+
     <div class="col-md-2">
       <label class="form-label"># Motor</label>
-      <input type="text" name="numero_motor" class="form-control">
+      {{ form.numero_motor }}
     </div>
+
     <div class="col-md-2">
       <label class="form-label"># Chasis</label>
-      <input type="text" name="numero_chasis" class="form-control">
+      {{ form.numero_chasis }}
     </div>
+
     <div class="col-md-2">
       <label class="form-label">Línea GPS</label>
-      <input type="text" name="linea_gps" class="form-control">
+      {{ form.linea_gps }}
     </div>
+
     <div class="col-md-2">
       <label class="form-label">Actualización SOAT</label>
-      <input type="date" name="actualizacion_soat" class="form-control">
+      {{ form.actualizacion_soat }}
     </div>
+
     <div class="col-md-2">
       <label class="form-label">Estado</label>
-      <select name="estado" class="form-select" readonly disabled>
+      <select class="form-select" disabled readonly>
         <option value="Vitrina" selected>Vitrina</option>
       </select>
     </div>
+
     <div class="col-md-2 d-flex align-items-end justify-content-end">
       <button type="submit" name="vehiculo_submit" class="btn btn-primary px-4 w-100">
         Guardar
@@ -71,7 +86,7 @@
   </div>
 
   <!-- ===================================== -->
-  <!-- Tabla de Vehículos con Modal Dinámico -->
+  <!-- Tabla de Vehículos -->
   <!-- ===================================== -->
   <table class="modern-table w-100">
     <thead>
@@ -84,7 +99,7 @@
         <th># Motor</th>
         <th># Chasis</th>
         <th>Línea GPS</th>
-        <th>Actualización SOAT</th>
+        <th>SOAT</th>
         <th>Estado</th>
         <th>Acciones</th>
       </tr>
@@ -143,6 +158,7 @@
   </script>
 </div>
 
+
 <!-- ============================ -->
 <!-- Modal Único para Editar -->
 <!-- ============================ -->
@@ -151,53 +167,64 @@
     <div class="modal-content">
       <form method="post">
         {% csrf_token %}
+
         <div class="modal-header">
-          <h5 class="modal-title" id="editarVehiculoLabel">Editar Vehículo</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          <h5 class="modal-title">Editar Vehículo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
 
         <div class="modal-body">
           <input type="hidden" name="vehiculo_id" id="modal-vehiculo-id">
+
           <div class="row g-3">
             <div class="col-md-4">
               <label class="form-label">Placa</label>
-              <input type="text" name="placa" id="modal-placa" class="form-control">
+              <input type="text" id="modal-placa" name="placa" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label">Marca</label>
-              <input type="text" name="marca" id="modal-marca" class="form-control">
+              <input type="text" id="modal-marca" name="marca" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label">Modelo</label>
-              <input type="text" name="modelo" id="modal-modelo" class="form-control">
+              <input type="text" id="modal-modelo" name="modelo" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label">Serie</label>
-              <input type="text" name="serie" id="modal-serie" class="form-control">
+              <input type="text" id="modal-serie" name="serie" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label">Propietario</label>
-              <input type="text" name="propietario" id="modal-propietario" class="form-control">
+              <input type="text" id="modal-propietario" name="propietario" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label"># Motor</label>
-              <input type="text" name="numero_motor" id="modal-motor" class="form-control">
+              <input type="text" id="modal-motor" name="numero_motor" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label"># Chasis</label>
-              <input type="text" name="numero_chasis" id="modal-chasis" class="form-control">
+              <input type="text" id="modal-chasis" name="numero_chasis" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label">Línea GPS</label>
-              <input type="text" name="linea_gps" id="modal-linea" class="form-control">
+              <input type="text" id="modal-linea" name="linea_gps" class="form-control">
             </div>
+
             <div class="col-md-4">
-              <label class="form-label">Actualización SOAT</label>
-              <input type="date" name="actualizacion_soat" id="modal-soat" class="form-control">
+              <label class="form-label">SOAT</label>
+              <input type="date" id="modal-soat" name="actualizacion_soat" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label">Estado</label>
-              <select name="estado" id="modal-estado" class="form-select">
+              <select id="modal-estado" name="estado" class="form-select">
                 <option value="Activo">Activo</option>
                 <option value="Vitrina">Vitrina</option>
                 <option value="Inactivo">Inactivo</option>
@@ -207,17 +234,15 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" name="vehiculo_update" class="btn btn-primary">Guardar Cambios</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-primary" name="vehiculo_update">Guardar Cambios</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-<!-- ================================== -->
-<!-- JS: Rellenar Modal Dinámicamente -->
-<!-- ================================== -->
+
 <script>
 document.querySelectorAll('.edit-vehiculo-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -233,23 +258,6 @@ document.querySelectorAll('.edit-vehiculo-btn').forEach(btn => {
     document.getElementById('modal-soat').value = btn.dataset.soat;
     document.getElementById('modal-estado').value = btn.dataset.estado;
   });
-});
-
-document.querySelector('#editarVehiculoModal form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const form = e.target;
-  const formData = new FormData(form);
-  const response = await fetch('/vehiculos/update/', {
-    method: 'POST',
-    body: formData,
-    headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') },
-  });
-
-  if (response.ok) {
-    location.reload();
-  } else {
-    alert('Error al actualizar el vehículo.');
-  }
 });
 </script>
 
