@@ -117,6 +117,7 @@
             data-linea="{{ v.linea_gps }}"
             data-soat="{{ v.actualizacion_soat|date:'Y-m-d' }}"
             data-estado="{{ v.estado }}"
+            data-motivo="{{ v.motivo_inactivo }}"
             data-bs-toggle="modal"
             data-bs-target="#editarVehiculoModal">
             Editar
@@ -126,6 +127,7 @@
       {% endfor %}
     </tbody>
   </table>
+
 
   <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -153,48 +155,58 @@
         {% csrf_token %}
         <div class="modal-header">
           <h5 class="modal-title" id="editarVehiculoLabel">Editar Vehículo</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
 
         <div class="modal-body">
           <input type="hidden" name="vehiculo_id" id="modal-vehiculo-id">
           <div class="row g-3">
+
             <div class="col-md-4">
               <label class="form-label">Placa</label>
               <input type="text" name="placa" id="modal-placa" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label">Marca</label>
               <input type="text" name="marca" id="modal-marca" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label">Modelo</label>
               <input type="text" name="modelo" id="modal-modelo" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label">Serie</label>
               <input type="text" name="serie" id="modal-serie" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label">Propietario</label>
               <input type="text" name="propietario" id="modal-propietario" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label"># Motor</label>
               <input type="text" name="numero_motor" id="modal-motor" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label"># Chasis</label>
               <input type="text" name="numero_chasis" id="modal-chasis" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label">Línea GPS</label>
               <input type="text" name="linea_gps" id="modal-linea" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label">Actualización SOAT</label>
               <input type="date" name="actualizacion_soat" id="modal-soat" class="form-control">
             </div>
+
             <div class="col-md-4">
               <label class="form-label">Estado</label>
               <select name="estado" id="modal-estado" class="form-select">
@@ -203,6 +215,13 @@
                 <option value="Inactivo">Inactivo</option>
               </select>
             </div>
+
+            <!-- NUEVO CAMPO -->
+            <div class="col-md-12" id="wrapper-motivo" style="display:none;">
+              <label class="form-label">Motivo Inactivo</label>
+              <input type="text" name="motivo_inactivo" id="modal-motivo" class="form-control">
+            </div>
+
           </div>
         </div>
 
@@ -232,25 +251,22 @@ document.querySelectorAll('.edit-vehiculo-btn').forEach(btn => {
     document.getElementById('modal-linea').value = btn.dataset.linea;
     document.getElementById('modal-soat').value = btn.dataset.soat;
     document.getElementById('modal-estado').value = btn.dataset.estado;
+
+    // Motivo
+    document.getElementById('modal-motivo').value = btn.dataset.motivo || "";
+
+    // Mostrar u ocultar el campo motivo
+    const wrapper = document.getElementById("wrapper-motivo");
+    wrapper.style.display = btn.dataset.estado === "Inactivo" ? "block" : "none";
   });
 });
 
-document.querySelector('#editarVehiculoModal form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const form = e.target;
-  const formData = new FormData(form);
-  const response = await fetch('/vehiculos/update/', {
-    method: 'POST',
-    body: formData,
-    headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') },
-  });
-
-  if (response.ok) {
-    location.reload();
-  } else {
-    alert('Error al actualizar el vehículo.');
-  }
+// Cuando el usuario cambia el estado dentro del modal
+document.getElementById("modal-estado").addEventListener("change", function() {
+  const wrapper = document.getElementById("wrapper-motivo");
+  wrapper.style.display = this.value === "Inactivo" ? "block" : "none";
 });
 </script>
+
 
 {% endblock %}

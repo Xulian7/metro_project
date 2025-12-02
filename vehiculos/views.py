@@ -12,7 +12,6 @@ def vehiculos_dashboard(request):
     vehiculos = Vehiculo.objects.all().order_by('placa')
     form = VehiculoForm()
     
-    # inversionistas para el dropdown
     inversionistas = Cliente.objects.filter(tipo="Inversionista").order_by("nombre")
 
     if request.method == "POST":
@@ -56,12 +55,16 @@ def vehiculo_update(request):
         vehiculo.propietario = request.POST.get('propietario')
         vehiculo.numero_motor = request.POST.get('numero_motor')
         vehiculo.numero_chasis = request.POST.get('numero_chasis')
-        vehiculo.linea_gps = request.POST.get('linea_gps')  # 🛰️ nuevo campo
+        vehiculo.linea_gps = request.POST.get('linea_gps')
         vehiculo.actualizacion_soat = request.POST.get('actualizacion_soat')
         vehiculo.estado = request.POST.get('estado')
+
+        # 🆕 GUARDAR estado_obs
+        vehiculo.estado_obs = request.POST.get('estado_obs')
+
         vehiculo.save()
 
-        # Devolver JSON para que el front actualice la tabla sin recargar
+        # Devolver JSON para actualizar fila
         return JsonResponse({
             'status': 'ok',
             'vehiculo': {
@@ -73,9 +76,10 @@ def vehiculo_update(request):
                 'propietario': vehiculo.propietario,
                 'numero_motor': vehiculo.numero_motor,
                 'numero_chasis': vehiculo.numero_chasis,
-                'linea_gps': vehiculo.linea_gps,  # 🛰️ devuelto al frontend
-                'actualizacion_soat': vehiculo.actualizacion_soat,
+                'linea_gps': vehiculo.linea_gps,
+                'actualizacion_soat': str(vehiculo.actualizacion_soat),
                 'estado': vehiculo.estado,
+                'estado_obs': vehiculo.estado_obs, 
             }
         })
 
