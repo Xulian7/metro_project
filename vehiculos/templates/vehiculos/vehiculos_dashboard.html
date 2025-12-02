@@ -256,48 +256,35 @@
 </div>
 
 <script>
-function abrirModalEditar(vehiculo) {
-    // Campos normales
-    document.getElementById("modal-vehiculo-id").value = vehiculo.id;
-    document.getElementById("modal-placa").value = vehiculo.placa;
-    document.getElementById("modal-marca").value = vehiculo.marca;
-    document.getElementById("modal-modelo").value = vehiculo.modelo;
-    document.getElementById("modal-serie").value = vehiculo.serie;
-    document.getElementById("modal-propietario").value = vehiculo.propietario;
-    document.getElementById("modal-motor").value = vehiculo.numero_motor;
-    document.getElementById("modal-chasis").value = vehiculo.numero_chasis;
-    document.getElementById("modal-linea").value = vehiculo.linea_gps;
-    document.getElementById("modal-soat").value = vehiculo.actualizacion_soat;
+document.querySelectorAll(".edit-vehiculo-btn").forEach(btn => {
+    btn.addEventListener("click", function () {
 
-    // ⭐ PRESELECCIONAR "Estado"
-    document.getElementById("modal-estado").value = vehiculo.estado;
+        const get = (key) => this.dataset[key] && this.dataset[key] !== "None" ? this.dataset[key] : "";
 
-    // ⭐ RELLENAR observación
-    document.getElementById("modal-estado-obs").value = vehiculo.estado_obs ?? "";
+        document.getElementById("modal-vehiculo-id").value = get("id");
+        document.getElementById("modal-placa").value = get("placa");
+        document.getElementById("modal-marca").value = get("marca");
+        document.getElementById("modal-modelo").value = get("modelo");
+        document.getElementById("modal-serie").value = get("serie");
+        document.getElementById("modal-propietario").value = get("propietario");
+        document.getElementById("modal-motor").value = get("motor");
+        document.getElementById("modal-chasis").value = get("chasis");
+        document.getElementById("modal-linea").value = get("linea");
+        document.getElementById("modal-soat").value = get("soat");
 
-    // ⭐ Mostrar/ocultar observación según estado
-    manejarCampoObservacion(vehiculo.estado);
+        // 🎯 Aquí está tu fix: seleccionar el Estado correcto
+        document.getElementById("modal-estado").value = get("estado");
 
-    // Mostrar modal
-    let modal = new bootstrap.Modal(document.getElementById('editarVehiculoModal'));
-    modal.show();
-}
+        // 🎯 Y llenar la observación
+        document.getElementById("modal-estado-obs").value = get("estado_obs");
 
-document.getElementById("modal-estado").addEventListener("change", function() {
-    manejarCampoObservacion(this.value);
+        // Abrir modal
+        const modal = new bootstrap.Modal(document.getElementById("editarVehiculoModal"));
+        modal.show();
+    });
 });
-
-function manejarCampoObservacion(estado) {
-    const campo = document.getElementById("modal-estado-obs").closest(".col-md-12");
-
-    if (estado === "Inactivo") {
-        campo.style.display = "block";
-    } else {
-        campo.style.display = "none";
-        document.getElementById("modal-estado-obs").value = "";
-    }
-}
 </script>
+
 
 
 {% endblock %}
