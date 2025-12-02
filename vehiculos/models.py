@@ -26,8 +26,6 @@ class Vehiculo(models.Model):
     actualizacion_soat = models.DateField()
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='Activo')
     linea_gps = models.CharField(max_length=50, blank=True, null=True)
-
-    # ⭐ Nuevo campo
     estado_obs = models.CharField(
         max_length=30,
         choices=ESTADO_OBS_CHOICES,

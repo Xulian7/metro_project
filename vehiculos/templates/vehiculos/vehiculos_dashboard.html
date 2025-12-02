@@ -86,6 +86,7 @@
         <th>Línea GPS</th>
         <th>Actualización SOAT</th>
         <th>Estado</th>
+        <th>Obs. Estado</th>
         <th>Acciones</th>
       </tr>
     </thead>
@@ -102,6 +103,7 @@
         <td>{{ v.linea_gps }}</td>
         <td>{{ v.actualizacion_soat|date:"Y-m-d" }}</td>
         <td>{{ v.estado }}</td>
+        <td>{{ v.estado_obs }}</td>
         <td>
           <button 
             type="button" 
@@ -117,6 +119,7 @@
             data-linea="{{ v.linea_gps }}"
             data-soat="{{ v.actualizacion_soat|date:'Y-m-d' }}"
             data-estado="{{ v.estado }}"
+            data-estado-obs="{{ v.estado_obs }}"
             data-bs-toggle="modal"
             data-bs-target="#editarVehiculoModal">
             Editar
@@ -203,6 +206,17 @@
                 <option value="Inactivo">Inactivo</option>
               </select>
             </div>
+            <div class="col-md-6">
+              <label class="form-label">Observación Estado</label>
+              <select name="estado_obs" id="modal-estado-obs" class="form-select">
+                  <option value="">Seleccione…</option>
+                  <option value="Transito/Policia">Tránsito / Policía</option>
+                  <option value="Hurto">Hurto</option>
+                  <option value="Siniestro">Siniestro</option>
+                  <option value="Traspaso Permanente">Traspaso Permanente</option>
+                  <option value="Otros">Otros</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -232,13 +246,36 @@ document.querySelectorAll('.edit-vehiculo-btn').forEach(btn => {
     document.getElementById('modal-linea').value = btn.dataset.linea;
     document.getElementById('modal-soat').value = btn.dataset.soat;
     document.getElementById('modal-estado').value = btn.dataset.estado;
+
+    const estadoObs = document.getElementById('modal-estado-obs');
+    estadoObs.value = btn.dataset.estado_obs || "";
+
+    toggleEstadoObs(btn.dataset.estado);
   });
 });
 
+// ⭐ Función para activar/desactivar el campo OBS
+function toggleEstadoObs(estado) {
+  const estadoObs = document.getElementById('modal-estado-obs');
+  if (estado === "Inactivo") {
+    estadoObs.removeAttribute("disabled");
+  } else {
+    estadoObs.value = ""; // opcional: limpiar si no aplica
+    estadoObs.setAttribute("disabled", "disabled");
+  }
+}
+
+// ⭐ Detectar cambios dentro del modal
+document.getElementById('modal-estado').addEventListener('change', e => {
+  toggleEstadoObs(e.target.value);
+});
+
+// ⭐ Envío del formulario
 document.querySelector('#editarVehiculoModal form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const form = e.target;
   const formData = new FormData(form);
+
   const response = await fetch('/vehiculos/update/', {
     method: 'POST',
     body: formData,
@@ -252,5 +289,6 @@ document.querySelector('#editarVehiculoModal form').addEventListener('submit', a
   }
 });
 </script>
+
 
 {% endblock %}
