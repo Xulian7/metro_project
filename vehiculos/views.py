@@ -68,7 +68,6 @@ def vehiculo_update(request):
         return JsonResponse({
             'status': 'ok',
             'vehiculo': {
-                'id': vehiculo.id,
                 'placa': vehiculo.placa,
                 'marca': vehiculo.marca,
                 'modelo': vehiculo.modelo,
@@ -79,7 +78,7 @@ def vehiculo_update(request):
                 'linea_gps': vehiculo.linea_gps,
                 'actualizacion_soat': str(vehiculo.actualizacion_soat),
                 'estado': vehiculo.estado,
-                'estado_obs': vehiculo.estado_obs, 
+                'estado_obs': vehiculo.estado_obs,  # 🔥 IMPORTANTE
             }
         })
 
