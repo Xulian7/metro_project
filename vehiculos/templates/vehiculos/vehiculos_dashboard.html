@@ -71,6 +71,11 @@
       </select>
     </div>
 
+    <div class="col-md-4">
+      <label class="form-label">Observación del Estado</label>
+      {{ form.estado_obs }}
+    </div>
+
     <div class="col-md-2 d-flex align-items-end justify-content-end">
       <button type="submit" name="vehiculo_submit" class="btn btn-primary px-4 w-100">
         Guardar
@@ -101,6 +106,7 @@
         <th>Línea GPS</th>
         <th>SOAT</th>
         <th>Estado</th>
+        <th>Obs Estado</th>
         <th>Acciones</th>
       </tr>
     </thead>
@@ -117,6 +123,7 @@
         <td>{{ v.linea_gps }}</td>
         <td>{{ v.actualizacion_soat|date:"Y-m-d" }}</td>
         <td>{{ v.estado }}</td>
+        <td>{{ v.estado_obs }}</td>
         <td>
           <button 
             type="button" 
@@ -132,6 +139,7 @@
             data-linea="{{ v.linea_gps }}"
             data-soat="{{ v.actualizacion_soat|date:'Y-m-d' }}"
             data-estado="{{ v.estado }}"
+            data-estadoobs="{{ v.estado_obs }}"
             data-bs-toggle="modal"
             data-bs-target="#editarVehiculoModal">
             Editar
@@ -230,6 +238,11 @@
                 <option value="Inactivo">Inactivo</option>
               </select>
             </div>
+
+            <div class="col-md-12">
+              <label class="form-label">Observación del Estado</label>
+              <textarea id="modal-estado-obs" name="estado_obs" class="form-control"></textarea>
+            </div>
           </div>
         </div>
 
@@ -257,6 +270,7 @@ document.querySelectorAll('.edit-vehiculo-btn').forEach(btn => {
     document.getElementById('modal-linea').value = btn.dataset.linea;
     document.getElementById('modal-soat').value = btn.dataset.soat;
     document.getElementById('modal-estado').value = btn.dataset.estado;
+    document.getElementById('modal-estado-obs').value = btn.dataset.estadoobs || "";
   });
 });
 </script>
