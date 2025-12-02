@@ -8,14 +8,6 @@ class Vehiculo(models.Model):
         ('Inactivo', 'Inactivo'),
     ]
 
-    ESTADO_OBS_CHOICES = [
-        ('Transito/Policia', 'Tránsito / Policía'),
-        ('Hurto', 'Hurto'),
-        ('Siniestro', 'Siniestro'),
-        ('Traspaso Permanente', 'Traspaso Permanente'),
-        ('Otros', 'Otros'),
-    ]
-
     placa = models.CharField(max_length=20, unique=True)
     marca = models.CharField(max_length=50)
     modelo = models.CharField(max_length=50)
@@ -25,16 +17,7 @@ class Vehiculo(models.Model):
     numero_chasis = models.CharField(max_length=50, blank=True, null=True)
     actualizacion_soat = models.DateField()
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='Activo')
-    linea_gps = models.CharField(max_length=50, blank=True, null=True)
-
-    # ⭐ Nuevo campo
-    estado_obs = models.CharField(
-        max_length=30,
-        choices=ESTADO_OBS_CHOICES,
-        blank=True,
-        null=True,
-        help_text="Observación del estado solo si el vehículo está inactivo."
-    )
+    linea_gps = models.CharField(max_length=50, blank=True, null=True)  # 🛰️ nuevo campo
 
     def __str__(self):
         return f"{self.placa} - {self.marca} {self.modelo}"
