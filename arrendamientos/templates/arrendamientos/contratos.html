@@ -76,6 +76,7 @@
         <th>Días</th>
         <th>Visitador</th>
         <th>Estado</th>
+        <th>Motivo</th> <!-- ⭐ Nuevo -->
       </tr>
     </thead>
     <tbody>
@@ -88,14 +89,22 @@
         <td>{{ c.dias_contrato }}</td>
         <td>{{ c.visitador }}</td>
         <td>{{ c.estado }}</td>
+        <td>
+          {% if c.estado == "Inactivo" %}
+            {{ c.get_motivo_display }}
+          {% else %}
+            —
+          {% endif %}
+        </td>
       </tr>
       {% empty %}
       <tr>
-        <td colspan="7" class="text-center">Sin contratos registrados</td>
+        <td colspan="8" class="text-center">Sin contratos registrados</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+
 
 </div>
 

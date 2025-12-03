@@ -8,8 +8,18 @@ class Contrato(models.Model):
         ('alquiler', 'Alquiler'),
     ]
 
+    # ⭐ NUEVO
+    MOTIVO_INACTIVO_CHOICES = [
+        ('Finalizado', 'Finalizado'),
+        ('Cancelado', 'Cancelado'),
+    ]
+
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-    vehiculo = models.ForeignKey(Vehiculo, on_delete=models.PROTECT, limit_choices_to={'estado': 'Inactivo'})
+    vehiculo = models.ForeignKey(
+        Vehiculo,
+        on_delete=models.PROTECT,
+        limit_choices_to={'estado': 'Inactivo'}
+    )
     fecha_inicio = models.DateField()
     cuota_inicial = models.DecimalField(max_digits=12, decimal_places=2)
     tarifa = models.DecimalField(max_digits=12, decimal_places=2)
@@ -17,6 +27,15 @@ class Contrato(models.Model):
     visitador = models.CharField(max_length=100)
     tipo_contrato = models.CharField(max_length=20, choices=TIPO_CONTRATO_CHOICES)
     estado = models.CharField(max_length=20, default='Activo')
+
+
+    motivo = models.CharField(
+        max_length=20,
+        choices=MOTIVO_INACTIVO_CHOICES,
+        blank=True,
+        null=True,
+        help_text="Motivo del estado inactivo del contrato."
+    )
 
     def __str__(self):
         return f"{self.cliente.nombre} - {self.vehiculo.placa}"
