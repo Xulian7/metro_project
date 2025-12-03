@@ -291,6 +291,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    const estadoSelect = document.getElementById("estado");
+    const motivoSelect = document.getElementById("motivo_inactivacion");
+
+    function actualizarMotivos() {
+        const estado = estadoSelect.value;
+
+        if (estado === "Inactivo") {
+            motivoSelect.disabled = false;
+            motivoSelect.innerHTML = `
+                <option value="">Seleccione...</option>
+                <option value="Finalizado">Finalizado</option>
+                <option value="Cancelado">Cancelado</option>
+            `;
+        } else {
+            motivoSelect.disabled = true;
+            motivoSelect.innerHTML = `<option value="">N/A</option>`;
+        }
+    }
+
+    estadoSelect.addEventListener("change", actualizarMotivos);
+
+    // Ejecutar al abrir el modal para que los valores coincidan si estás editando
+    actualizarMotivos();
+});
+
 
 </script>
 {% endblock %}
