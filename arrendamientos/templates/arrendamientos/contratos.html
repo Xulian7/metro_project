@@ -76,9 +76,11 @@
         <th>Días</th>
         <th>Visitador</th>
         <th>Estado</th>
-        <th>Motivo</th> <!-- ⭐ Nuevo -->
+        <th>Motivo</th>
+        <th>Acciones</th> <!-- ⭐ Nuevo -->
       </tr>
     </thead>
+
     <tbody>
       {% for c in contratos %}
       <tr>
@@ -96,14 +98,38 @@
             —
           {% endif %}
         </td>
+
+        <td>
+          <button
+            class="btn btn-sm btn-primary edit-contrato-btn"
+            data-bs-toggle="modal"
+            data-bs-target="#editarContratoModal"
+
+            data-id="{{ c.id }}"
+            data-cliente="{{ c.cliente.id }}"
+            data-vehiculo="{{ c.vehiculo.id }}"
+            data-fecha_inicio="{{ c.fecha_inicio }}"
+            data-cuota_inicial="{{ c.cuota_inicial }}"
+            data-tarifa="{{ c.tarifa }}"
+            data-dias="{{ c.dias_contrato }}"
+            data-visitador="{{ c.visitador }}"
+            data-tipo="{{ c.tipo_contrato }}"
+            data-estado="{{ c.estado }}"
+            data-motivo="{{ c.motivo }}"
+          >
+            Editar
+          </button>
+        </td>
+
       </tr>
       {% empty %}
       <tr>
-        <td colspan="8" class="text-center">Sin contratos registrados</td>
+        <td colspan="9" class="text-center">Sin contratos registrados</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+
 
 
 </div>
