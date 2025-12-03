@@ -35,7 +35,7 @@ class Vehiculo(models.Model):
     )
 
     def __str__(self):
-        return f"{self.placa} - {self.marca} {self.modelo}"
+        return f"{self.placa}"
 
     @property
     def cliente_actual(self):

@@ -25,5 +25,5 @@ class Cliente(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Normal', blank=True, null=True)
 
     def __str__(self):
-        return f"{self.nombre} ({self.cedula})"
+        return f"{self.nombre}"
 
