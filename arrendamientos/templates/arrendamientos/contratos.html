@@ -271,20 +271,31 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-document.querySelectorAll('.editar-contrato-btn').forEach(btn => {
+document.querySelectorAll('.edit-contrato-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.getElementById('modal-id').value = btn.dataset.id;
+    
+    document.getElementById('modal-contrato-id').value = btn.dataset.id;
     document.getElementById('modal-cliente').value = btn.dataset.cliente;
     document.getElementById('modal-vehiculo').value = btn.dataset.vehiculo;
-    document.getElementById('modal-fecha').value = btn.dataset.fecha;
+    document.getElementById('modal-fecha-inicio').value = btn.dataset.fecha_inicio;
+    document.getElementById('modal-cuota').value = btn.dataset.cuota_inicial;
     document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
     document.getElementById('modal-dias').value = btn.dataset.dias;
     document.getElementById('modal-visitador').value = btn.dataset.visitador;
+    document.getElementById('modal-tipo').value = btn.dataset.tipo;
     document.getElementById('modal-estado').value = btn.dataset.estado;
 
-    const motivo = document.getElementById('modal-motivo');
+    // Motivo
+    const motivo = document.getElementById("modal-motivo");
     motivo.value = btn.dataset.motivo || "";
-    motivo.disabled = (btn.dataset.estado !== "Inactivo");
+
+    if (btn.dataset.estado === "Inactivo") {
+      motivo.removeAttribute("disabled");
+    } else {
+      motivo.setAttribute("disabled", "disabled");
+      motivo.value = "";
+    }
+
   });
 });
 
