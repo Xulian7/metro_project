@@ -270,30 +270,10 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-
 document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll('.editar-contrato-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
 
-        document.getElementById('modal-id').value = btn.dataset.id;
-        document.getElementById('modal-cliente').value = btn.dataset.cliente;
-        document.getElementById('modal-vehiculo').value = btn.dataset.vehiculo;
-        document.getElementById('modal-fecha').value = btn.dataset.fecha;
-        document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
-        document.getElementById('modal-dias').value = btn.dataset.dias;
-        document.getElementById('modal-visitador').value = btn.dataset.visitador;
-        document.getElementById('modal-estado').value = btn.dataset.estado;
-
-        const motivo = document.getElementById('modal-motivo');
-        motivo.value = btn.dataset.motivo || "";
-        motivo.disabled = (btn.dataset.estado !== "Inactivo");
-      });
-    });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const estadoSelect = document.getElementById("estado");
-    const motivoSelect = document.getElementById("motivo_inactivacion");
+    const estadoSelect = document.getElementById("modal-estado");
+    const motivoSelect = document.getElementById("modal-motivo");
 
     function actualizarMotivos() {
         const estado = estadoSelect.value;
@@ -311,10 +291,31 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Cambio dentro del modal
     estadoSelect.addEventListener("change", actualizarMotivos);
 
-    // Ejecutar al abrir el modal para que los valores coincidan si estás editando
-    actualizarMotivos();
+    // Cuando abres el modal con botón "Editar"
+    document.querySelectorAll('.editar-contrato-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+
+            // Poblar el modal
+            document.getElementById('modal-id').value = btn.dataset.id;
+            document.getElementById('modal-cliente').value = btn.dataset.cliente;
+            document.getElementById('modal-vehiculo').value = btn.dataset.vehiculo;
+            document.getElementById('modal-fecha').value = btn.dataset.fecha;
+            document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
+            document.getElementById('modal-dias').value = btn.dataset.dias;
+            document.getElementById('modal-visitador').value = btn.dataset.visitador;
+            estadoSelect.value = btn.dataset.estado;
+
+            // Actualiza motivos según estado
+            actualizarMotivos();
+
+            // Y luego setea el motivo elegido si aplica
+            motivoSelect.value = btn.dataset.motivo || "";
+        });
+    });
+
 });
 
 
