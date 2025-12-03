@@ -274,6 +274,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const estadoSelect = document.getElementById("modal-estado");
     const motivoSelect = document.getElementById("modal-motivo");
+    const formEditar = document.getElementById("form-editar-contrato");
 
     function actualizarMotivos() {
         const estado = estadoSelect.value;
@@ -306,18 +307,21 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
             document.getElementById('modal-dias').value = btn.dataset.dias;
             document.getElementById('modal-visitador').value = btn.dataset.visitador;
+
             estadoSelect.value = btn.dataset.estado;
+
+            // ⭐ IMPORTANTE → Definir la URL del POST
+            formEditar.action = `/arrendamientos/contratos/update/${btn.dataset.id}/`;
 
             // Actualiza motivos según estado
             actualizarMotivos();
 
-            // Y luego setea el motivo elegido si aplica
+            // Setea el motivo si existe
             motivoSelect.value = btn.dataset.motivo || "";
         });
     });
 
 });
-
-
 </script>
+
 {% endblock %}
