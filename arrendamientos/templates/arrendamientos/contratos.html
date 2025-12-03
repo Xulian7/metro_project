@@ -130,97 +130,78 @@
     </tbody>
   </table>
   
-  <!-- Modal para editar contrato -->
+  <!-- Modal de edición -->
   <div class="modal fade" id="editarContratoModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
       <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Editar contrato</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
 
         <form id="formEditarContrato">
           {% csrf_token %}
-          <input type="hidden" name="id" id="modal-contrato-id">
-
-          <div class="modal-header">
-            <h5 class="modal-title">Editar contrato</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
+          <input type="hidden" id="modal-id" name="id">
 
           <div class="modal-body">
-            
-            <div class="row">
-              <div class="col-md-6">
-                <label>Cliente</label>
-                <select name="cliente" id="modal-cliente" class="form-select"></select>
-              </div>
 
-              <div class="col-md-6">
-                <label>Vehículo</label>
-                <select name="vehiculo" id="modal-vehiculo" class="form-select"></select>
-              </div>
-            </div>
-            
-            <div class="row mt-3">
-              <div class="col-md-4">
-                <label>Fecha inicio</label>
-                <input type="date" name="fecha_inicio" id="modal-fecha-inicio" class="form-control">
-              </div>
-
-              <div class="col-md-4">
-                <label>Cuota inicial</label>
-                <input type="number" step="0.01" name="cuota_inicial" id="modal-cuota" class="form-control">
-              </div>
-
-              <div class="col-md-4">
-                <label>Tarifa</label>
-                <input type="number" step="0.01" name="tarifa" id="modal-tarifa" class="form-control">
-              </div>
+            <div class="mb-3">
+              <label>Cliente</label>
+              <input type="text" id="modal-cliente" class="form-control" disabled>
             </div>
 
-            <div class="row mt-3">
-              <div class="col-md-4">
-                <label>Días</label>
-                <input type="number" name="dias_contrato" id="modal-dias" class="form-control">
-              </div>
-
-              <div class="col-md-4">
-                <label>Visitador</label>
-                <input type="text" name="visitador" id="modal-visitador" class="form-control">
-              </div>
-
-              <div class="col-md-4">
-                <label>Tipo contrato</label>
-                <select name="tipo_contrato" id="modal-tipo" class="form-select"></select>
-              </div>
+            <div class="mb-3">
+              <label>Vehículo</label>
+              <input type="text" id="modal-vehiculo" class="form-control" disabled>
             </div>
 
-            <div class="row mt-3">
-              <div class="col-md-4">
-                <label>Estado</label>
-                <select name="estado" id="modal-estado" class="form-select">
-                  <option value="Activo">Activo</option>
-                  <option value="Inactivo">Inactivo</option>
-                </select>
-              </div>
+            <div class="mb-3">
+              <label>Fecha inicio</label>
+              <input type="date" id="modal-fecha" name="fecha_inicio" class="form-control">
+            </div>
 
-              <div class="col-md-4">
-                <label>Motivo</label>
-                <select name="motivo" id="modal-motivo" class="form-select" disabled>
-                  <option value="">---</option>
-                  <option value="Finalizado">Finalizado</option>
-                  <option value="Cancelado">Cancelado</option>
-                </select>
-              </div>
+            <div class="mb-3">
+              <label>Tarifa</label>
+              <input type="number" id="modal-tarifa" name="tarifa" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label>Días</label>
+              <input type="number" id="modal-dias" name="dias_contrato" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label>Visitador</label>
+              <input type="text" id="modal-visitador" name="visitador" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label>Estado</label>
+              <select id="modal-estado" name="estado" class="form-select">
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label>Motivo (solo si está inactivo)</label>
+              <select id="modal-motivo" name="motivo" class="form-select" disabled>
+                <option value="Finalizado">Finalizado</option>
+                <option value="Cancelado">Cancelado</option>
+              </select>
             </div>
 
           </div>
 
           <div class="modal-footer">
-            <button type="submit" class="btn btn-success">Guardar cambios</button>
+            <button type="submit" class="btn btn-primary">Actualizar</button>
           </div>
         </form>
-
       </div>
     </div>
   </div>
+
 
 
 
@@ -290,31 +271,20 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-document.querySelectorAll('.edit-contrato-btn').forEach(btn => {
+document.querySelectorAll('.editar-contrato-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    
-    document.getElementById('modal-contrato-id').value = btn.dataset.id;
+    document.getElementById('modal-id').value = btn.dataset.id;
     document.getElementById('modal-cliente').value = btn.dataset.cliente;
     document.getElementById('modal-vehiculo').value = btn.dataset.vehiculo;
-    document.getElementById('modal-fecha-inicio').value = btn.dataset.fecha_inicio;
-    document.getElementById('modal-cuota').value = btn.dataset.cuota_inicial;
+    document.getElementById('modal-fecha').value = btn.dataset.fecha;
     document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
     document.getElementById('modal-dias').value = btn.dataset.dias;
     document.getElementById('modal-visitador').value = btn.dataset.visitador;
-    document.getElementById('modal-tipo').value = btn.dataset.tipo;
     document.getElementById('modal-estado').value = btn.dataset.estado;
 
-    // Motivo
-    const motivo = document.getElementById("modal-motivo");
+    const motivo = document.getElementById('modal-motivo');
     motivo.value = btn.dataset.motivo || "";
-
-    if (btn.dataset.estado === "Inactivo") {
-      motivo.removeAttribute("disabled");
-    } else {
-      motivo.setAttribute("disabled", "disabled");
-      motivo.value = "";
-    }
-
+    motivo.disabled = (btn.dataset.estado !== "Inactivo");
   });
 });
 
