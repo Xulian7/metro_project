@@ -16,7 +16,7 @@
       </div>
       <div class="col-md-2">
         <label class="form-label">Marca</label>
-        <select name="marca" class="form-select" required>
+        <select name="marca" id="selectMarca" class="form-select" required>
           <option value="">-- Selecciona marca --</option>
           {% for m in marcas %}
             <option value="{{ m.id }}">{{ m.nombre }}</option>
