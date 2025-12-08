@@ -8,7 +8,7 @@
   <!-- Formulario Crear Vehículo -->
   <!-- ========================= -->
   <div class="w-100 overflow-auto">
-    <form method="post" class="row g-3 mb-4">
+    <form method="post" action="{% url 'vehiculos_dashboard' %}" class="row g-3 mb-4">
       {% csrf_token %}
       <div class="col-md-2">
         <label class="form-label">Placa</label>
