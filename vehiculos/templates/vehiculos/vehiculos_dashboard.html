@@ -7,62 +7,64 @@
   <!-- ========================= -->
   <!-- Formulario Crear Vehículo -->
   <!-- ========================= -->
-  <form method="post" class="row g-3 mb-4">
-    {% csrf_token %}
-    <div class="col-md-2">
-      <label class="form-label">Placa</label>
-      <input type="text" name="placa" class="form-control">
-    </div>
-    <div class="col-md-2">
-      <label class="form-label">Marca</label>
-      <input type="text" name="marca" class="form-control">
-    </div>
-    <div class="col-md-2">
-      <label class="form-label">Modelo</label>
-      <input type="text" name="modelo" class="form-control">
-    </div>
-    <div class="col-md-2">
-      <label class="form-label">Serie</label>
-      <input type="text" name="serie" class="form-control">
-    </div>
-    <div class="col-md-2">
-      <label class="form-label">Propietario</label>
-      <select name="propietario" class="form-select">
-        <option value="">Seleccione…</option>
-        {% for inv in inversionistas %}
-            <option value="{{ inv.id }}">{{ inv.nombre }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="col-md-2">
-      <label class="form-label"># Motor</label>
-      <input type="text" name="numero_motor" class="form-control">
-    </div>
-    <div class="col-md-2">
-      <label class="form-label"># Chasis</label>
-      <input type="text" name="numero_chasis" class="form-control">
-    </div>
-    <div class="col-md-2">
-      <label class="form-label">Línea GPS</label>
-      <input type="text" name="linea_gps" class="form-control">
-    </div>
-    <div class="col-md-2">
-      <label class="form-label">Actualización SOAT</label>
-      <input type="date" name="actualizacion_soat" class="form-control">
-    </div>
-    <div class="col-md-2">
-      <label class="form-label">Estado</label>
-      <select name="estado" class="form-select" readonly disabled>
-        <option value="Vitrina" selected>Vitrina</option>
-      </select>
-    </div>
-    <div class="col-md-2 d-flex align-items-end justify-content-end">
-      <button type="submit" name="vehiculo_submit" class="btn btn-primary px-4 w-100">
-        Guardar
-      </button>
-    </div>
-  </form>
-
+  <div class="w-100 overflow-auto">
+    <form method="post" class="row g-3 mb-4">
+      {% csrf_token %}
+      <div class="col-md-2">
+        <label class="form-label">Placa</label>
+        <input type="text" name="placa" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Marca</label>
+        <input type="text" name="marca" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Modelo</label>
+        <input type="text" name="modelo" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Serie</label>
+        <input type="text" name="serie" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Propietario</label>
+        <select name="propietario" class="form-select">
+          <option value="">Seleccione…</option>
+          {% for inv in inversionistas %}
+              <option value="{{ inv.id }}">{{ inv.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label"># Motor</label>
+        <input type="text" name="numero_motor" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label"># Chasis</label>
+        <input type="text" name="numero_chasis" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Línea GPS</label>
+        <input type="text" name="linea_gps" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Actualización SOAT</label>
+        <input type="date" name="actualizacion_soat" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Estado</label>
+        <select name="estado" class="form-select" readonly disabled>
+          <option value="Vitrina" selected>Vitrina</option>
+        </select>
+      </div>
+      <div class="col-md-2 d-flex align-items-end justify-content-end">
+        <button type="submit" name="vehiculo_submit" class="btn btn-primary px-4 w-100">
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+  
   <!-- ===================================== -->
   <!-- Buscador -->
   <!-- ===================================== -->

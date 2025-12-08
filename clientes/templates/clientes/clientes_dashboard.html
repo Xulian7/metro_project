@@ -9,78 +9,79 @@
   <!-- ========================= -->
   <!-- Formulario Crear Cliente -->
   <!-- ========================= -->
-  <form method="post" class="row g-3 align-items-end mb-4">
-    {% csrf_token %}
+  <div class="w-100 overflow-auto">
+    <form method="post" class="row g-3 align-items-end mb-4">
+      {% csrf_token %}
 
-    <div class="col-md-2">
-      <label class="form-label">Cédula</label>
-      <input type="text" name="cedula" class="form-control">
-    </div>
+      <div class="col-md-2">
+        <label class="form-label">Cédula</label>
+        <input type="text" name="cedula" class="form-control">
+      </div>
 
-    <div class="col-md-2">
-      <label class="form-label">Nombre</label>
-      <input type="text" name="nombre" class="form-control">
-    </div>
+      <div class="col-md-2">
+        <label class="form-label">Nombre</label>
+        <input type="text" name="nombre" class="form-control">
+      </div>
 
-    <div class="col-md-2">
-      <label class="form-label">Nacionalidad</label>
-      <input type="text" name="nacionalidad" class="form-control">
-    </div>
+      <div class="col-md-2">
+        <label class="form-label">Nacionalidad</label>
+        <input type="text" name="nacionalidad" class="form-control">
+      </div>
 
-    <div class="col-md-2">
-      <label class="form-label">Dirección</label>
-      <input type="text" name="direccion" class="form-control">
-    </div>
+      <div class="col-md-2">
+        <label class="form-label">Dirección</label>
+        <input type="text" name="direccion" class="form-control">
+      </div>
 
-    <div class="col-md-2">
-      <label class="form-label">Teléfono</label>
-      <input type="text" name="telefono" class="form-control">
-    </div>
+      <div class="col-md-2">
+        <label class="form-label">Teléfono</label>
+        <input type="text" name="telefono" class="form-control">
+      </div>
 
-    <div class="col-md-2">
-      <label class="form-label">Referencia 1</label>
-      <input type="text" name="referencia_1" class="form-control">
-    </div>
+      <div class="col-md-2">
+        <label class="form-label">Referencia 1</label>
+        <input type="text" name="referencia_1" class="form-control">
+      </div>
 
-    <div class="col-md-2">
-      <label class="form-label">Teléfono Ref. 1</label>
-      <input type="text" name="telefono_ref_1" class="form-control">
-    </div>
+      <div class="col-md-2">
+        <label class="form-label">Teléfono Ref. 1</label>
+        <input type="text" name="telefono_ref_1" class="form-control">
+      </div>
 
-    <div class="col-md-2">
-      <label class="form-label">Referencia 2</label>
-      <input type="text" name="referencia_2" class="form-control">
-    </div>
+      <div class="col-md-2">
+        <label class="form-label">Referencia 2</label>
+        <input type="text" name="referencia_2" class="form-control">
+      </div>
 
-    <div class="col-md-2">
-      <label class="form-label">Teléfono Ref. 2</label>
-      <input type="text" name="telefono_ref_2" class="form-control">
-    </div>
+      <div class="col-md-2">
+        <label class="form-label">Teléfono Ref. 2</label>
+        <input type="text" name="telefono_ref_2" class="form-control">
+      </div>
 
-    <div class="col-md-2">
-      <label class="form-label">Tipo</label>
-      <select name="tipo" class="form-select">
-        <option value="Normal">Normal</option>
-        <option value="Inversionista">Inversionista</option>
-      </select>
-    </div>
+      <div class="col-md-2">
+        <label class="form-label">Tipo</label>
+        <select name="tipo" class="form-select">
+          <option value="Normal">Normal</option>
+          <option value="Inversionista">Inversionista</option>
+        </select>
+      </div>
 
-    <div class="col-md-2">
-      <label class="form-label">Status</label>
-      <select name="status" class="form-select">
-        <option value="Normal">Normal</option>
-        <option value="Lista Negra">Lista Negra</option>
-      </select>
-    </div>
+      <div class="col-md-2">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+          <option value="Normal">Normal</option>
+          <option value="Lista Negra">Lista Negra</option>
+        </select>
+      </div>
 
-    <div class="col-md-2 d-flex align-items-end justify-content-end">
-      <button type="submit" name="cliente_submit" class="btn btn-primary btn-app-action w-100">
-        Guardar Cliente
-      </button>
-    </div>
+      <div class="col-md-2 d-flex align-items-end justify-content-end">
+        <button type="submit" name="cliente_submit" class="btn btn-primary btn-app-action w-100">
+          Guardar Cliente
+        </button>
+      </div>
 
-  </form>
-
+    </form>
+  </div>
 
   <!-- ========================= -->
   <!-- Buscador -->
