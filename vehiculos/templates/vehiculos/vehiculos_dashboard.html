@@ -73,62 +73,64 @@
   <!-- ===================================== -->
   <!-- Tabla de Vehículos con Modal Dinámico -->
   <!-- ===================================== -->
-  <table class="modern-table w-100">
-    <thead>
-      <tr>
-        <th>Placa</th>
-        <th>Marca</th>
-        <th>Modelo</th>
-        <th>Serie</th>
-        <th>Propietario</th>
-        <th># Motor</th>
-        <th># Chasis</th>
-        <th>Línea GPS</th>
-        <th>Actualización SOAT</th>
-        <th>Estado</th>
-        <th>Obs. Estado</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for v in vehiculos %}
-      <tr>
-        <td>{{ v.placa }}</td>
-        <td>{{ v.marca }}</td>
-        <td>{{ v.modelo }}</td>
-        <td>{{ v.serie }}</td>
-        <td>{{ v.propietario }}</td>
-        <td>{{ v.numero_motor }}</td>
-        <td>{{ v.numero_chasis }}</td>
-        <td>{{ v.linea_gps }}</td>
-        <td>{{ v.actualizacion_soat|date:"Y-m-d" }}</td>
-        <td>{{ v.estado }}</td>
-        <td>{{ v.estado_obs }}</td>
-        <td>
-          <button 
-            type="button" 
-            class="btn btn-sm btn-warning edit-vehiculo-btn"
-            data-id="{{ v.id }}"
-            data-placa="{{ v.placa }}"
-            data-marca="{{ v.marca }}"
-            data-modelo="{{ v.modelo }}"
-            data-serie="{{ v.serie }}"
-            data-propietario="{{ v.propietario }}"
-            data-motor="{{ v.numero_motor }}"
-            data-chasis="{{ v.numero_chasis }}"
-            data-linea="{{ v.linea_gps }}"
-            data-soat="{{ v.actualizacion_soat|date:'Y-m-d' }}"
-            data-estado="{{ v.estado }}"
-            data-estado-obs="{{ v.estado_obs }}"
-            data-bs-toggle="modal"
-            data-bs-target="#editarVehiculoModal">
-            Editar
-          </button>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="modern-table w-100">
+      <thead>
+        <tr>
+          <th>Placa</th>
+          <th>Marca</th>
+          <th>Modelo</th>
+          <th>Serie</th>
+          <th>Propietario</th>
+          <th># Motor</th>
+          <th># Chasis</th>
+          <th>Línea GPS</th>
+          <th>Actualización SOAT</th>
+          <th>Estado</th>
+          <th>Obs. Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in vehiculos %}
+        <tr>
+          <td>{{ v.placa }}</td>
+          <td>{{ v.marca }}</td>
+          <td>{{ v.modelo }}</td>
+          <td>{{ v.serie }}</td>
+          <td>{{ v.propietario }}</td>
+          <td>{{ v.numero_motor }}</td>
+          <td>{{ v.numero_chasis }}</td>
+          <td>{{ v.linea_gps }}</td>
+          <td>{{ v.actualizacion_soat|date:"Y-m-d" }}</td>
+          <td>{{ v.estado }}</td>
+          <td>{{ v.estado_obs }}</td>
+          <td>
+            <button 
+              type="button" 
+              class="btn btn-sm btn-warning edit-vehiculo-btn"
+              data-id="{{ v.id }}"
+              data-placa="{{ v.placa }}"
+              data-marca="{{ v.marca }}"
+              data-modelo="{{ v.modelo }}"
+              data-serie="{{ v.serie }}"
+              data-propietario="{{ v.propietario }}"
+              data-motor="{{ v.numero_motor }}"
+              data-chasis="{{ v.numero_chasis }}"
+              data-linea="{{ v.linea_gps }}"
+              data-soat="{{ v.actualizacion_soat|date:'Y-m-d' }}"
+              data-estado="{{ v.estado }}"
+              data-estado-obs="{{ v.estado_obs }}"
+              data-bs-toggle="modal"
+              data-bs-target="#editarVehiculoModal">
+              Editar
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  <div/>
 
   <script>
   document.addEventListener('DOMContentLoaded', function() {
