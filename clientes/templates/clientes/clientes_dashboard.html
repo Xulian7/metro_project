@@ -92,60 +92,62 @@
   <!-- ========================= -->
   <!-- Tabla de Clientes -->
   <!-- ========================= -->
-  <table class="modern-table w-100">
-    <thead>
-      <tr>
-        <th>Cédula</th>
-        <th>Nombre</th>
-        <th>Nacionalidad</th>
-        <th>Dirección</th>
-        <th>Teléfono</th>
-        <th>Referencia 1</th>
-        <th>Tel. Ref 1</th>
-        <th>Referencia 2</th>
-        <th>Tel. Ref 2</th>
-        <th>Tipo</th>
-        <th>Status</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for c in clientes %}
-      <tr>
-        <td>{{ c.cedula }}</td>
-        <td>{{ c.nombre }}</td>
-        <td>{{ c.nacionalidad }}</td>
-        <td>{{ c.direccion }}</td>
-        <td>{{ c.telefono }}</td>
-        <td>{{ c.referencia_1 }}</td>
-        <td>{{ c.telefono_ref_1 }}</td>
-        <td>{{ c.referencia_2 }}</td>
-        <td>{{ c.telefono_ref_2 }}</td>
-        <td>{{ c.tipo }}</td>
-        <td>{{ c.status }}</td>
-        <td>
-          <button type="button" class="btn btn-sm btn-warning edit-cliente-btn"
-            data-id="{{ c.id }}"
-            data-cedula="{{ c.cedula }}"
-            data-nombre="{{ c.nombre }}"
-            data-nacionalidad="{{ c.nacionalidad }}"
-            data-direccion="{{ c.direccion }}"
-            data-telefono="{{ c.telefono }}"
-            data-ref1="{{ c.referencia_1 }}"
-            data-telref1="{{ c.telefono_ref_1 }}"
-            data-ref2="{{ c.referencia_2 }}"
-            data-telref2="{{ c.telefono_ref_2 }}"
-            data-tipo="{{ c.tipo }}"
-            data-status="{{ c.status }}"
-            data-bs-toggle="modal"
-            data-bs-target="#editarClienteModal">
-            Editar
-          </button>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="modern-table table w-100">
+      <thead>
+        <tr>
+          <th>Cédula</th>
+          <th>Nombre</th>
+          <th>Nacionalidad</th>
+          <th>Dirección</th>
+          <th>Teléfono</th>
+          <th>Referencia 1</th>
+          <th>Tel. Ref 1</th>
+          <th>Referencia 2</th>
+          <th>Tel. Ref 2</th>
+          <th>Tipo</th>
+          <th>Status</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in clientes %}
+        <tr>
+          <td>{{ c.cedula }}</td>
+          <td>{{ c.nombre }}</td>
+          <td>{{ c.nacionalidad }}</td>
+          <td>{{ c.direccion }}</td>
+          <td>{{ c.telefono }}</td>
+          <td>{{ c.referencia_1 }}</td>
+          <td>{{ c.telefono_ref_1 }}</td>
+          <td>{{ c.referencia_2 }}</td>
+          <td>{{ c.telefono_ref_2 }}</td>
+          <td>{{ c.tipo }}</td>
+          <td>{{ c.status }}</td>
+          <td>
+            <button type="button" class="btn btn-sm btn-warning edit-cliente-btn"
+              data-id="{{ c.id }}"
+              data-cedula="{{ c.cedula }}"
+              data-nombre="{{ c.nombre }}"
+              data-nacionalidad="{{ c.nacionalidad }}"
+              data-direccion="{{ c.direccion }}"
+              data-telefono="{{ c.telefono }}"
+              data-ref1="{{ c.referencia_1 }}"
+              data-telref1="{{ c.telefono_ref_1 }}"
+              data-ref2="{{ c.referencia_2 }}"
+              data-telref2="{{ c.telefono_ref_2 }}"
+              data-tipo="{{ c.tipo }}"
+              data-status="{{ c.status }}"
+              data-bs-toggle="modal"
+              data-bs-target="#editarClienteModal">
+              Editar
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
 
   <script>
