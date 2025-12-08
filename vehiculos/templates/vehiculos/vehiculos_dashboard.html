@@ -326,7 +326,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 serieSelect.innerHTML = '<option value="">-- Selecciona serie --</option>';
                 data.series.forEach(s => {
-                    serieSelect.innerHTML += `<option value="${s.id}">${s.nombre}</option>`;
+                    serieSelect.innerHTML += `<option value="${s.nombre}">${s.nombre}</option>`;
                 });
             })
             .catch(err => {
@@ -336,21 +336,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector("form"); // tu form principal
 
-    form.addEventListener("submit", function () {
-        // Marca
-        const marcaSelect = document.querySelector('select[name="marca"]');
-        const marcaNombre = marcaSelect.options[marcaSelect.selectedIndex].text;
-        marcaSelect.value = marcaNombre;
-
-        // Serie
-        const serieSelect = document.querySelector('select[name="serie"]');
-        const serieNombre = serieSelect.options[serieSelect.selectedIndex]?.text || "";
-        serieSelect.value = serieNombre;
-    });
-});
 
 </script>
 
