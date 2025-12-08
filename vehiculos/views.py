@@ -128,6 +128,8 @@ def catalogo_marcas(request):
     }
     return render(request, "vehiculos/catalogo_marcas.html", context)
 
+
+
 def cargar_series(request):
     marca_id = request.GET.get("marca_id")
 
