@@ -4,7 +4,11 @@ from .models import Vehiculo
 class VehiculoForm(forms.ModelForm):
     class Meta:
         model = Vehiculo
-        fields = '__all__'
+        fields = [
+            'placa', 'marca', 'modelo', 'serie', 'propietario',
+            'numero_motor', 'numero_chasis', 'linea_gps', 'actualizacion_soat'
+        ]
+
         widgets = {
             'placa': forms.TextInput(attrs={'class': 'form-control'}),
             'marca': forms.TextInput(attrs={'class': 'form-control'}),

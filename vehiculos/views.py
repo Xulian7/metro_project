@@ -22,7 +22,8 @@ def vehiculos_dashboard(request):
             form = VehiculoForm(request.POST)
             if form.is_valid():
                 vehiculo = form.save(commit=False)
-                vehiculo.estado = "Vitrina" 
+                vehiculo.estado = "Vitrina"     # forzado siempre
+                vehiculo.estado_obs = None      # por si acaso
                 vehiculo.save()
 
                 messages.success(request, "🚗 Vehículo creado correctamente.")
