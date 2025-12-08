@@ -37,7 +37,7 @@
       <div class="col-md-2">
           <label class="form-label">Serie</label>
           <select name="serie" id="selectSerie" class="form-select">
-              <option value="">Seleccione una marca primero…</option>
+              <option value="">Seleccione una marca</option>
           </select>
       </div>
 
@@ -314,7 +314,7 @@ document.getElementById("selectMarca").addEventListener("change", function () {
     serieSelect.innerHTML = `<option value="">Cargando...</option>`;
 
     if (!marcaId) {
-        serieSelect.innerHTML = `<option value="">Seleccione una marca primero…</option>`;
+        serieSelect.innerHTML = `<option value="">Seleccione una marca</option>`;
         return;
     }
 
