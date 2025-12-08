@@ -307,37 +307,33 @@ document.querySelector('#editarVehiculoModal form').addEventListener('submit', a
   }
 });
 
-document.getElementById("selectMarca").addEventListener("change", function () {
-    const marcaId = this.value;
+document.addEventListener("DOMContentLoaded", function () {
+    const marcaSelect = document.getElementById("selectMarca");
     const serieSelect = document.getElementById("selectSerie");
 
-    serieSelect.innerHTML = `<option value="">Cargando...</option>`;
+    marcaSelect.addEventListener("change", function () {
+        const marcaId = marcaSelect.value;
 
-    if (!marcaId) {
-        serieSelect.innerHTML = `<option value="">Seleccione una marca</option>`;
-        return;
-    }
+        serieSelect.innerHTML = '<option value="">Cargando...</option>';
 
-    fetch(`/vehiculos/ajax/cargar-series/?marca_id=${marcaId}`)
-        .then(response => response.json())
-        .then(data => {
-            serieSelect.innerHTML = "";
+        if (!marcaId) {
+            serieSelect.innerHTML = '<option value="">Seleccione una marca</option>';
+            return;
+        }
 
-            if (data.series.length === 0) {
-                serieSelect.innerHTML = `<option value="">(Sin series disponibles)</option>`;
-                return;
-            }
-
-            data.series.forEach(s => {
-                const opt = document.createElement("option");
-                opt.value = s.id;
-                opt.textContent = s.nombre;
-                serieSelect.appendChild(opt);
+        fetch(`/vehiculos/ajax/cargar-series/?marca_id=` + marcaId)
+            .then(response => response.json())
+            .then(data => {
+                serieSelect.innerHTML = '<option value="">-- Selecciona serie --</option>';
+                data.series.forEach(s => {
+                    serieSelect.innerHTML += `<option value="${s.id}">${s.nombre}</option>`;
+                });
+            })
+            .catch(err => {
+                console.error("Error AJAX:", err);
+                serieSelect.innerHTML = '<option value="">Error</option>';
             });
-        })
-        .catch(() => {
-            serieSelect.innerHTML = `<option value="">Error al cargar</option>`;
-        });
+    });
 });
 
 </script>
