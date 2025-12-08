@@ -35,9 +35,12 @@
       </div>
 
       <div class="col-md-2">
-        <label class="form-label">Serie</label>
-        <input type="text" name="serie" class="form-control">
+          <label class="form-label">Serie</label>
+          <select name="serie" id="selectSerie" class="form-select">
+              <option value="">Seleccione una marca primero…</option>
+          </select>
       </div>
+
 
       <div class="col-md-2">
         <label class="form-label">Propietario</label>
@@ -304,6 +307,40 @@ document.querySelector('#editarVehiculoModal form').addEventListener('submit', a
     alert('Error al actualizar el vehículo.');
   }
 });
+
+document.getElementById("selectMarca").addEventListener("change", function () {
+    const marcaId = this.value;
+    const serieSelect = document.getElementById("selectSerie");
+
+    serieSelect.innerHTML = `<option value="">Cargando...</option>`;
+
+    if (!marcaId) {
+        serieSelect.innerHTML = `<option value="">Seleccione una marca primero…</option>`;
+        return;
+    }
+
+    fetch(`/vehiculos/ajax/cargar-series/?marca_id=${marcaId}`)
+        .then(response => response.json())
+        .then(data => {
+            serieSelect.innerHTML = "";
+
+            if (data.series.length === 0) {
+                serieSelect.innerHTML = `<option value="">(Sin series disponibles)</option>`;
+                return;
+            }
+
+            data.series.forEach(s => {
+                const opt = document.createElement("option");
+                opt.value = s.id;
+                opt.textContent = s.nombre;
+                serieSelect.appendChild(opt);
+            });
+        })
+        .catch(() => {
+            serieSelect.innerHTML = `<option value="">Error al cargar</option>`;
+        });
+});
+
 </script>
 
 

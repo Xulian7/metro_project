@@ -127,3 +127,15 @@ def catalogo_marcas(request):
         "series": series,
     }
     return render(request, "vehiculos/catalogo_marcas.html", context)
+
+def cargar_series(request):
+    marca_id = request.GET.get("marca_id")
+
+    if not marca_id:
+        return JsonResponse({"series": []})
+
+    series = Marca.objects.filter(parent_id=marca_id).order_by("nombre")
+
+    data = [{"id": s.id, "nombre": s.nombre} for s in series]
+
+    return JsonResponse({"series": data})
