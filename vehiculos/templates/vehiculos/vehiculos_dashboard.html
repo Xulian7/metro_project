@@ -336,6 +336,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("form"); // tu form principal
+
+    form.addEventListener("submit", function () {
+        // Marca
+        const marcaSelect = document.querySelector('select[name="marca"]');
+        const marcaNombre = marcaSelect.options[marcaSelect.selectedIndex].text;
+        marcaSelect.value = marcaNombre;
+
+        // Serie
+        const serieSelect = document.querySelector('select[name="serie"]');
+        const serieNombre = serieSelect.options[serieSelect.selectedIndex]?.text || "";
+        serieSelect.value = serieNombre;
+    });
+});
+
 </script>
 
 
