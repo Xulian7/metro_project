@@ -21,7 +21,10 @@ def vehiculos_dashboard(request):
         if 'vehiculo_submit' in request.POST:
             form = VehiculoForm(request.POST)
             if form.is_valid():
-                form.save()
+                vehiculo = form.save(commit=False)
+                vehiculo.estado = "Vitrina" 
+                vehiculo.save()
+
                 messages.success(request, "🚗 Vehículo creado correctamente.")
                 return redirect('vehiculos_dashboard')
             else:
