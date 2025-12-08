@@ -19,7 +19,9 @@
         <select name="marca" id="selectMarca" class="form-select" required>
           <option value="">-- Selecciona marca --</option>
           {% for m in marcas %}
-            <option value="{{ m.id }}">{{ m.nombre }}</option>
+            <option value="{{ m.id }}" data-nombre="{{ m.nombre }}">
+                {{ m.nombre }}
+            </option>
           {% endfor %}
         </select>
       </div>
@@ -307,11 +309,19 @@ document.querySelector('#editarVehiculoModal form').addEventListener('submit', a
   }
 });
 
+
 document.addEventListener("DOMContentLoaded", function () {
+
     const marcaSelect = document.getElementById("selectMarca");
     const serieSelect = document.getElementById("selectSerie");
+    const modeloSelect = document.getElementById("selectModelo");
 
     marcaSelect.addEventListener("change", function () {
+
+        // Nombre real elegido por el usuario
+        let nombreMarca = marcaSelect.options[marcaSelect.selectedIndex].dataset.nombre;
+        console.log("Marca seleccionada:", nombreMarca);
+
         const marcaId = marcaSelect.value;
 
         serieSelect.innerHTML = '<option value="">Cargando...</option>';
@@ -326,6 +336,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 serieSelect.innerHTML = '<option value="">-- Selecciona serie --</option>';
                 data.series.forEach(s => {
+                    // Serie se guarda por nombre directo
                     serieSelect.innerHTML += `<option value="${s.nombre}">${s.nombre}</option>`;
                 });
             })
@@ -334,7 +345,26 @@ document.addEventListener("DOMContentLoaded", function () {
                 serieSelect.innerHTML = '<option value="">Error</option>';
             });
     });
+
+    // OPCIONAL: Capturar antes de enviar el formulario
+    const form = document.querySelector("form");
+
+    if (form) {
+        form.addEventListener("submit", function () {
+
+            let marcaNombre = marcaSelect.options[marcaSelect.selectedIndex].dataset.nombre;
+            let serieNombre = serieSelect.value;
+            let modeloValor = modeloSelect ? modeloSelect.value : null;
+
+            console.log("📝 Datos que se enviarán:");
+            console.log("Marca (nombre):", marcaNombre);
+            console.log("Marca (id):", marcaSelect.value);
+            console.log("Serie:", serieNombre);
+            console.log("Modelo:", modeloValor);
+        });
+    }
 });
+
 
 
 
