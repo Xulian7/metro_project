@@ -19,7 +19,7 @@ def vehiculos_dashboard(request):
     # ===========================
     # AÑADIDO: catálogo de marcas
     # ===========================
-    marcas = Marca.objects.all().order_by("nombre")
+    marcas = Marca.objects.filter(parent__isnull=True).order_by("nombre")
 
     # ===========================
     # AÑADIDO: años de modelo
