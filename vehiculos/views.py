@@ -6,6 +6,7 @@ from .forms import VehiculoForm
 from clientes.models import Cliente
 from .models import Marca
 from .forms import MarcaForm
+from datetime import datetime
 
 # ==========================================================
 # DASHBOARD PRINCIPAL (listar y crear vehículos)
@@ -13,8 +14,18 @@ from .forms import MarcaForm
 def vehiculos_dashboard(request):
     vehiculos = Vehiculo.objects.all().order_by('placa')
     form = VehiculoForm()
-    
     inversionistas = Cliente.objects.filter(tipo="Inversionista").order_by("nombre")
+
+    # ===========================
+    # AÑADIDO: catálogo de marcas
+    # ===========================
+    marcas = Marca.objects.all().order_by("nombre")
+
+    # ===========================
+    # AÑADIDO: años de modelo
+    # ===========================
+    year_now = datetime.now().year
+    modelos = list(range(2010, year_now + 2))  # 2010 → año actual + 1
 
     if request.method == "POST":
         # ========================
@@ -24,8 +35,8 @@ def vehiculos_dashboard(request):
             form = VehiculoForm(request.POST)
             if form.is_valid():
                 vehiculo = form.save(commit=False)
-                vehiculo.estado = "Vitrina"     # forzado siempre
-                vehiculo.estado_obs = None      # por si acaso
+                vehiculo.estado = "Vitrina"
+                vehiculo.estado_obs = None
                 vehiculo.save()
 
                 messages.success(request, "🚗 Vehículo creado correctamente.")
@@ -37,6 +48,10 @@ def vehiculos_dashboard(request):
         'vehiculos': vehiculos,
         'form': form,
         'inversionistas': inversionistas,
+
+        # → NUEVO
+        'marcas': marcas,
+        'modelos': modelos,
     }
 
     return render(request, "vehiculos/vehiculos_dashboard.html", context)

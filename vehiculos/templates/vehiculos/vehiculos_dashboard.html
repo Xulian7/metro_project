@@ -16,16 +16,29 @@
       </div>
       <div class="col-md-2">
         <label class="form-label">Marca</label>
-        <input type="text" name="marca" class="form-control">
+        <select name="marca" class="form-select" required>
+          <option value="">-- Selecciona marca --</option>
+          {% for m in marcas %}
+            <option value="{{ m.nombre }}">{{ m.nombre }}</option>
+          {% endfor %}
+        </select>
       </div>
+
       <div class="col-md-2">
         <label class="form-label">Modelo</label>
-        <input type="text" name="modelo" class="form-control">
+        <select name="modelo" class="form-select" required>
+          <option value="">-- Año --</option>
+          {% for y in modelos %}
+            <option value="{{ y }}">{{ y }}</option>
+          {% endfor %}
+        </select>
       </div>
+
       <div class="col-md-2">
         <label class="form-label">Serie</label>
         <input type="text" name="serie" class="form-control">
       </div>
+
       <div class="col-md-2">
         <label class="form-label">Propietario</label>
         <select name="propietario" class="form-select">
