@@ -25,7 +25,7 @@ def vehiculos_dashboard(request):
     # AÑADIDO: años de modelo
     # ===========================
     year_now = datetime.now().year
-    modelos = list(range(2010, year_now + 2))  # 2010 → año actual + 1
+    modelos = list(range(2018, year_now + 2))  # 2010 → año actual + 1
 
     if request.method == "POST":
         # ========================
@@ -35,6 +35,15 @@ def vehiculos_dashboard(request):
             form = VehiculoForm(request.POST)
             if form.is_valid():
                 vehiculo = form.save(commit=False)
+                
+                #Convertir marca_id → nombre real
+                marca_id = request.POST.get("marca")
+                if marca_id:
+                    from .models import Marca
+                    marca_obj = Marca.objects.filter(id=marca_id).first()
+                    if marca_obj:
+                        vehiculo.marca = marca_obj.nombre
+                
                 vehiculo.estado = "Vitrina"
                 vehiculo.estado_obs = None
                 vehiculo.save()
