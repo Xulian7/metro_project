@@ -138,6 +138,6 @@ def cargar_series(request):
 
     series = Marca.objects.filter(parent_id=marca_id).order_by("nombre")
 
-    data = [{"id": s.id, "nombre": s.nombre} for s in series]
+    data = [{"id": s.nombre, "nombre": s.nombre} for s in series]
 
     return JsonResponse({"series": data})

@@ -19,7 +19,7 @@
         <select name="marca" id="selectMarca" class="form-select" required>
           <option value="">-- Selecciona marca --</option>
           {% for m in marcas %}
-            <option value="{{ m.id }}">{{ m.nombre }}</option>
+            <option value="{{ m.nombre }}">{{ m.nombre }}</option>
           {% endfor %}
         </select>
       </div>
@@ -272,7 +272,7 @@ document.querySelectorAll('.edit-vehiculo-btn').forEach(btn => {
   });
 });
 
-// ⭐ Función para activar/desactivar el campo OBS
+// Función para activar/desactivar el campo OBS
 function toggleEstadoObs(estado) {
   const estadoObs = document.getElementById('modal-estado-obs');
   if (estado === "Inactivo") {
@@ -283,12 +283,12 @@ function toggleEstadoObs(estado) {
   }
 }
 
-// ⭐ Detectar cambios dentro del modal
+// Detectar cambios dentro del modal
 document.getElementById('modal-estado').addEventListener('change', e => {
   toggleEstadoObs(e.target.value);
 });
 
-// ⭐ Envío del formulario
+// Envío del formulario
 document.querySelector('#editarVehiculoModal form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const form = e.target;
