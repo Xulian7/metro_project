@@ -4,6 +4,8 @@ from django.contrib import messages
 from .models import Vehiculo
 from .forms import VehiculoForm
 from clientes.models import Cliente
+from .models import Marca
+from .forms import MarcaForm
 
 # ==========================================================
 # DASHBOARD PRINCIPAL (listar y crear vehículos)
@@ -85,3 +87,28 @@ def vehiculo_update(request):
         })
 
     return HttpResponseBadRequest('Método no permitido.')
+
+# ==========================================================
+# CATÁLOGO DE MARCAS Y SERIES
+# ==========================================================
+def catalogo_marcas(request):
+    marcas = Marca.objects.filter(parent__isnull=True)
+    series = Marca.objects.filter(parent__isnull=False)
+
+    form = MarcaForm()
+
+    if request.method == "POST":
+        form = MarcaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "✔ Registro guardado correctamente.")
+            return redirect("catalogo_marcas")
+        else:
+            messages.error(request, "⚠ Hay errores en el formulario.")
+
+    context = {
+        "form": form,
+        "marcas": marcas,
+        "series": series,
+    }
+    return render(request, "vehiculos/catalogo_marcas.html", context)

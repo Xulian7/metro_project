@@ -1,5 +1,5 @@
 from django import forms
-from .models import Vehiculo
+from .models import Vehiculo, Marca
 
 class VehiculoForm(forms.ModelForm):
     class Meta:
@@ -54,3 +54,19 @@ class VehiculoForm(forms.ModelForm):
 
         return cleaned_data
 
+
+class MarcaForm(forms.ModelForm):
+    class Meta:
+        model = Marca
+        fields = ["nombre", "parent"]
+        widgets = {
+            "nombre": forms.TextInput(attrs={"class": "form-control"}),
+            "parent": forms.Select(attrs={"class": "form-select"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Mostrar solo marcas como posibles padres (no series)
+        self.fields["parent"].queryset = Marca.objects.filter(parent__isnull=True)
+        self.fields["parent"].required = False

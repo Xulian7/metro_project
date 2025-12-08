@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <h2 class="mb-3 fw-bold">📦 Catálogo de Marcas y Series</h2>
+
+  <!-- Formulario -->
+  <div class="card mb-4">
+    <div class="card-header">Agregar Marca o Serie</div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Nombre</label>
+            {{ form.nombre }}
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Marca (opcional si esto es una serie)</label>
+            {{ form.parent }}
+          </div>
+        </div>
+        <button class="btn btn-primary">Guardar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- LISTADO -->
+  <div class="row">
+    <div class="col-md-6">
+      <h4>Marcas</h4>
+      <ul class="list-group">
+        {% for marca in marcas %}
+          <li class="list-group-item">{{ marca.nombre }}</li>
+        {% empty %}
+          <li class="list-group-item text-muted">Sin marcas registradas</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="col-md-6">
+      <h4>Series</h4>
+      <ul class="list-group">
+        {% for serie in series %}
+          <li class="list-group-item">
+            <strong>{{ serie.parent.nombre }}:</strong> {{ serie.nombre }}
+          </li>
+        {% empty %}
+          <li class="list-group-item text-muted">Sin series registradas</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

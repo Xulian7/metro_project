@@ -40,3 +40,32 @@ class Vehiculo(models.Model):
     @property
     def cliente_actual(self):
         return None
+
+
+class Marca(models.Model):
+    nombre = models.CharField(max_length=100)
+    parent = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        related_name='series',
+        on_delete=models.CASCADE
+    )
+
+    class Meta:
+        verbose_name = "Marca / Serie"
+        verbose_name_plural = "Marcas y Series"
+        ordering = ["parent__id", "nombre"]
+
+    def __str__(self):
+        if self.parent:
+            return f"{self.parent.nombre} → {self.nombre}"
+        return self.nombre
+
+    @property
+    def es_marca(self):
+        return self.parent is None
+
+    @property
+    def es_serie(self):
+        return self.parent is not None
