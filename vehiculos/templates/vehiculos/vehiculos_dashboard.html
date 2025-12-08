@@ -308,6 +308,7 @@ document.querySelector('#editarVehiculoModal form').addEventListener('submit', a
   }
 });
 
+
 document.getElementById("selectMarca").addEventListener("change", function () {
     const marcaId = this.value;
     const serieSelect = document.getElementById("selectSerie");
@@ -315,11 +316,11 @@ document.getElementById("selectMarca").addEventListener("change", function () {
     serieSelect.innerHTML = `<option value="">Cargando...</option>`;
 
     if (!marcaId) {
-        serieSelect.innerHTML = `<option value="">Seleccione una marca primero…</option>`;
+        serieSelect.innerHTML = `<option value="">Seleccione una marca</option>`;
         return;
     }
 
-    fetch(`/vehiculos/ajax/cargar-series/?marca_id=${marcaId}`)
+    fetch(`/vehiculos/cargar-series/?marca_id=${marcaId}`)
         .then(response => response.json())
         .then(data => {
             serieSelect.innerHTML = "";
