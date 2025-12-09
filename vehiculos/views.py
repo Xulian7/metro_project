@@ -48,8 +48,6 @@ def vehiculos_dashboard(request):
         'vehiculos': vehiculos,
         'form': form,
         'inversionistas': inversionistas,
-
-        # → NUEVO
         'marcas': marcas,
         'modelos': modelos,
     }

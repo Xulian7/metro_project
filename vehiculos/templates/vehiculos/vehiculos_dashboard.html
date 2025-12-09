@@ -19,9 +19,7 @@
         <select name="marca" id="selectMarca" class="form-select" required>
           <option value="">-- Selecciona marca --</option>
           {% for m in marcas %}
-            <option value="{{ m.id }}" data-nombre="{{ m.nombre }}">
-                {{ m.nombre }}
-            </option>
+            <option value="{{ m.nombre }}" data-id="{{ m.id }}">{{ m.nombre }}</option>
           {% endfor %}
         </select>
       </div>
