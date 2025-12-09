@@ -13,7 +13,7 @@ class MyLogoutView(LogoutView):
 def home(request):
     return render(request, 'accounts/home.html', {'user': request.user})
 
-
 def vehiculos_vitrina(request):
     vehiculos = Vehiculo.objects.filter(estado='Vitrina')
     return render(request, 'home.html', {'vehiculos': vehiculos})
+
