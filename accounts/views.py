@@ -16,4 +16,4 @@ def home(request):
 
 def vehiculos_vitrina(request):
     vehiculos = Vehiculo.objects.filter(estado='Vitrina')
-    return render(request, 'vehiculos_slider.html', {'vehiculos': vehiculos})
+    return render(request, 'home.html', {'vehiculos': vehiculos})

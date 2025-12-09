@@ -8,7 +8,7 @@ class Contrato(models.Model):
         ('alquiler', 'Alquiler'),
     ]
 
-    # ⭐ NUEVO
+    
     MOTIVO_INACTIVO_CHOICES = [
         ('Finalizado', 'Finalizado'),
         ('Cancelado', 'Cancelado'),
