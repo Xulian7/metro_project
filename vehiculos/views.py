@@ -1,13 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib import messages
-from .models import Vehiculo
-from .forms import VehiculoForm
+from .models import Vehiculo, Marca
+from .forms import VehiculoForm, MarcaForm
 from clientes.models import Cliente
-from .models import Marca
-from .forms import MarcaForm
 from datetime import datetime
-
 # ==========================================================
 # DASHBOARD PRINCIPAL (listar y crear vehículos)
 # ==========================================================
@@ -17,15 +14,15 @@ def vehiculos_dashboard(request):
     inversionistas = Cliente.objects.filter(tipo="Inversionista").order_by("nombre")
 
     # ===========================
-    # AÑADIDO: catálogo de marcas
+    # Catálogo de marcas
     # ===========================
     marcas = Marca.objects.filter(parent__isnull=True).order_by("nombre")
 
     # ===========================
-    # AÑADIDO: años de modelo
+    # Años de modelo
     # ===========================
     year_now = datetime.now().year
-    modelos = list(range(2018, year_now + 2))  # 2010 → año actual + 1
+    modelos = list(range(2018, year_now + 2))  # 2018 → año actual + 1
 
     if request.method == "POST":
         # ========================
@@ -35,8 +32,20 @@ def vehiculos_dashboard(request):
             form = VehiculoForm(request.POST)
             if form.is_valid():
                 vehiculo = form.save(commit=False)
+                
+                # Forzar estado y limpiar observación
                 vehiculo.estado = "Vitrina"
                 vehiculo.estado_obs = None
+
+                # Reemplazar ID de marca por nombre
+                marca_id = request.POST.get("marca")
+                if marca_id:
+                    try:
+                        marca_obj = Marca.objects.get(id=marca_id)
+                        vehiculo.marca = marca_obj.nombre
+                    except Marca.DoesNotExist:
+                        vehiculo.marca = ""
+
                 vehiculo.save()
 
                 messages.success(request, "🚗 Vehículo creado correctamente.")
@@ -53,6 +62,7 @@ def vehiculos_dashboard(request):
     }
 
     return render(request, "vehiculos/vehiculos_dashboard.html", context)
+
 
 
 # ==========================================================
