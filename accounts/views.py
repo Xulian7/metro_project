@@ -11,9 +11,9 @@ class MyLogoutView(LogoutView):
 
 @login_required
 def home(request):
-    return render(request, 'accounts/home.html', {'user': request.user})
-
-def vehiculos_vitrina(request):
     vehiculos = Vehiculo.objects.filter(estado='Vitrina')
-    return render(request, 'accounts/home.html', {'vehiculos': vehiculos})
+    return render(request, 'accounts/home.html', {
+        'user': request.user,
+        'vehiculos': vehiculos
+    })
 
