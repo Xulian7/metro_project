@@ -328,14 +328,67 @@
                 </style>
             </div>
 
-
-
+            <!-- Widget SOAT por vencer -->
             <div class="widget-box">
-              <div class="widget-header">
-                <i class="bi bi-arrow-repeat"></i> Vehículos con contrato finalizado
-              </div>
-              <div class="widget-placeholder"></div>
+                <div class="widget-header">
+                    <i class="bi bi-calendar-event"></i> SOAT por vencer
+                </div>
+
+                <table class="table table-striped modern-table">
+                    <thead>
+                        <tr>
+                            <th>Placa</th>
+                            <th>Días para vencer</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in soat_data %}
+                            <tr>
+                                <td><strong>{{ item.placa }}</strong></td>
+                                <td>
+                                    {% if item.dias is None %}
+                                        <span style="color: #777;">Sin registro</span>
+                                    {% elif item.dias < 0 %}
+                                        <span style="color: red; font-weight: bold;">
+                                            Vencido ({{ item.dias }} días)
+                                        </span>
+                                    {% elif item.dias <= 30 %}
+                                        <span style="color: #ff8c00; font-weight: bold;">
+                                            {{ item.dias }} días (¡Atento!)
+                                        </span>
+                                    {% else %}
+                                        {{ item.dias }} días
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <style>
+                    .modern-table {
+                        width: 100%;
+                        border-radius: 10px;
+                        overflow: hidden;
+                        background: #fff;
+                        box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+                    }
+
+                    .modern-table thead {
+                        background: #222;
+                        color: #fff;
+                    }
+
+                    .modern-table tbody tr:hover {
+                        background: #f3f3f3;
+                    }
+                </style>
             </div>
+
+
+
+
           </div>
           {% endblock %}
         </div>
