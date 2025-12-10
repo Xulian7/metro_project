@@ -237,7 +237,7 @@
             </div>
 
             <!-- Widget Vehículos en vitrina - Collage 3D -->
-            <div class="widget-box widget-vitrina">
+            <div class="widget-box">
                 <div class="widget-header">
                     <i class="bi bi-car-front"></i> Vehículos en vitrina
                 </div>
@@ -258,7 +258,7 @@
                 <style>
                     .vehiculos-collage-3d {
                         display: grid;
-                        grid-template-columns: repeat(2, 1fr);
+                        grid-template-columns: repeat(3, 1fr); /* 🔥 Ahora 3 columnas */
                         gap: 15px;
                         max-height: 450px;
                         overflow-y: auto;
@@ -268,87 +268,62 @@
                         border: 1px solid #ccc;
                     }
 
+                    /* 🔥 Nuevo estilo de placa con borde negro separado */
                     .placa-3d {
                         position: relative;
-                        background: linear-gradient(145deg, #ffeb3b, #fdd835);
+                        background: #fdd835; /* Amarillo base */
+                        padding: 12px;
+                        border-radius: 12px;
+
+                        /* Marco negro externo */
+                        box-shadow:
+                            0 0 0 3px #000 inset,      /* borde negro pero separado */
+                            0 8px 15px rgba(0,0,0,0.4); /* sombra 3D */
+
+                        /* Zona central (efecto de “marco”) */
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+
+                        /* Tamaño del texto */
                         color: #111;
                         font-family: 'Arial Black', sans-serif;
                         font-size: 24px;
-                        padding: 15px 25px;
-                        border-radius: 8px;
-                        border: 2px solid #222;
-                        box-shadow: 0 8px 15px rgba(0,0,0,0.4),
-                                    inset 0 -3px 6px rgba(0,0,0,0.2),
-                                    0 4px 0px rgba(255,255,255,0.2);
-                        text-align: center;
                         letter-spacing: 4px;
+                        text-align: center;
+
+                        /* Ligero efecto 3D */
                         transform: rotateX(1deg) rotateY(-1deg);
+                        transition: transform 0.2s ease-in-out;
                     }
 
+                    /* 🔥 Contenedor del texto con fondo amarillo para crear borde interno */
+                    .placa-text {
+                        background: linear-gradient(145deg, #ffeb3b, #fdd835);
+                        padding: 18px 25px;
+                        border-radius: 8px;
+
+                        /* Borde interno negro */
+                        box-shadow: 0 0 0 3px #000 inset;
+                    }
+
+                    /* El reflejo sigue igual */
                     .placa-3d .reflejo {
                         content: '';
                         position: absolute;
                         top: 0; left: 0; right: 0; bottom: 0;
-                        background: linear-gradient(to bottom, rgba(255,255,255,0.3), rgba(255,255,255,0));
-                        border-radius: 8px;
+                        background: linear-gradient(to bottom, rgba(255,255,255,0.25), rgba(255,255,255,0));
+                        border-radius: 12px;
                         pointer-events: none;
                     }
 
-                    /* Scroll estilizado */
-                    .vehiculos-collage-3d::-webkit-scrollbar {
-                        width: 8px;
-                    }
-                    .vehiculos-collage-3d::-webkit-scrollbar-thumb {
-                        background: rgba(0,0,0,0.25);
-                        border-radius: 4px;
-                    }
-                    .vehiculos-collage-3d::-webkit-scrollbar-track {
-                        background: rgba(0,0,0,0.05);
-                    }
-
-                    /* Hover placas */
+                    /* Hover */
                     .placa-3d:hover {
                         transform: rotateX(3deg) rotateY(-3deg) scale(1.05);
-                        transition: transform 0.2s ease-in-out;
                     }
 
-                    /* Widget expandible */
-                    .widget-box {
-                        position: relative;
-                        transition: all 0.25s ease-in-out;
-                        z-index: 1;
-                    }
-
-                    .widget-box.expandido {
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        width: calc(100% - 20px);
-                        height: calc(100% - 20px);
-                        margin: 10px;
-                        z-index: 999;
-                        box-shadow: 0 0 25px rgba(0,0,0,0.35);
-                        background: #fff;
-                        border-radius: 12px;
-                        overflow: hidden;
-                    }
                 </style>
             </div>
-
-            <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const widget = document.querySelector(".widget-vitrina");
-
-                widget.addEventListener("mouseenter", () => {
-                    widget.classList.add("expandido");
-                });
-
-                widget.addEventListener("mouseleave", () => {
-                    widget.classList.remove("expandido");
-                });
-            });
-            </script>
-
 
 
 
