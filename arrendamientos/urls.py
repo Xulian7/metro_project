@@ -8,4 +8,6 @@ urlpatterns = [
     path('contratos/', views.contratos, name='contratos'),
     path('reportes/', views.reportes, name='reportes'),
     path('contratos/update/<int:contrato_id>/', views.update_contrato, name='update_contrato'),
+    path('ajax/get-cedula/', views.get_cedula_cliente, name='get_cedula_cliente'),
+
 ]

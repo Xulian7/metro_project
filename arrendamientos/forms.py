@@ -8,6 +8,15 @@ class ContratoForm(forms.ModelForm):
         queryset=Cliente.objects.exclude(tipo='Inversionista'),
         widget=forms.Select(attrs={'class': 'form-select select2', 'data-placeholder': 'Buscar cliente...'})
     )
+    
+    cedula = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'readonly': True
+        })
+    )
+    
     vehiculo = forms.ModelChoiceField(
         queryset=Vehiculo.objects.filter(estado='Vitrina'),
         widget=forms.Select(attrs={'class': 'form-select'})
