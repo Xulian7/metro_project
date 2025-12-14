@@ -113,20 +113,26 @@
             class="btn btn-sm btn-primary editar-contrato-btn"
             data-bs-toggle="modal"
             data-bs-target="#editarContratoModal"
+
             data-id="{{ c.id }}"
-            data-cliente="{{ c.cliente.id }}"
-            data-vehiculo="{{ c.vehiculo.id }}"
-            data-fecha_inicio="{{ c.fecha_inicio }}"
-            data-cuota_inicial="{{ c.cuota_inicial }}"
+
+            data-cliente-id="{{ c.cliente.id }}"
+            data-cliente-nombre="{{ c.cliente }}"
+
+            data-vehiculo-id="{{ c.vehiculo.id }}"
+            data-vehiculo-placa="{{ c.vehiculo }}"
+
+            data-fecha="{{ c.fecha_inicio }}"
+            data-cuota="{{ c.cuota_inicial }}"
             data-tarifa="{{ c.tarifa }}"
             data-dias="{{ c.dias_contrato }}"
             data-visitador="{{ c.visitador }}"
-            data-tipo="{{ c.tipo_contrato }}"
             data-estado="{{ c.estado }}"
             data-motivo="{{ c.motivo }}"
           >
             Editar
           </button>
+
         </td>
 
       </tr>
@@ -306,29 +312,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Cuando abres el modal con botón "Editar"
     document.querySelectorAll('.editar-contrato-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+      btn.addEventListener('click', () => {
 
-            // Poblar el modal
-            document.getElementById('modal-id').value = btn.dataset.id;
-            document.getElementById('modal-cliente').value = btn.dataset.cliente;
-            document.getElementById('modal-vehiculo').value = btn.dataset.vehiculo;
-            document.getElementById('modal-fecha').value = btn.dataset.fecha;
-            document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
-            document.getElementById('modal-dias').value = btn.dataset.dias;
-            document.getElementById('modal-visitador').value = btn.dataset.visitador;
+        document.getElementById('modal-id').value = btn.dataset.id;
 
-            estadoSelect.value = btn.dataset.estado;
+        // Texto bonito (NO IDs)
+        document.getElementById('modal-cliente').value = btn.dataset.clienteNombre;
+        document.getElementById('modal-vehiculo').value = btn.dataset.vehiculoPlaca;
 
-            // ⭐ IMPORTANTE → Definir la URL del POST
-            formEditar.action = `/arrendamientos/contratos/update/${btn.dataset.id}/`;
+        document.getElementById('modal-fecha').value = btn.dataset.fecha;
+        document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
+        document.getElementById('modal-dias').value = btn.dataset.dias;
+        document.getElementById('modal-visitador').value = btn.dataset.visitador;
 
-            // Actualiza motivos según estado
-            actualizarMotivos();
+        estadoSelect.value = btn.dataset.estado;
 
-            // Setea el motivo si existe
-            motivoSelect.value = btn.dataset.motivo || "";
-        });
+        formEditar.action = `/arrendamientos/contratos/update/${btn.dataset.id}/`;
+
+        actualizarMotivos();
+
+        motivoSelect.value = btn.dataset.motivo || "";
+      });
     });
+
 
 });
 </script>
