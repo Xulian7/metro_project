@@ -16,7 +16,7 @@ class ContratoForm(forms.ModelForm):
     class Meta:
         model = Contrato
         fields = [
-            'cliente', 'vehiculo', 'fecha_inicio', 'cuota_inicial',
+            'cliente', 'Cedula', 'vehiculo', 'fecha_inicio', 'cuota_inicial',
             'tarifa', 'dias_contrato', 'visitador', 'tipo_contrato',
             'estado', 'motivo',   # ⭐ Agregados
         ]
