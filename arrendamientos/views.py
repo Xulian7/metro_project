@@ -3,6 +3,20 @@ from .models import Contrato
 from .forms import ContratoForm
 from django.http import JsonResponse
 from vehiculos.models import Vehiculo
+from clientes.models import Cliente
+
+def get_cedula_cliente(request):
+    cliente_id = request.GET.get('cliente_id')
+
+    if not cliente_id:
+        return JsonResponse({'error': 'Cliente no enviado'}, status=400)
+
+    try:
+        cliente = Cliente.objects.get(id=cliente_id)
+        return JsonResponse({'cedula': cliente.cedula})
+    except Cliente.DoesNotExist:
+        return JsonResponse({'error': 'Cliente no encontrado'}, status=404)
+
 
 def lista_cobros(request):
     return render(request, 'arrendamientos/lista_cobros.html')
