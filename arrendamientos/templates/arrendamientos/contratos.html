@@ -327,7 +327,15 @@ document.addEventListener('DOMContentLoaded', function() {
       motivoSelect.value = btn.dataset.motivo || "";
 
       formEditar.action = `/arrendamientos/contratos/update/${btn.dataset.id}/`;
-    });
+      // 🔥 Enviar datos al backend solo para debug
+      fetch("/arrendamientos/debug-dataset/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify(btn.dataset)
+      });
   });
 });
 </script>
