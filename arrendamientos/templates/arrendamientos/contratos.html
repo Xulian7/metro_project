@@ -35,6 +35,8 @@
     <div class="col-md-3">
       <label class="form-label">Cuota inicial</label>
       {{ form.cuota_inicial }}
+
+      <div id="cuotasRapidas" class="mt-2 d-flex gap-2 flex-wrap"></div>
     </div>
 
     <div class="col-md-3">
@@ -360,6 +362,23 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 </script>
+
+<script>
+  const cuotas = [200000, 300000, 400000, 500000, 600000];
+  const container = document.getElementById("cuotasRapidas");
+
+  cuotas.forEach(valor => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btn-sm btn-outline-secondary";
+    btn.textContent = (valor / 1000) + "K";
+    btn.onclick = () => {
+      document.getElementById("id_cuota_inicial").value = valor;
+    };
+    container.appendChild(btn);
+  });
+</script>
+
 
 
 {% endblock %}
