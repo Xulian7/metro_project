@@ -26,20 +26,18 @@ def contratos(request):
     contratos = Contrato.objects.all()
     form = ContratoForm(request.POST or None)
 
-    if request.method == 'POST':
-        print("🔥 POST data:", request.POST)
-        print("🔥 form valid?", form.is_valid())
-        print("🔥 form errors:", form.errors)
+    if request.method == 'POST' and form.is_valid():
+        # Guardar sin enviar estado en el POST
+        contrato = form.save(commit=False)
+        contrato.estado = 'Activo'  # Se asigna automáticamente
+        contrato.save()
 
-        if form.is_valid():
-            contrato = form.save()
+        # Cambiar el estado del vehículo a Activo
+        vehiculo = contrato.vehiculo
+        vehiculo.estado = 'Activo'
+        vehiculo.save()
 
-            # Cambiar el estado del vehículo a Activo
-            vehiculo = contrato.vehiculo
-            vehiculo.estado = 'Activo'
-            vehiculo.save()
-
-            return redirect('arrendamientos:contratos')
+        return redirect('arrendamientos:contratos')
 
     return render(request, 'arrendamientos/contratos.html', {
         'form': form,
