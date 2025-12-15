@@ -42,12 +42,17 @@
     <div class="col-md-3">
       <label class="form-label">Tarifa</label>
       {{ form.tarifa }}
+
+      <div id="tarifasRapidas" class="mt-2 d-flex gap-2 flex-wrap"></div>
     </div>
 
     <div class="col-md-3">
       <label class="form-label">Días contrato</label>
       {{ form.dias_contrato }}
+
+      <div id="diasRapidos" class="mt-2 d-flex gap-2 flex-wrap"></div>
     </div>
+
 
     <div class="col-md-3">
       <label class="form-label">Visitador</label>
@@ -343,7 +348,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-
 <script>
   $('#id_cliente').on('change', function () {
     const clienteId = $(this).val();
@@ -378,6 +382,39 @@ document.addEventListener("DOMContentLoaded", function () {
     container.appendChild(btn);
   });
 </script>
+
+<script>
+  const tarifas = [34000, 35000, 36000, 37000];
+  const containerTarifas = document.getElementById("tarifasRapidas");
+
+  tarifas.forEach(valor => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btn-sm btn-outline-secondary";
+    btn.textContent = valor.toLocaleString("es-CO");
+    btn.onclick = () => {
+      document.getElementById("id_tarifa").value = valor;
+    };
+    containerTarifas.appendChild(btn);
+  });
+</script>
+
+<script>
+  const dias = [15, 30, 60, 90];
+  const containerDias = document.getElementById("diasRapidos");
+
+  dias.forEach(valor => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btn-sm btn-outline-secondary";
+    btn.textContent = valor + " días";
+    btn.onclick = () => {
+      document.getElementById("id_dias_contrato").value = valor;
+    };
+    containerDias.appendChild(btn);
+  });
+</script>
+
 
 
 
