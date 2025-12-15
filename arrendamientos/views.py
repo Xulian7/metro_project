@@ -28,6 +28,8 @@ def contratos(request):
 
     if request.method == 'POST' and form.is_valid():
         contrato = form.save()
+        print("🔥 POST LLEGÓ")
+        print(request.POST)
 
         # Cambiar el estado del vehículo a Activo
         vehiculo = contrato.vehiculo
