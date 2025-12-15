@@ -65,6 +65,17 @@
       {{ form.tipo_contrato }}
     </div>
 
+    <div class="col-md-9 d-flex align-items-end justify-content-end gap-2">
+      <button type="button" class="btn btn-outline-secondary px-4" onclick="limpiarFormulario()">
+        Limpiar
+      </button>
+
+      <button type="submit" class="btn btn-primary px-4">
+        Guardar Contrato
+      </button>
+    </div>
+
+
     <div class="col-md-9 d-flex align-items-end justify-content-end">
       <button type="submit" class="btn btn-primary px-4">
         Guardar Contrato
@@ -415,7 +426,21 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 </script>
 
+<script>
+  function limpiarFormulario() {
+    const form = document.querySelector("form");
+    form.reset();
 
+    // Reset Select2 (si los usas)
+    if (window.jQuery) {
+      $(form).find(".select2").val(null).trigger("change");
+    }
 
+    // Limpiar inputs manuales por si acaso
+    form.querySelectorAll("input[type=text], input[type=number], input[type=date]").forEach(input => {
+      input.value = "";
+    });
+  }
+</script>
 
 {% endblock %}
