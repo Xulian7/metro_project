@@ -262,96 +262,76 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Inicializar Select2 con búsqueda activa
+  // Inicializar Select2
   $('.select2').select2({
     width: '100%',
     placeholder: 'Buscar...',
     allowClear: true,
     language: {
-      noResults: function() {
-        return "Sin resultados";
-      }
+      noResults: function() { return "Sin resultados"; }
     }
   });
 
-  // 🔍 Filtro dinámico nativo para la tabla
+  // Filtro dinámico para la tabla
   const input = document.getElementById("filtroTabla");
   const tabla = document.getElementById("tablaContratos").getElementsByTagName("tbody")[0];
 
   input.addEventListener("keyup", () => {
     const filtro = input.value.toLowerCase().trim();
     const filas = tabla.getElementsByTagName("tr");
-
     for (let fila of filas) {
       const textoFila = fila.textContent.toLowerCase();
       fila.style.display = textoFila.includes(filtro) ? "" : "none";
     }
   });
-});
 
-document.addEventListener("DOMContentLoaded", function () {
+  // Modal de edición
+  const estadoSelect = document.getElementById("modal-estado");
+  const motivoSelect = document.getElementById("modal-motivo");
+  const formEditar = document.getElementById("formEditarContrato");
 
-    const estadoSelect = document.getElementById("modal-estado");
-    const motivoSelect = document.getElementById("modal-motivo");
-    const formEditar = document.getElementById("formEditarContrato");
-
-    function actualizarMotivos() {
-        const estado = estadoSelect.value;
-
-        if (estado === "Inactivo") {
-            motivoSelect.disabled = false;
-            motivoSelect.innerHTML = `
-                <option value="">Seleccione...</option>
-                <option value="Finalizado">Finalizado</option>
-                <option value="Cancelado">Cancelado</option>
-            `;
-        } else {
-            motivoSelect.disabled = true;
-            motivoSelect.innerHTML = `<option value="">N/A</option>`;
-        }
+  function actualizarMotivos() {
+    const estado = estadoSelect.value;
+    if (estado === "Inactivo") {
+      motivoSelect.disabled = false;
+      motivoSelect.innerHTML = `
+        <option value="">Seleccione...</option>
+        <option value="Finalizado">Finalizado</option>
+        <option value="Cancelado">Cancelado</option>
+      `;
+    } else {
+      motivoSelect.disabled = true;
+      motivoSelect.innerHTML = `<option value="">N/A</option>`;
     }
+  }
 
-    // Cambio dentro del modal
-    estadoSelect.addEventListener("change", actualizarMotivos);
+  estadoSelect.addEventListener("change", actualizarMotivos);
 
-    // Cuando abres el modal con botón "Editar"
-    document.querySelectorAll('.editar-contrato-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+  document.querySelectorAll('.editar-contrato-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('modal-id').value = btn.dataset.id;
+      document.getElementById('modal-cliente').value = btn.dataset.clienteNombre;
+      document.getElementById('modal-vehiculo').value = btn.dataset.vehiculoPlaca;
 
-        document.getElementById('modal-id').value = btn.dataset.id;
-        document.getElementById('modal-cliente').value = btn.dataset.clienteNombre;
-        document.getElementById('modal-vehiculo').value = btn.dataset.vehiculoPlaca;
-        // Tomando la fecha del dataset
-        let fechaRaw = btn.dataset.fecha; // ej: "2025-12-14 00:00:00" o "14/12/2025"
+      // Formatear fecha para input type="date"
+      let fechaRaw = btn.dataset.fecha; // ej: "2025-12-14 00:00:00"
+      let fecha = fechaRaw.split(" ")[0]; // toma solo la parte YYYY-MM-DD
+      document.getElementById('modal-fecha').value = fecha;
 
-        // Convertir a formato YYYY-MM-DD
-        let fecha = "";
-        if (fechaRaw.includes(" ")) { // si viene con hora
-          fecha = fechaRaw.split(" ")[0]; // toma solo la parte de fecha
-        } else if (fechaRaw.includes("/")) { // si viene con slashes
-          const parts = fechaRaw.split("/");
-          fecha = `${parts[2]}-${parts[1].padStart(2,"0")}-${parts[0].padStart(2,"0")}`;
-        } else {
-          fecha = fechaRaw; // ya está bien
-        }
-        document.getElementById('modal-fecha').value = btn.dataset.fecha;
-        document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
-        document.getElementById('modal-dias').value = btn.dataset.dias;
-        document.getElementById('modal-visitador').value = btn.dataset.visitador;
+      document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
+      document.getElementById('modal-dias').value = btn.dataset.dias;
+      document.getElementById('modal-visitador').value = btn.dataset.visitador;
 
-        estadoSelect.value = btn.dataset.estado;
+      estadoSelect.value = btn.dataset.estado;
+      actualizarMotivos();
+      motivoSelect.value = btn.dataset.motivo || "";
 
-        formEditar.action = `/arrendamientos/contratos/update/${btn.dataset.id}/`;
-
-        actualizarMotivos();
-
-        motivoSelect.value = btn.dataset.motivo || "";
-      });
+      formEditar.action = `/arrendamientos/contratos/update/${btn.dataset.id}/`;
     });
-
-
+  });
 });
 </script>
+
 
 <!-- Sugerido Cédula automática -->
 <script>
