@@ -27,7 +27,7 @@ class ContratoForm(forms.ModelForm):
         fields = [
             'cliente', 'vehiculo', 'fecha_inicio', 'cuota_inicial',
             'tarifa', 'dias_contrato', 'visitador', 'tipo_contrato',
-            'estado', 'motivo',   # ⭐ Agregados
+            'estado', 'motivo', 
         ]
         widgets = {
             'fecha_inicio': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
@@ -37,8 +37,6 @@ class ContratoForm(forms.ModelForm):
             'visitador': forms.TextInput(attrs={'class': 'form-control'}),
             'tipo_contrato': forms.Select(attrs={'class': 'form-select'}),
             'estado': forms.Select(attrs={'class': 'form-select'}),
-
-            # ⭐ Nuevo widget
             'motivo': forms.Select(attrs={'class': 'form-select'}),
         }
 
