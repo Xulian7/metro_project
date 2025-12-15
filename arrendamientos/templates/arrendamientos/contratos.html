@@ -319,11 +319,21 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.addEventListener('click', () => {
 
         document.getElementById('modal-id').value = btn.dataset.id;
-
-        // Texto bonito (NO IDs)
         document.getElementById('modal-cliente').value = btn.dataset.clienteNombre;
         document.getElementById('modal-vehiculo').value = btn.dataset.vehiculoPlaca;
+        // Tomando la fecha del dataset
+        let fechaRaw = btn.dataset.fecha; // ej: "2025-12-14 00:00:00" o "14/12/2025"
 
+        // Convertir a formato YYYY-MM-DD
+        let fecha = "";
+        if (fechaRaw.includes(" ")) { // si viene con hora
+          fecha = fechaRaw.split(" ")[0]; // toma solo la parte de fecha
+        } else if (fechaRaw.includes("/")) { // si viene con slashes
+          const parts = fechaRaw.split("/");
+          fecha = `${parts[2]}-${parts[1].padStart(2,"0")}-${parts[0].padStart(2,"0")}`;
+        } else {
+          fecha = fechaRaw; // ya está bien
+        }
         document.getElementById('modal-fecha').value = btn.dataset.fecha;
         document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
         document.getElementById('modal-dias').value = btn.dataset.dias;
@@ -343,6 +353,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
+<!-- Sugerido Cédula automática -->
 <script>
   $('#id_cliente').on('change', function () {
     const clienteId = $(this).val();
@@ -362,6 +373,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 </script>
 
+<!-- Sugerido Inicial -->
 <script>
   const cuotas = [200000, 300000, 400000, 500000, 600000];
   const container = document.getElementById("cuotasRapidas");
@@ -378,6 +390,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 </script>
 
+<!-- Sugerido tarifas -->
 <script>
   const tarifas = [34000, 35000, 36000, 37000];
   const containerTarifas = document.getElementById("tarifasRapidas");
@@ -394,6 +407,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 </script>
 
+<!-- Sugerido dias -->
 <script>
   const dias = [305, 365, 548];
   const containerDias = document.getElementById("diasRapidos");
