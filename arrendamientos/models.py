@@ -18,7 +18,7 @@ class Contrato(models.Model):
     vehiculo = models.ForeignKey(
         Vehiculo,
         on_delete=models.PROTECT,
-        limit_choices_to={'estado': 'Inactivo'}
+        limit_choices_to={'estado': 'Vitrina'}
     )
     fecha_inicio = models.DateField()
     cuota_inicial = models.DecimalField(max_digits=12, decimal_places=2)
