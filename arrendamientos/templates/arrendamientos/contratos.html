@@ -7,73 +7,70 @@
 
   <h3 class="fw-bold mb-4">Contratos</h3>
 
-  <form method="post" class="row g-3 mb-4">
-    {% csrf_token %}
+    <form method="post" class="row g-3 mb-4">
+      {% csrf_token %}
 
-    <!-- Fila 1 -->
-    <div class="col-md-3">
-      <label class="form-label">Cliente</label>
-      {{ form.cliente|add_class:"select2" }}
-    </div>
+      <!-- Fila 1 -->
+      <div class="col-md-3">
+        <label class="form-label">Cliente</label>
+        {{ form.cliente|add_class:"select2" }}
+      </div>
 
-    <div class="col-md-3">
-      <label class="form-label">Cédula</label>
-      {{ form.cedula }}
-    </div>
+      <div class="col-md-3">
+        <label class="form-label">Cédula</label>
+        {{ form.cedula }}
+      </div>
 
-    <div class="col-md-3">
-      <label class="form-label">Vehículo</label>
-      {{ form.vehiculo|add_class:"select2" }}
-    </div>
+      <div class="col-md-3">
+        <label class="form-label">Vehículo</label>
+        {{ form.vehiculo|add_class:"select2" }}
+      </div>
 
-    <div class="col-md-3">
-      <label class="form-label">Fecha inicio</label>
-      {{ form.fecha_inicio }}
-    </div>
+      <div class="col-md-3">
+        <label class="form-label">Fecha inicio</label>
+        {{ form.fecha_inicio }}
+      </div>
 
-    <!-- Fila 2 -->
-    <div class="col-md-3">
-      <label class="form-label">Cuota inicial</label>
-      {{ form.cuota_inicial }}
+      <!-- Fila 2 -->
+      <div class="col-md-3">
+        <label class="form-label">Cuota inicial</label>
+        {{ form.cuota_inicial }}
 
-      <div id="cuotasRapidas" class="mt-2 d-flex gap-2 flex-wrap"></div>
-    </div>
+        <div id="cuotasRapidas" class="mt-2 d-flex gap-2 flex-wrap"></div>
+      </div>
 
-    <div class="col-md-3">
-      <label class="form-label">Tarifa</label>
-      {{ form.tarifa }}
+      <div class="col-md-3">
+        <label class="form-label">Tarifa</label>
+        {{ form.tarifa }}
 
-      <div id="tarifasRapidas" class="mt-2 d-flex gap-2 flex-wrap"></div>
-    </div>
+        <div id="tarifasRapidas" class="mt-2 d-flex gap-2 flex-wrap"></div>
+      </div>
 
-    <div class="col-md-3">
-      <label class="form-label">Días contrato</label>
-      {{ form.dias_contrato }}
+      <div class="col-md-3">
+        <label class="form-label">Días contrato</label>
+        {{ form.dias_contrato }}
 
-      <div id="diasRapidos" class="mt-2 d-flex gap-2 flex-wrap"></div>
-    </div>
-
-
-    <div class="col-md-3">
-      <label class="form-label">Visitador</label>
-      {{ form.visitador }}
-    </div>
-
-    <!-- Fila 3 -->
-    <div class="col-md-3">
-      <label class="form-label">Tipo de contrato</label>
-      {{ form.tipo_contrato }}
-    </div>
-
-    <div class="col-md-9 d-flex align-items-end justify-content-end">
-      <button type="submit" class="btn btn-primary px-4">
-        Guardar Contrato
-      </button>
-    </div>
-    
-  </form>
+        <div id="diasRapidos" class="mt-2 d-flex gap-2 flex-wrap"></div>
+      </div>
 
 
+      <div class="col-md-3">
+        <label class="form-label">Visitador</label>
+        {{ form.visitador }}
+      </div>
+
+      <!-- Fila 3 -->
+      <div class="col-md-3">
+        <label class="form-label">Tipo de contrato</label>
+        {{ form.tipo_contrato }}
+      </div>
+
+      <div class="col-md-9 d-flex align-items-end justify-content-end">
+        <button type="submit" class="btn btn-primary px-4">
+          Guardar Contrato
+        </button>
+      </div>
+    </form>
 
   <!-- 🔍 Filtro dinámico -->
   <div class="mb-3">
