@@ -308,29 +308,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Cambio dentro del modal
     estadoSelect.addEventListener("change", actualizarMotivos);
-
     // Cuando abres el modal con botón "Editar"
     document.querySelectorAll('.editar-contrato-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-
         document.getElementById('modal-id').value = btn.dataset.id;
         document.getElementById('modal-cliente').value = btn.dataset.clienteNombre;
         document.getElementById('modal-vehiculo').value = btn.dataset.vehiculoPlaca;
-        // Tomando la fecha del dataset
-        let fechaRaw = btn.dataset.fecha; // ej: "2025-12-14 00:00:00" o "14/12/2025"
-
-        
         document.getElementById('modal-fecha').value = btn.dataset.fecha;
         document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
         document.getElementById('modal-dias').value = btn.dataset.dias;
         document.getElementById('modal-visitador').value = btn.dataset.visitador;
-
         estadoSelect.value = btn.dataset.estado;
-
         formEditar.action = `/arrendamientos/contratos/update/${btn.dataset.id}/`;
-
         actualizarMotivos();
-
         motivoSelect.value = btn.dataset.motivo || "";
       });
     });
