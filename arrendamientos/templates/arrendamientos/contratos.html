@@ -319,13 +319,12 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('modal-dias').value = btn.dataset.dias;
         document.getElementById('modal-visitador').value = btn.dataset.visitador;
         estadoSelect.value = btn.dataset.estado;
-        formEditar.action = `/arrendamientos/contratos/update/${btn.dataset.id}/`;
         actualizarMotivos();
         motivoSelect.value = btn.dataset.motivo || "";
+        formEditar.action = `/arrendamientos/contratos/update/${btn.dataset.id}/`;
+        
       });
     });
-
-
 });
 </script>
 

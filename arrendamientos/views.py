@@ -56,11 +56,18 @@ def contratos(request):
     })
 
 
+# views.py
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from .models import Contrato
+
 @login_required
 @require_POST
 def actualizar_contrato(request, id):
     contrato = get_object_or_404(Contrato, id=id)
 
+    # 🔹 Datos simples
     contrato.fecha_inicio = request.POST.get("fecha_inicio")
     contrato.tarifa = request.POST.get("tarifa")
     contrato.dias_contrato = request.POST.get("dias_contrato")
@@ -76,6 +83,7 @@ def actualizar_contrato(request, id):
     contrato.save()
 
     return redirect("arrendamientos:lista_contratos")
+
 
 
 def reportes(request):
