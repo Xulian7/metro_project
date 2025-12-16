@@ -53,6 +53,17 @@
   </head>
 
   <body>
+    <!-- 🔔 Toasts de mensajes Django -->
+    {% if messages %}
+      <div id="toast-container">
+        {% for message in messages %}
+          <div class="toast-msg toast-{{ message.tags }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     <div class="app-shell">
       <!-- Sidebar -->
       <aside id="sidebar" class="sidebar">
