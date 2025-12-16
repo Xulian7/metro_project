@@ -4,7 +4,6 @@ from .forms import ContratoForm
 from django.http import JsonResponse
 from vehiculos.models import Vehiculo
 from clientes.models import Cliente
-from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 
 def get_cedula_cliente(request):
@@ -56,16 +55,9 @@ def contratos(request):
     })
 
 
-# views.py
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from .models import Contrato
-
-@login_required
 @require_POST
-def actualizar_contrato(request, id):
-    contrato = get_object_or_404(Contrato, id=id)
+def actualizar_contrato(request, contrato_id):
+    contrato = get_object_or_404(Contrato, id=contrato_id)
 
     # 🔹 Datos simples
     contrato.fecha_inicio = request.POST.get("fecha_inicio")
