@@ -156,7 +156,9 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
 
-        <form id="formEditarContrato">
+        <form id="formEditarContrato"
+          method="post"
+        >
           {% csrf_token %}
           <input type="hidden" id="modal-id" name="id">
 
