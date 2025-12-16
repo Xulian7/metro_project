@@ -74,7 +74,7 @@ def actualizar_contrato(request, contrato_id):
 
     contrato.save()
 
-    return redirect("arrendamientos:lista_contratos")
+    return redirect('arrendamientos:contratos')
 
 
 
