@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from vehiculos.models import Vehiculo
 from clientes.models import Cliente
 from django.views.decorators.http import require_POST
+from django.contrib import messages
 
 def get_cedula_cliente(request):
     cliente_id = request.GET.get('cliente_id')
@@ -59,27 +60,41 @@ def contratos(request):
 def actualizar_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, id=contrato_id)
 
-    # 🔹 Datos simples
+    nuevo_estado = request.POST.get("estado")
+    vehiculo = contrato.vehiculo
+
+    # 🛑 VALIDACIÓN CLAVE
+    if contrato.estado == "Inactivo" and nuevo_estado == "Activo":
+        existe_otro_activo = Contrato.objects.filter(
+            vehiculo=vehiculo,
+            estado="Activo"
+        ).exclude(id=contrato.id).exists()
+
+        if existe_otro_activo:
+            messages.error(
+                request,
+                f"La placa {vehiculo} ya tiene un contrato activo. Misión fallida."
+            )
+            return redirect('arrendamientos:contratos')
+
+    # 🔹 Actualización normal
     contrato.fecha_inicio = request.POST.get("fecha_inicio")
     contrato.tarifa = request.POST.get("tarifa")
     contrato.dias_contrato = request.POST.get("dias_contrato")
     contrato.visitador = request.POST.get("visitador")
-    contrato.estado = request.POST.get("estado")
+    contrato.estado = nuevo_estado
 
-    vehiculo = contrato.vehiculo  # 🎯 el verdadero protagonista
-
-    # 🔹 Lógica de negocio
-    if contrato.estado == "Inactivo":
+    if nuevo_estado == "Inactivo":
         contrato.motivo = request.POST.get("motivo")
         vehiculo.estado = "Vitrina"
     else:
         contrato.motivo = None
         vehiculo.estado = "Activo"
 
-    # 💾 Guardar todo
     contrato.save()
     vehiculo.save()
 
+    messages.success(request, "Contrato actualizado correctamente.")
     return redirect('arrendamientos:contratos')
 
 
