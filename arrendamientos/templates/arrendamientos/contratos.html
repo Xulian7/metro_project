@@ -120,16 +120,12 @@
             class="btn btn-sm btn-primary editar-contrato-btn"
             data-bs-toggle="modal"
             data-bs-target="#editarContratoModal"
-
             data-id="{{ c.id }}"
-
             data-cliente-id="{{ c.cliente.id }}"
             data-cliente-nombre="{{ c.cliente }}"
-
             data-vehiculo-id="{{ c.vehiculo.id }}"
             data-vehiculo-placa="{{ c.vehiculo }}"
-
-            data-fecha="{{ c.fecha_inicio }}"
+            data-fecha="{{ c.fecha_inicio|date:'Y-m-d' }}"
             data-cuota="{{ c.cuota_inicial }}"
             data-tarifa="{{ c.tarifa }}"
             data-dias="{{ c.dias_contrato }}"
@@ -139,7 +135,6 @@
           >
             Editar
           </button>
-
         </td>
 
       </tr>
