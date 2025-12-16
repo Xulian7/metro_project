@@ -31,7 +31,7 @@ def contratos(request):
     print("🔥 POST data:", request.POST)
 
     if request.method == 'POST':
-        print("🔥 Form is_valid antes de commit:", form.is_valid())
+        print("Form is_valid antes de commit:", form.is_valid())
         print("🔥 Form errors antes de commit:", form.errors)
 
         if form.is_valid():
@@ -66,15 +66,22 @@ def actualizar_contrato(request, contrato_id):
     contrato.visitador = request.POST.get("visitador")
     contrato.estado = request.POST.get("estado")
 
-    # 🔹 Motivo solo si está inactivo
+    vehiculo = contrato.vehiculo  # 🎯 el verdadero protagonista
+
+    # 🔹 Lógica de negocio
     if contrato.estado == "Inactivo":
         contrato.motivo = request.POST.get("motivo")
+        vehiculo.estado = "Vitrina"
     else:
         contrato.motivo = None
+        vehiculo.estado = "Activo"
 
+    # 💾 Guardar todo
     contrato.save()
+    vehiculo.save()
 
     return redirect('arrendamientos:contratos')
+
 
 
 
