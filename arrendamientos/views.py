@@ -4,6 +4,8 @@ from .forms import ContratoForm
 from django.http import JsonResponse
 from vehiculos.models import Vehiculo
 from clientes.models import Cliente
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 def get_cedula_cliente(request):
     cliente_id = request.GET.get('cliente_id')
@@ -54,26 +56,29 @@ def contratos(request):
     })
 
 
-# 🔥 NUEVA VIEW PARA EDITAR DESDE EL MODAL
-def update_contrato(request, contrato_id):
-    contrato = get_object_or_404(Contrato, id=contrato_id)
+@login_required
+@require_POST
+def actualizar_contrato(request, id):
+    contrato = get_object_or_404(Contrato, id=id)
 
-    if request.method == "POST":
-        estado = request.POST.get("estado")
-        motivo = request.POST.get("motivo")
+    contrato.fecha_inicio = request.POST.get("fecha_inicio")
+    contrato.tarifa = request.POST.get("tarifa")
+    contrato.dias_contrato = request.POST.get("dias_contrato")
+    contrato.visitador = request.POST.get("visitador")
+    contrato.estado = request.POST.get("estado")
 
-        # Validación: si estado = Inactivo → motivo obligatorio
-        if estado == "Inactivo" and not motivo:
-            return JsonResponse({"error": "Debe seleccionar un motivo."}, status=400)
+    # 🔹 Motivo solo si está inactivo
+    if contrato.estado == "Inactivo":
+        contrato.motivo = request.POST.get("motivo")
+    else:
+        contrato.motivo = None
 
-        contrato.estado = estado
-        contrato.motivo = motivo if estado == "Inactivo" else None
-        contrato.save()
+    contrato.save()
 
-        return JsonResponse({"success": True})
-
-    return JsonResponse({"error": "Método no permitido"}, status=405)
+    return redirect("arrendamientos:lista_contratos")
 
 
 def reportes(request):
     return render(request, 'arrendamientos/reportes.html')
+
+
