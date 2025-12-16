@@ -53,14 +53,6 @@
   </head>
 
   <body>
-    {% if messages %}
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-          {{ message }}
-        </div>
-      {% endfor %}
-    {% endif %}
-
     <div class="app-shell">
       <!-- Sidebar -->
       <aside id="sidebar" class="sidebar">
@@ -316,8 +308,6 @@
                           inset 0 2px 6px rgba(255,255,255,1),
                           inset 0 -3px 6px rgba(0,0,0,0.3);
                   }
-
-
                 </style>
             </div>
 
@@ -378,123 +368,118 @@
                     }
                 </style>
             </div>
-
-
-
-
           </div>
           {% endblock %}
         </div>
       </main>
-
     </div>
 
-<script>
-  // toggle sublist tipo acordeón con fade-in
-  document.querySelectorAll(".parent-link").forEach((parent) => {
-    parent.addEventListener("click", (e) => {
-      e.preventDefault();
-      const pid = parent.dataset.parent;
-      const sub = document.querySelector(
-        '.sublist[data-parent="' + pid + '"]'
-      );
-      const isOpen = sub.classList.contains("show");
+    <script>
+        // toggle sublist tipo acordeón con fade-in
+        document.querySelectorAll(".parent-link").forEach((parent) => {
+          parent.addEventListener("click", (e) => {
+            e.preventDefault();
+            const pid = parent.dataset.parent;
+            const sub = document.querySelector(
+              '.sublist[data-parent="' + pid + '"]'
+            );
+            const isOpen = sub.classList.contains("show");
 
-      // cerrar todas
-      document
-        .querySelectorAll(".sublist")
-        .forEach((sl) => sl.classList.remove("show"));
-      document
-        .querySelectorAll(".parent-link")
-        .forEach((pl) => pl.classList.remove("active-parent"));
+            // cerrar todas
+            document
+              .querySelectorAll(".sublist")
+              .forEach((sl) => sl.classList.remove("show"));
+            document
+              .querySelectorAll(".parent-link")
+              .forEach((pl) => pl.classList.remove("active-parent"));
 
-      // abrir la seleccionada si no estaba abierta
-      if (!isOpen) {
-        sub.classList.add("show");
-        parent.classList.add("active-parent");
-      }
-    });
-  });
+            // abrir la seleccionada si no estaba abierta
+            if (!isOpen) {
+              sub.classList.add("show");
+              parent.classList.add("active-parent");
+            }
+          });
+        });
 
-  // Mostrar/ocultar campo factura_referencia según tipo
-  document.addEventListener('DOMContentLoaded', function() {
-      const tipoSelect = document.querySelector('#id_tipo');
-      const facturaFieldRow = document.querySelector('[for="id_factura_referencia"]')?.closest('.row');
+        // Mostrar/ocultar campo factura_referencia según tipo
+        document.addEventListener('DOMContentLoaded', function() {
+            const tipoSelect = document.querySelector('#id_tipo');
+            const facturaFieldRow = document.querySelector('[for="id_factura_referencia"]')?.closest('.row');
 
-      function toggleFacturaField() {
-          if (!tipoSelect || !facturaFieldRow) return;
+            function toggleFacturaField() {
+                if (!tipoSelect || !facturaFieldRow) return;
 
-          const tiposConFactura = [
-              'ingreso_compra',
-              'salida_venta',
-              'ingreso_devolucion_cliente',
-              'salida_devolucion_proveedor'
-          ];
+                const tiposConFactura = [
+                    'ingreso_compra',
+                    'salida_venta',
+                    'ingreso_devolucion_cliente',
+                    'salida_devolucion_proveedor'
+                ];
 
-          if (tiposConFactura.includes(tipoSelect.value)) {
-              facturaFieldRow.style.display = '';
-          } else {
-              facturaFieldRow.style.display = 'none';
-          }
-      }
+                if (tiposConFactura.includes(tipoSelect.value)) {
+                    facturaFieldRow.style.display = '';
+                } else {
+                    facturaFieldRow.style.display = 'none';
+                }
+            }
 
-      // Al cargar y cuando cambie el tipo
-      toggleFacturaField();
-      tipoSelect?.addEventListener('change', toggleFacturaField);
-  });
+            // Al cargar y cuando cambie el tipo
+            toggleFacturaField();
+            tipoSelect?.addEventListener('change', toggleFacturaField);
+        });
 
-  
-  // Alternar modo colapsado
-  document.addEventListener("DOMContentLoaded", () => {
-    const sidebar = document.getElementById("sidebar");
-    const toggleBtn = document.getElementById("toggleSidebar");
+        
+        // Alternar modo colapsado
+        document.addEventListener("DOMContentLoaded", () => {
+          const sidebar = document.getElementById("sidebar");
+          const toggleBtn = document.getElementById("toggleSidebar");
 
-    toggleBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("collapsed");
+          toggleBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("collapsed");
 
-      // Cerrar todas las sublistas al colapsar
-      if (sidebar.classList.contains("collapsed")) {
-        document
-          .querySelectorAll(".sublist")
-          .forEach((sl) => sl.classList.remove("show"));
-        document
-          .querySelectorAll(".parent-link")
-          .forEach((pl) => pl.classList.remove("active-parent"));
-      }
-    });
-  });
+            // Cerrar todas las sublistas al colapsar
+            if (sidebar.classList.contains("collapsed")) {
+              document
+                .querySelectorAll(".sublist")
+                .forEach((sl) => sl.classList.remove("show"));
+              document
+                .querySelectorAll(".parent-link")
+                .forEach((pl) => pl.classList.remove("active-parent"));
+            }
+          });
+        });
 
-  // Expandir el sidebar al hacer clic en cualquier icono cuando esté colapsado
-  document.querySelectorAll(".sidebar .nav-link").forEach(link => {
-    link.addEventListener("click", () => {
-      const sidebar = document.querySelector("#sidebar");
-      if (sidebar.classList.contains("collapsed")) {
-        sidebar.classList.remove("collapsed");
-      }
-    });
-  });
+        // Expandir el sidebar al hacer clic en cualquier icono cuando esté colapsado
+        document.querySelectorAll(".sidebar .nav-link").forEach(link => {
+          link.addEventListener("click", () => {
+            const sidebar = document.querySelector("#sidebar");
+            if (sidebar.classList.contains("collapsed")) {
+              sidebar.classList.remove("collapsed");
+            }
+          });
+        });
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const widget = document.querySelector(".widget-box");
+        document.addEventListener("DOMContentLoaded", function () {
+            const widget = document.querySelector(".widget-box");
 
-    widget.addEventListener("mouseenter", () => {
-        widget.classList.add("expandido");
-    });
+            widget.addEventListener("mouseenter", () => {
+                widget.classList.add("expandido");
+            });
 
-    widget.addEventListener("mouseleave", () => {
-        widget.classList.remove("expandido");
-  });
-});
-  // Eliminar mensajes toast después de 4 segundos
-  setTimeout(() => {
-    document.querySelectorAll('.toast-msg').forEach(el => el.remove());
-  }, 4000);
-
-</script>
+            widget.addEventListener("mouseleave", () => {
+                widget.classList.remove("expandido");
+          });
+        });
+    </script>
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+    <script>
+      setTimeout(() => {
+        document.querySelectorAll('.toast-msg').forEach(el => el.remove());
+      }, 4000);
+    </script>
+
   {% block scripts %}{% endblock %}
   {% block extra_js %}{% endblock %}
 
