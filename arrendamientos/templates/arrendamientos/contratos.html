@@ -101,7 +101,7 @@
         <td>{{ c.cliente }}</td>
         <td>{{ c.cliente.cedula|default:"—" }}</td>
         <td>{{ c.vehiculo }}</td>
-        <td>{{ c.fecha_inicio }}</td>
+        <td>{{ c.fecha_inicio|date:"d/m/Y" }}</td>
         <td>{{ c.cuota_inicial }}</td>
         <td>{{ c.tarifa }}</td>
         <td>{{ c.dias_contrato }}</td>
