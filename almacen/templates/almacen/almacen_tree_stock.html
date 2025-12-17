@@ -53,37 +53,52 @@
                 <div class="modal-content">
                 <form method="post">
                     {% csrf_token %}
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="crearProductoLabel">Crear Nuevo Producto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+
+                    <div class="modal-header border-0 pb-2">
+                        <h5 class="modal-title fw-semibold" id="crearProductoLabel">
+                        Crear nuevo producto
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
-                    <div class="modal-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                        <label class="form-label">Nombre</label>
-                        {% render_field producto_form.nombre class="form-control" placeholder="Ej. Tornillo cabeza hexagonal" %}
+
+                    <div class="modal-body pt-0">
+                        <div class="d-grid gap-3">
+
+                        <div>
+                            <label class="form-label small text-muted">Nombre</label>
+                            {% render_field producto_form.nombre class="form-control" placeholder="Descripcion item" %}
                         </div>
-                        <div class="col-md-6">
-                        <label class="form-label">Referencia</label>
-                        {% render_field producto_form.referencia class="form-control" placeholder="Ref-001" %}
+
+                        <div>
+                            <label class="form-label small text-muted">Referencia</label>
+                            {% render_field producto_form.referencia class="form-control" placeholder="Ref-001" %}
                         </div>
-                        <div class="col-md-4">
-                        <label class="form-label">Utilidad</label>
-                        {% render_field producto_form.utilidad class="form-control" placeholder="Alta/Media/Baja" %}
+
+                        <div>
+                            <label class="form-label small text-muted">Utilidad</label>
+                            {% render_field producto_form.utilidad class="form-control" placeholder="Nkd / Sbr / Boxer" %}
                         </div>
-                        <div class="col-md-4">
-                        <label class="form-label">Precio venta</label>
-                        {% render_field producto_form.precio_venta class="form-control" step="0.01" placeholder="5000" %}
+
+                        <div>
+                            <label class="form-label small text-muted">Precio de venta</label>
+                            {% render_field producto_form.precio_venta class="form-control" step="0.01" placeholder="$" %}
                         </div>
-                        <div class="col-md-4">
-                        <label class="form-label">EAN</label>
-                        {% render_field producto_form.ean class="form-control" placeholder="Código EAN" %}
+
+                        <div>
+                            <label class="form-label small text-muted">EAN</label>
+                            {% render_field producto_form.ean class="form-control" placeholder="Código EAN" %}
+                        </div>
+
                         </div>
                     </div>
-                    </div>
-                    <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="producto_submit" class="btn btn-primary">Guardar</button>
+
+                    <div class="modal-footer border-0 pt-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                        </button>
+                        <button type="submit" name="producto_submit" class="btn btn-primary px-4">
+                        Guardar
+                        </button>
                     </div>
                 </form>
                 </div>
