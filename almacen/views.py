@@ -90,13 +90,12 @@ def almacen_dashboard(request):
 
             for i, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
                 try:
-                    nombre, referencia, utilidad_raw, precio_raw, ean = row
+                    nombre, referencia, utilidad, precio_raw, ean = row
 
                     if not nombre or not referencia:
                         raise ValueError("Nombre o referencia vacíos")
 
                     try:
-                        utilidad = Decimal(str(utilidad_raw))
                         precio_venta = Decimal(str(precio_raw))
                     except (InvalidOperation, TypeError):
                         raise ValueError("Utilidad o precio inválidos")
