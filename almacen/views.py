@@ -115,10 +115,14 @@ def almacen_dashboard(request):
                     errores.append(f"Fila {i}: {str(e)}")
 
             if errores:
+                filas = [e.split(":")[0] for e in errores]
+
                 messages.warning(
                     request,
-                    f"Se crearon {creados} productos, pero hubo errores en algunas filas."
+                    f"Se crearon {creados} productos.<br>"
+                    f"Errores en: {', '.join(filas)}"
                 )
+
                 for e in errores:
                     print("⚠️", e)
             else:
@@ -128,7 +132,6 @@ def almacen_dashboard(request):
                 )
 
             return redirect('almacen_dashboard')
-
 
 
 
