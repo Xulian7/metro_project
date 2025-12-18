@@ -78,9 +78,12 @@ def almacen_dashboard(request):
             if headers != expected:
                 messages.error(
                     request,
-                    f"Encabezados inválidos. Se esperaban: {expected}"
+                    "Encabezados inválidos.\n"
+                    f"Esperados: {expected}\n"
+                    f"Recibidos: {headers}"
                 )
                 return redirect('almacen_dashboard')
+
 
             creados = 0
             errores = []
