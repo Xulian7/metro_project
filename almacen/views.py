@@ -73,7 +73,7 @@ def almacen_dashboard(request):
             # Normalizar encabezados
             headers = [str(c.value).strip().lower().replace(" ", "_") for c in ws[1]]
 
-            expected = ['nombre', 'referencia', 'utilidad', 'precio venta', 'ean']
+            expected = ['nombre', 'referencia', 'utilidad', 'precio_venta', 'ean']
 
             if headers != expected:
                 messages.error(
