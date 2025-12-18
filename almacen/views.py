@@ -52,6 +52,83 @@ def almacen_dashboard(request):
                 messages.success(request, "Producto creado correctamente.")
                 return redirect('almacen_dashboard')
 
+
+        elif 'carga_masiva_productos' in request.POST:
+            archivo = request.FILES.get('archivo_excel')
+
+            if not archivo:
+                messages.error(request, "Debe seleccionar un archivo Excel.")
+                return redirect('almacen_dashboard')
+
+            import openpyxl
+            from decimal import Decimal, InvalidOperation
+
+            try:
+                wb = openpyxl.load_workbook(archivo)
+                ws = wb.active
+            except Exception as e:
+                messages.error(request, f"No se pudo leer el archivo: {str(e)}")
+                return redirect('almacen_dashboard')
+
+            # Normalizar encabezados
+            headers = [str(c.value).strip().lower().replace(" ", "_") for c in ws[1]]
+
+            expected = ['nombre', 'referencia', 'utilidad', 'precio_venta', 'ean']
+
+            if headers != expected:
+                messages.error(
+                    request,
+                    f"Encabezados inválidos. Se esperaban: {expected}"
+                )
+                return redirect('almacen_dashboard')
+
+            creados = 0
+            errores = []
+
+            for i, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+                try:
+                    nombre, referencia, utilidad_raw, precio_raw, ean = row
+
+                    if not nombre or not referencia:
+                        raise ValueError("Nombre o referencia vacíos")
+
+                    try:
+                        utilidad = Decimal(str(utilidad_raw))
+                        precio_venta = Decimal(str(precio_raw))
+                    except (InvalidOperation, TypeError):
+                        raise ValueError("Utilidad o precio inválidos")
+
+                    Producto.objects.create(
+                        nombre=str(nombre).strip(),
+                        referencia=str(referencia).strip(),
+                        utilidad=utilidad,
+                        precio_venta=precio_venta,
+                        EAN=str(ean).strip() if ean else None
+                    )
+
+                    creados += 1
+
+                except Exception as e:
+                    errores.append(f"Fila {i}: {str(e)}")
+
+            if errores:
+                messages.warning(
+                    request,
+                    f"Se crearon {creados} productos, pero hubo errores en algunas filas."
+                )
+                for e in errores:
+                    print("⚠️", e)
+            else:
+                messages.success(
+                    request,
+                    f"Se cargaron {creados} productos correctamente."
+                )
+
+            return redirect('almacen_dashboard')
+
+
+
+
         # Crear proveedor
         elif 'proveedor_submit' in request.POST:
             proveedor_form = ProveedorForm(request.POST)
@@ -72,7 +149,7 @@ def almacen_dashboard(request):
         elif 'export_csv' in request.POST:
             return export_movimientos_csv(movimientos)
 
-        # Carga masiva de facturas
+        
         # Carga masiva de facturas
         elif 'carga_masiva_factura' in request.POST:
             archivo = request.FILES.get('archivo_factura')
