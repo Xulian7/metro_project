@@ -434,6 +434,7 @@
                                 <th>Proveedor</th>
                                 <th>Factura / Referencia</th>
                                 <th>Fecha</th>
+                                <th>Fecha Factura</th>
                                 <th>Precio Unitario</th>
                                 <th>Movimiento</th>
                             </tr>
@@ -446,6 +447,7 @@
                                     <td>{% if m.proveedor %}{{ m.proveedor.nombre }}{% else %}-{% endif %}</td>
                                     <td>{% if m.factura_referencia %}{{ m.factura_referencia }}{% else %}-{% endif %}</td>
                                     <td>{{ m.fecha }}</td>
+                                    <td>{% if m.fecha_factura %}{{ m.fecha_factura }}{% else %}-{% endif %}</td>
                                     <td>{{ m.precio_unitario }}</td>
                                     <td>Ingreso</td>
                                 </tr>
@@ -458,6 +460,7 @@
                                     <td>{% if m.proveedor %}{{ m.proveedor.nombre }}{% else %}-{% endif %}</td>
                                     <td>{% if m.factura_referencia %}{{ m.factura_referencia }}{% else %}-{% endif %}</td>
                                     <td>{{ m.fecha }}</td>
+                                    <td>{% if m.fecha_factura %}{{ m.fecha_factura }}{% else %}-{% endif %}</td>
                                     <td>{{ m.precio_unitario }}</td>
                                     <td>Salida</td>
                                 </tr>
