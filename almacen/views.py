@@ -93,13 +93,18 @@ def almacen_dashboard(request):
                     if not any(row):
                         continue
 
-                    nombre, referencia, utilidad, precio_raw, ean_raw = row
+                    nombre, referencia, utilidad_raw, precio_raw, ean_raw = row
 
                     if not nombre or not referencia:
                         raise ValueError("Nombre o referencia vacíos")
 
+                    # UTILIDAD → texto tal cual (solo limpieza básica)
+                    utilidad = str(utilidad_raw).strip() if utilidad_raw else None
+
+                    # PRECIO → sí o sí Decimal
                     precio_venta = Decimal(str(precio_raw).strip().replace(",", "."))
 
+                    # EAN → evitar notación científica
                     ean = str(ean_raw).split(".")[0] if ean_raw else None
 
                     Producto.objects.create(
@@ -107,13 +112,14 @@ def almacen_dashboard(request):
                         referencia=str(referencia).strip(),
                         utilidad=utilidad,
                         precio_venta=precio_venta,
-                        EAN=ean
+                        ean=ean
                     )
 
                     creados += 1
 
                 except Exception as e:
                     errores.append(f"Fila {i}: {e}")
+
 
 
             if errores:
