@@ -90,28 +90,32 @@ def almacen_dashboard(request):
 
             for i, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
                 try:
-                    nombre, referencia, utilidad, precio_raw, ean = row
+                    if not any(row):
+                        continue
+
+                    nombre, referencia, utilidad_raw, precio_raw, ean_raw = row
 
                     if not nombre or not referencia:
                         raise ValueError("Nombre o referencia vacíos")
 
-                    try:
-                        precio_venta = Decimal(str(precio_raw))
-                    except (InvalidOperation, TypeError):
-                        raise ValueError("Utilidad o precio inválidos")
+                    utilidad = Decimal(str(utilidad_raw).strip().replace(",", "."))
+                    precio_venta = Decimal(str(precio_raw).strip().replace(",", "."))
+
+                    ean = str(ean_raw).split(".")[0] if ean_raw else None
 
                     Producto.objects.create(
                         nombre=str(nombre).strip(),
                         referencia=str(referencia).strip(),
                         utilidad=utilidad,
                         precio_venta=precio_venta,
-                        EAN=str(ean).strip() if ean else None
+                        EAN=ean
                     )
 
                     creados += 1
 
                 except Exception as e:
-                    errores.append(f"Fila {i}: {str(e)}")
+                    errores.append(f"Fila {i}: {e}")
+
 
             if errores:
                 filas = [e.split(":")[0] for e in errores]
