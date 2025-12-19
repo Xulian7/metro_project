@@ -36,6 +36,7 @@ class Movimiento(models.Model):
     cantidad = models.IntegerField()
     proveedor = models.ForeignKey(Proveedor, on_delete=models.SET_NULL, null=True, blank=True)
     fecha = models.DateField(auto_now_add=True)
+    fecha_factura = models.DateField(null=True, blank=True)
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     factura_referencia = models.CharField(
         max_length=100,

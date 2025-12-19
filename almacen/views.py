@@ -12,6 +12,7 @@ from openpyxl.styles import Font
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json 
+from datetime import date, datetime
 
 def almacen_dashboard(request):
     productos = Producto.objects.all()
@@ -52,7 +53,7 @@ def almacen_dashboard(request):
                 messages.success(request, "Producto creado correctamente.")
                 return redirect('almacen_dashboard')
 
-
+        # Carga masiva de productos
         elif 'carga_masiva_productos' in request.POST:
             archivo = request.FILES.get('archivo_excel')
 
@@ -142,7 +143,6 @@ def almacen_dashboard(request):
             return redirect('almacen_dashboard')
 
 
-
         # Crear proveedor
         elif 'proveedor_submit' in request.POST:
             proveedor_form = ProveedorForm(request.POST)
@@ -183,8 +183,12 @@ def almacen_dashboard(request):
                 messages.error(request, f"No se pudo leer el archivo: {str(e)}")
                 return redirect('almacen_dashboard')
 
-            expected_headers = ['referencia', 'cantidad', 'precio_unitario', 'proveedor', 'factura_referencia']
-            actual_headers = [str(cell.value).strip().lower() if cell.value else '' for cell in ws[1]]
+            expected_headers = ['referencia', 'cantidad', 'precio_unitario', 'proveedor', 'fecha_factura', 'factura_referencia']
+            actual_headers = [
+                str(cell.value).strip().lower().replace(" ", "_") if cell.value else ''
+                for cell in ws[1]
+            ]
+
 
             print("👉 Encabezados detectados:", actual_headers)  # Debug opcional
 
@@ -199,7 +203,7 @@ def almacen_dashboard(request):
 
             for i, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
                 try:
-                    referencia_o_nombre, cantidad_raw, precio_unitario_raw, proveedor_nombre, factura_ref = row
+                    referencia_o_nombre, cantidad_raw, precio_unitario_raw, proveedor_nombre, fecha_factura, factura_ref = row
 
                     if not referencia_o_nombre:
                         raise ValueError("Referencia o nombre vacío en la fila")
@@ -237,9 +241,21 @@ def almacen_dashboard(request):
                         raise ValueError("Cantidad inválida (debe ser un número entero)")
 
                     try:
-                        precio_unitario = Decimal(str(precio_unitario_raw))
+                        precio_unitario = Decimal(str(precio_unitario_raw).replace(",", "."))
+
                     except (TypeError, InvalidOperation):
                         raise ValueError("Precio unitario inválido (debe ser numérico)")
+                    
+                    fecha_factura_final = None
+                    if fecha_factura:
+                        if isinstance(fecha_factura, date):
+                            fecha_factura_final = fecha_factura
+                        elif isinstance(fecha_factura, datetime):
+                            fecha_factura_final = fecha_factura.date()
+                        else:
+                            fecha_factura_final = datetime.strptime(
+                                str(fecha_factura), "%Y-%m-%d"
+                            ).date()
 
                     # Crear movimiento
                     Movimiento.objects.create(
@@ -248,6 +264,7 @@ def almacen_dashboard(request):
                         cantidad=cantidad,
                         proveedor=proveedor,
                         precio_unitario=precio_unitario,
+                        fecha_factura=fecha_factura_final,
                         factura_referencia=str(factura_ref).strip() if factura_ref else None
                     )
 
