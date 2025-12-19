@@ -93,12 +93,11 @@ def almacen_dashboard(request):
                     if not any(row):
                         continue
 
-                    nombre, referencia, utilidad_raw, precio_raw, ean_raw = row
+                    nombre, referencia, utilidad, precio_raw, ean_raw = row
 
                     if not nombre or not referencia:
                         raise ValueError("Nombre o referencia vacíos")
 
-                    utilidad = Decimal(str(utilidad_raw).strip().replace(",", "."))
                     precio_venta = Decimal(str(precio_raw).strip().replace(",", "."))
 
                     ean = str(ean_raw).split(".")[0] if ean_raw else None
