@@ -18,9 +18,6 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="movimientos-tab" data-bs-toggle="tab" data-bs-target="#movimientos" type="button">Movimientos</button>
         </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="stock-tab" data-bs-toggle="tab" data-bs-target="#stock" type="button">Stock</button>
-        </li>
     </ul>
 
     <!-- Productos -->
@@ -494,36 +491,6 @@
     </div>
 
 
-    <!-- Stock -->
-    <div class="tab-pane fade" id="stock" role="tabpanel" aria-labelledby="stock-tab">
-        <h5 class="mb-3">Resumen de Stock</h5>
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Producto</th>
-                        <th>Referencia</th>
-                        <th>Stock Actual</th>
-                        <th>Valor Stock</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for producto, movs in movimientos_por_producto.items %}
-                    <tr>
-                        <td>{{ producto.nombre }}</td>
-                        <td>{{ producto.referencia }}</td>
-                        <td>
-                            <span class="{% if movs.stock_actual <= 0 %}text-danger fw-bold{% else %}text-success{% endif %}">
-                                {{ movs.stock_actual }}
-                            </span>
-                        </td>
-                        <td>${{ movs.valor_stock }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
 
 </div>
 
