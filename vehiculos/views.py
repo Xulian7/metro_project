@@ -81,6 +81,7 @@ def vehiculo_update(request):
         vehiculo.marca = request.POST.get('marca')
         vehiculo.modelo = request.POST.get('modelo')
         vehiculo.serie = request.POST.get('serie')
+        vehiculo.color = request.POST.get('color')
         vehiculo.propietario = request.POST.get('propietario')
         vehiculo.numero_motor = request.POST.get('numero_motor')
         vehiculo.numero_chasis = request.POST.get('numero_chasis')
@@ -99,6 +100,7 @@ def vehiculo_update(request):
                 'marca': vehiculo.marca,
                 'modelo': vehiculo.modelo,
                 'serie': vehiculo.serie,
+                'color': vehiculo.color,
                 'propietario': vehiculo.propietario,
                 'numero_motor': vehiculo.numero_motor,
                 'numero_chasis': vehiculo.numero_chasis,

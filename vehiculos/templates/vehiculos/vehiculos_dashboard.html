@@ -42,6 +42,20 @@
       </div>
 
       <div class="col-md-2">
+        <label class="form-label">Color</label>
+        <select name="color" class="form-select" required>
+          <option value="">Seleccione…</option>
+          <option value="Negro">Negro</option>
+          <option value="Negro Mate">Negro Mate</option>
+          <option value="Gris">Gris</option>
+          <option value="Blanco">Blanco</option>
+          <option value="Morado">Morado</option>
+          <option value="Azul">Azul</option>
+          <option value="Rojo">Rojo</option>
+        </select>
+      </div>
+
+      <div class="col-md-2">
         <label class="form-label">Propietario</label>
         <select name="propietario" class="form-select">
           <option value="">Seleccione…</option>
@@ -98,6 +112,7 @@
           <th>Marca</th>
           <th>Modelo</th>
           <th>Serie</th>
+          <th>Color</th>
           <th>Propietario</th>
           <th># Motor</th>
           <th># Chasis</th>
@@ -115,6 +130,7 @@
           <td>{{ v.marca }}</td>
           <td>{{ v.modelo }}</td>
           <td>{{ v.serie }}</td>
+          <td>{{ v.color }}</td>
           <td>{{ v.propietario }}</td>
           <td>{{ v.numero_motor }}</td>
           <td>{{ v.numero_chasis }}</td>
@@ -131,6 +147,7 @@
               data-marca="{{ v.marca }}"
               data-modelo="{{ v.modelo }}"
               data-serie="{{ v.serie }}"
+              data-color="{{ v.color }}"
               data-propietario="{{ v.propietario }}"
               data-motor="{{ v.numero_motor }}"
               data-chasis="{{ v.numero_chasis }}"
@@ -198,6 +215,10 @@
               <input type="text" name="serie" id="modal-serie" class="form-control">
             </div>
             <div class="col-md-4">
+              <label class="form-label">Color</label>
+              <input type="text" name="color" id="modal-color" class="form-control">
+            </div>
+            <div class="col-md-4">
               <label class="form-label">Propietario</label>
               <input type="text" name="propietario" id="modal-propietario" class="form-control">
             </div>
@@ -258,6 +279,7 @@ document.querySelectorAll('.edit-vehiculo-btn').forEach(btn => {
     document.getElementById('modal-marca').value = btn.dataset.marca;
     document.getElementById('modal-modelo').value = btn.dataset.modelo;
     document.getElementById('modal-serie').value = btn.dataset.serie;
+    document.getElementById('modal-color').value = btn.dataset.color;
     document.getElementById('modal-propietario').value = btn.dataset.propietario;
     document.getElementById('modal-motor').value = btn.dataset.motor;
     document.getElementById('modal-chasis').value = btn.dataset.chasis;

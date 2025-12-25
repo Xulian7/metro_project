@@ -5,7 +5,7 @@ class VehiculoForm(forms.ModelForm):
     class Meta:
         model = Vehiculo
         fields = [
-            'placa', 'marca', 'modelo', 'serie', 'propietario',
+            'placa', 'marca', 'modelo', 'serie','color', 'propietario',
             'numero_motor', 'numero_chasis', 'linea_gps', 'actualizacion_soat'
         ]
 
@@ -14,6 +14,7 @@ class VehiculoForm(forms.ModelForm):
             'marca': forms.TextInput(attrs={'class': 'form-control'}),
             'modelo': forms.TextInput(attrs={'class': 'form-control'}),
             'serie': forms.TextInput(attrs={'class': 'form-control'}),
+            'color': forms.TextInput(attrs={'class': 'form-control'}),
             'propietario': forms.TextInput(attrs={'class': 'form-control'}),
             'numero_motor': forms.TextInput(attrs={'class': 'form-control'}),
             'numero_chasis': forms.TextInput(attrs={'class': 'form-control'}),

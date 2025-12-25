@@ -20,6 +20,7 @@ class Vehiculo(models.Model):
     marca = models.CharField(max_length=50)
     modelo = models.CharField(max_length=50)
     serie = models.CharField(max_length=50, blank=True, null=True)
+    color = models.CharField(max_length=50, blank=True, null=True)
     propietario = models.CharField(max_length=100)
     numero_motor = models.CharField(max_length=50, blank=True, null=True)
     numero_chasis = models.CharField(max_length=50, blank=True, null=True)
