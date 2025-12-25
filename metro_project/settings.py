@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'vehiculos',
     'arrendamientos',
     'taller',
+    'utils',
     
 ]
 
@@ -95,6 +96,15 @@ DATABASES = {
         'PASSWORD': 'tSOTklzLYfQQZiXxFZIcAPtZkDJxdKgN',
         'HOST': 'metro.proxy.rlwy.net',
         'PORT': '30259',
+    },
+    
+    'externa': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'cUVmSghVIpRTJkWWtUymoMaadGwzLKUn',
+        'HOST': 'shuttle.proxy.rlwy.net',
+        'PORT': '38698',
     }
 }
 
