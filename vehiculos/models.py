@@ -24,7 +24,7 @@ class Vehiculo(models.Model):
     propietario = models.CharField(max_length=100)
     numero_motor = models.CharField(max_length=50, blank=True, null=True)
     numero_chasis = models.CharField(max_length=50, blank=True, null=True)
-    actualizacion_soat = models.DateField()
+    actualizacion_soat = models.DateField(blank=True, null=True)
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='Activo')
     linea_gps = models.CharField(max_length=50, blank=True, null=True)
     estado_obs = models.CharField(

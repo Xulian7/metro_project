@@ -11,6 +11,11 @@ MAPEO = {
     "modelo_ext": "modelo",
 }
 
+COLORES_VALIDOS = [
+    "Negro", "Negro Mate", "Gris", "Blanco",
+    "Morado", "Azul", "Rojo"
+]
+
 class Command(BaseCommand):
     help = "Migra vehículos desde DB externa (propietario)"
 
@@ -38,6 +43,10 @@ class Command(BaseCommand):
 
         return None
 
+    def normalizar_color(self, color):
+        color = (color or "").title()
+        return color if color in COLORES_VALIDOS else "Negro"
+
     def handle(self, *args, **options):
 
         columnas_externas = ", ".join(MAPEO.values())
@@ -50,6 +59,7 @@ class Command(BaseCommand):
             filas = cursor.fetchall()
 
         creados = 0
+        omitidos = 0
 
         for fila in tqdm(filas, desc="Migrando vehículos", unit="vehículo"):
             data = {
@@ -60,12 +70,17 @@ class Command(BaseCommand):
             marca, serie = self.detectar_marca_y_serie(data["modelo_ext"])
             modelo = self.detectar_modelo(data["modelo_ext"])
 
+            # 🚨 Si no se puede inferir marca o modelo → se omite
+            if not marca or not modelo:
+                omitidos += 1
+                continue
+
             defaults = {
                 "marca": marca,
                 "modelo": modelo,
                 "serie": serie,
-                "propietario": data["tarjeta_propiedad"],
-                "color": data["color"],
+                "propietario": data["tarjeta_propiedad"] or "Por definir",
+                "color": self.normalizar_color(data["color"]),
             }
 
             _, created = Vehiculo.objects.get_or_create(
@@ -78,4 +93,7 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(f"\n✔ Vehículos creados: {creados}")
+        )
+        self.stdout.write(
+            self.style.WARNING(f"⚠ Vehículos omitidos: {omitidos}")
         )
