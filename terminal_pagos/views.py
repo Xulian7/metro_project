@@ -1,6 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import transaction
@@ -8,7 +5,7 @@ from django.db import transaction
 from arrendamientos.models import Contrato
 from terminal_pagos.models import (
     MedioPago,
-    TipoItemFactura,
+    ItemFactura,
 )
 
 def terminal_pagos(request):
@@ -18,11 +15,12 @@ def terminal_pagos(request):
     ).all()
 
     medios_pago = MedioPago.objects.filter(activo=True)
-    tipos_item = TipoItemFactura.objects.all()
+
+    # Tipos de item directamente desde el modelo
+    tipos_item = ItemFactura.TIPOS
 
     if request.method == "POST":
-        # ⚠️ De momento solo capturamos, no persistimos
-        # La lógica dura viene después (items + pagos + validaciones)
+        # MVP: solo capturamos, la lógica dura viene después
         messages.success(
             request,
             "Transacción capturada correctamente (modo MVP 😎)"

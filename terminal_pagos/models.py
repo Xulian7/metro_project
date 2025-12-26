@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator
+from decimal import Decimal
 
 
 # =========================
@@ -20,8 +21,14 @@ class Factura(models.Model):
         related_name="facturas"
     )
 
-    consecutivo = models.CharField(max_length=20, unique=True)
-    fecha = models.DateTimeField(default=timezone.now)
+    consecutivo = models.CharField(
+        max_length=20,
+        unique=True
+    )
+
+    fecha = models.DateTimeField(
+        default=timezone.now
+    )
 
     estado = models.CharField(
         max_length=10,
@@ -32,7 +39,7 @@ class Factura(models.Model):
     total = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        default=0,
+        default=Decimal("0.00"),
         validators=[MinValueValidator(0)]
     )
 
@@ -43,7 +50,7 @@ class Factura(models.Model):
     def total_pagado(self):
         return self.pagos.aggregate(
             total=models.Sum("valor")
-        )["total"] or 0
+        )["total"] or Decimal("0.00")
 
     @property
     def saldo(self):
@@ -73,12 +80,14 @@ class ItemFactura(models.Model):
         choices=TIPOS
     )
 
-    descripcion = models.CharField(max_length=255)
+    descripcion = models.CharField(
+        max_length=255
+    )
 
     cantidad = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        default=1,
+        default=Decimal("1.00"),
         validators=[MinValueValidator(0)]
     )
 
@@ -114,15 +123,22 @@ class ItemFactura(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.tipo} - {self.descripcion}"
+        return f"{self.get_tipo_display()} - {self.descripcion}"
 
 
 # =========================
 # MEDIOS DE PAGO
 # =========================
 class MedioPago(models.Model):
-    nombre = models.CharField(max_length=50, unique=True)
-    activo = models.BooleanField(default=True)
+
+    nombre = models.CharField(
+        max_length=50,
+        unique=True
+    )
+
+    activo = models.BooleanField(
+        default=True
+    )
 
     def __str__(self):
         return self.nombre
@@ -132,6 +148,7 @@ class MedioPago(models.Model):
 # PAGOS A FACTURA
 # =========================
 class PagoFactura(models.Model):
+
     factura = models.ForeignKey(
         Factura,
         on_delete=models.CASCADE,
@@ -155,7 +172,9 @@ class PagoFactura(models.Model):
         null=True
     )
 
-    fecha = models.DateTimeField(default=timezone.now)
+    fecha = models.DateTimeField(
+        default=timezone.now
+    )
 
     def __str__(self):
         return f"{self.medio_pago} - {self.valor}"
