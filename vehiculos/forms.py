@@ -1,7 +1,8 @@
 from django import forms
 from .models import Vehiculo, Marca
+from core.forms_mixins import SmartCleanMixin
 
-class VehiculoForm(forms.ModelForm):
+class VehiculoForm(SmartCleanMixin, forms.ModelForm):
     class Meta:
         model = Vehiculo
         fields = [
