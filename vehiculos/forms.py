@@ -57,7 +57,7 @@ class VehiculoForm(SmartCleanMixin, forms.ModelForm):
         return cleaned_data
 
 
-class MarcaForm(forms.ModelForm):
+class MarcaForm(SmartCleanMixin, forms.ModelForm):
     class Meta:
         model = Marca
         fields = ["nombre", "parent"]
