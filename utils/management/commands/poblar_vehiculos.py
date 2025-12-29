@@ -19,15 +19,19 @@ COLORES_VALIDOS = [
 class Command(BaseCommand):
     help = "Migra vehículos desde DB externa (propietario)"
 
-    def detectar_marca_y_serie(self, modelo):
-        modelo = (modelo or "").upper()
+    # 🔤 Normalización a Nombre Propio
+    def nom_propio(self, texto):
+        return (texto or "").strip().title()
 
-        if "NKD" in modelo:
-            return "NKD", "NKD 1125"
-        if "BERA" in modelo:
-            return "BERA", "SBR 150"
-        if "BAJA" in modelo:
-            return "BAJAJ", "BOXER CT"
+    def detectar_marca_y_serie(self, modelo):
+        modelo_up = (modelo or "").upper()
+
+        if "NKD" in modelo_up:
+            return "Nkd", "Nkd 125"
+        if "BERA" in modelo_up:
+            return "Bera", "Sbr 150"
+        if "BAJA" in modelo_up:
+            return "Bajaj", "Boxer Ct"
 
         return None, None
 
@@ -44,7 +48,7 @@ class Command(BaseCommand):
         return None
 
     def normalizar_color(self, color):
-        color = (color or "").title()
+        color = self.nom_propio(color)
         return color if color in COLORES_VALIDOS else "Negro"
 
     def handle(self, *args, **options):
@@ -76,15 +80,17 @@ class Command(BaseCommand):
                 continue
 
             defaults = {
-                "marca": marca,
+                "marca": self.nom_propio(marca),
                 "modelo": modelo,
-                "serie": serie,
-                "propietario": data["tarjeta_propiedad"] or "Por definir",
+                "serie": self.nom_propio(serie),
+                "propietario": self.nom_propio(
+                    data["tarjeta_propiedad"]
+                ) or "Por Definir",
                 "color": self.normalizar_color(data["color"]),
             }
 
             _, created = Vehiculo.objects.get_or_create(
-                placa=data["placa"],
+                placa=(data["placa"] or "").upper().strip(),
                 defaults=defaults
             )
 

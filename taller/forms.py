@@ -1,7 +1,8 @@
 from django import forms
 from .models import Servicio, Mecanico
+from core.forms_mixins import SmartCleanMixin
 
-class ServicioForm(forms.ModelForm):
+class ServicioForm(SmartCleanMixin, forms.ModelForm):
     class Meta:
         model = Servicio
         fields = ['nombre_servicio', 'valor']
@@ -11,7 +12,7 @@ class ServicioForm(forms.ModelForm):
         }
 
 
-class MecanicoForm(forms.ModelForm):
+class MecanicoForm(SmartCleanMixin, forms.ModelForm):
     class Meta:
         model = Mecanico
         fields = ['nombre', 'identificacion']
