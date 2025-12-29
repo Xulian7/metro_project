@@ -2,6 +2,8 @@ from django.core.management.base import BaseCommand
 from django.db import connections
 from vehiculos.models import Vehiculo
 from tqdm import tqdm
+from datetime import datetime
+import os
 
 # Campos que vienen de la DB externa (tabla propietario)
 MAPEO = {
@@ -16,6 +18,8 @@ COLORES_VALIDOS = [
     "Morado", "Azul", "Rojo"
 ]
 
+LOG_FILE = "log.txt"
+
 class Command(BaseCommand):
     help = "Migra vehículos desde DB externa (propietario)"
 
@@ -25,6 +29,10 @@ class Command(BaseCommand):
 
     def detectar_marca_y_serie(self, modelo):
         modelo_up = (modelo or "").upper()
+
+        # 🎯 Regla especial: MILAN → BERA
+        if "MILAN" in modelo_up:
+            return "Bera", "Sbr 150"
 
         if "NKD" in modelo_up:
             return "Nkd", "Nkd 125"
@@ -51,7 +59,20 @@ class Command(BaseCommand):
         color = self.nom_propio(color)
         return color if color in COLORES_VALIDOS else "Negro"
 
+    def log_omitido(self, data, razon):
+        with open(LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(
+                f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] "
+                f"PLACA={data.get('placa')} | "
+                f"MODELO_EXT='{data.get('modelo_ext')}' | "
+                f"RAZON={razon}\n"
+            )
+
     def handle(self, *args, **options):
+
+        # 🧹 Limpia log anterior
+        if os.path.exists(LOG_FILE):
+            os.remove(LOG_FILE)
 
         columnas_externas = ", ".join(MAPEO.values())
 
@@ -72,12 +93,21 @@ class Command(BaseCommand):
             }
 
             marca, serie = self.detectar_marca_y_serie(data["modelo_ext"])
-            modelo = self.detectar_modelo(data["modelo_ext"])
 
-            # 🚨 Si no se puede inferir marca o modelo → se omite
-            if not marca or not modelo:
+            if not marca:
                 omitidos += 1
+                self.log_omitido(data, "Marca no reconocida")
                 continue
+
+            # 🎯 Reglas de año
+            if marca == "Bera":
+                modelo = "2025"
+            else:
+                modelo = self.detectar_modelo(data["modelo_ext"])
+                if not modelo:
+                    omitidos += 1
+                    self.log_omitido(data, "Modelo (año) no detectado")
+                    continue
 
             defaults = {
                 "marca": self.nom_propio(marca),
@@ -102,4 +132,7 @@ class Command(BaseCommand):
         )
         self.stdout.write(
             self.style.WARNING(f"⚠ Vehículos omitidos: {omitidos}")
+        )
+        self.stdout.write(
+            self.style.NOTICE(f"📝 Detalle de omitidos en: {LOG_FILE}")
         )
