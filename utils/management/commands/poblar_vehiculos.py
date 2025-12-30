@@ -35,23 +35,22 @@ class Command(BaseCommand):
             return "Bera", "Sbr 150"
 
         if "NKD" in modelo_up:
-            return "Nkd", "Nkd 125"
+            return "Akt", "Nkd 125"
         if "BERA" in modelo_up:
             return "Bera", "Sbr 150"
         if "BAJA" in modelo_up:
             return "Bajaj", "Boxer Ct"
+        if "SUZUKI" in modelo_up:
+            return "Suzuki", "GN"
 
         return None, None
 
     def detectar_modelo(self, modelo):
         modelo = modelo or ""
 
-        if "2024" in modelo:
-            return "2024"
-        if "2025" in modelo:
-            return "2025"
-        if "2026" in modelo:
-            return "2026"
+        for year in range(2018, 2027):
+            if str(year) in modelo:
+                return str(year)
 
         return None
 
