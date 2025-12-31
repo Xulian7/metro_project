@@ -732,4 +732,22 @@ border-radius: 8px;
 @keyframes fadeOut {
   to { opacity: 0; transform: translateX(30px); }
 }
+
+/* Link activo (padre o hijo) */
+.sidebar .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.15); /* más claro */
+  color: #fff;
+  border-left: 4px solid #0d6efd; /* detalle pro */
+}
+
+/* Icono activo */
+.sidebar .nav-link.active .icon i {
+  color: #0d6efd;
+}
+
+/* Submenú visible cuando el padre está activo */
+.sidebar .nav-item.active .sublist {
+  display: block;
+}
+
 /* === Fin layout.css === */
