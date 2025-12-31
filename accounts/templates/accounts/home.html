@@ -491,6 +491,25 @@
       }, 4000);
     </script>
 
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const currentUrl = window.location.pathname;
+
+        document.querySelectorAll(".nav-link.child-link").forEach(link => {
+          if (link.getAttribute("href") === currentUrl) {
+            link.classList.add("active");
+
+            const parent = link.closest(".nav-item");
+            if (parent) {
+              parent.classList.add("active");
+              parent.querySelector(".parent-link")?.classList.add("active");
+            }
+          }
+        });
+      });
+    </script>
+
+
   {% block scripts %}{% endblock %}
   {% block extra_js %}{% endblock %}
 
