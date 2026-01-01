@@ -1,6 +1,8 @@
 from django.db import models
 
 
+from arrendamientos.models import Contrato
+
 class Factura(models.Model):
     ESTADOS = (
         ("borrador", "Borrador"),
@@ -8,15 +10,18 @@ class Factura(models.Model):
         ("anulada", "Anulada"),
     )
 
-    placa = models.CharField(max_length=20, blank=True, null=True)
-    nombre_cliente = models.CharField(max_length=150, blank=True, null=True)
+    contrato = models.ForeignKey(
+        Contrato,
+        on_delete=models.PROTECT,
+        related_name="facturas"
+    )
 
     fecha = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=20, choices=ESTADOS, default="borrador")
 
     total = models.DecimalField(
         max_digits=12, decimal_places=2, default=0
-    )  # calculado luego
+    )
 
     def __str__(self):
         return f"Factura #{self.id} - {self.fecha.date()}"

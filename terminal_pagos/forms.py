@@ -1,12 +1,26 @@
 from django import forms
 from django.forms import inlineformset_factory
 from .models import Factura, ItemFactura
+from arrendamientos.models import Contrato
+
 
 
 class FacturaForm(forms.ModelForm):
     class Meta:
         model = Factura
-        fields = ["placa", "nombre_cliente"]
+        fields = ["contrato"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["contrato"].queryset = Contrato.objects.select_related(
+            "vehiculo", "cliente"
+        )
+
+        self.fields["contrato"].label_from_instance = (
+            lambda obj: f"{obj.vehiculo.placa} — {obj.cliente.nombre}"
+        )
+
 
 
 class ItemFacturaForm(forms.ModelForm):

@@ -12,16 +12,11 @@
     {% csrf_token %}
 
     <!-- ========================= -->
-    <!-- Datos del cliente -->
+    <!-- Contrato -->
     <!-- ========================= -->
-    <div class="col-md-3">
-      <label class="form-label">Placa</label>
-      {{ factura_form.placa|add_class:"form-control" }}
-    </div>
-
-    <div class="col-md-5">
-      <label class="form-label">Nombre del cliente</label>
-      {{ factura_form.nombre_cliente|add_class:"form-control" }}
+    <div class="col-md-8">
+      <label class="form-label">Contrato (Placa - Cliente)</label>
+      {{ factura_form.contrato|add_class:"form-select" }}
     </div>
 
     <div class="col-md-4 d-flex align-items-end justify-content-end">
