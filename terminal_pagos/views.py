@@ -10,7 +10,7 @@ def nueva_transaccion(request):
     factura_form = FacturaForm()
     item_formset = ItemFacturaFormSet()
 
-    return render(request, "terminal_pagos/nueva_transaccion.html", {
+    return render(request, "terminal_pagos/terminal_pagos.html", {
         "factura_form": factura_form,
         "item_formset": item_formset,
         "productos_json": list(productos),
