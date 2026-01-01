@@ -9,14 +9,15 @@ class ContratoSelect(forms.Select):
             name, value, label, selected, index, subindex=subindex, attrs=attrs
         )
 
-        if value:
+        if value and hasattr(value, "value"):
             try:
-                contrato = Contrato.objects.get(pk=value)
+                contrato = Contrato.objects.get(pk=value.value)
                 option["attrs"]["data-tarifa"] = contrato.tarifa
             except Contrato.DoesNotExist:
                 pass
 
         return option
+
 
 
 class FacturaForm(forms.ModelForm):
