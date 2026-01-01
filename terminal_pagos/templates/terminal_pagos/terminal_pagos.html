@@ -1,27 +1,76 @@
 {% extends "accounts/home.html" %}
+{% load static %}
 
 {% block content %}
-<h1>Nueva Factura</h1>
 
-<form method="post">
+<div class="card p-4 shadow-sm">
+
+  <h3 class="fw-bold fs-5 mb-4">Nueva Transacción</h3>
+
+  <form method="post" class="row g-3">
     {% csrf_token %}
 
-    <fieldset>
-        <legend>Datos del cliente</legend>
-        {{ factura_form.as_p }}
-    </fieldset>
+    <!-- ========================= -->
+    <!-- Datos del cliente -->
+    <!-- ========================= -->
+    <div class="col-md-3">
+      <label class="form-label">Placa</label>
+      {{ factura_form.placa|add_class:"form-control" }}
+    </div>
 
-    <fieldset>
-        <legend>Ítems</legend>
-        {{ item_formset.management_form }}
+    <div class="col-md-5">
+      <label class="form-label">Nombre del cliente</label>
+      {{ factura_form.nombre_cliente|add_class:"form-control" }}
+    </div>
 
-        {% for form in item_formset %}
-            <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-                {{ form.as_p }}
-            </div>
-        {% endfor %}
-    </fieldset>
+    <div class="col-md-4 d-flex align-items-end justify-content-end">
+      <button type="submit"
+              class="btn btn-primary btn-app-action w-100">
+        Guardar Factura
+      </button>
+    </div>
 
-    <button type="submit">Guardar factura</button>
-</form>
+    <!-- ========================= -->
+    <!-- Ítems de la factura -->
+    <!-- ========================= -->
+    <div class="col-12 mt-4">
+      <h6 class="fw-bold mb-3">Ítems</h6>
+    </div>
+
+    {{ item_formset.management_form }}
+
+    {% for form in item_formset %}
+      <div class="row g-3 align-items-end border rounded p-3 mb-2">
+
+        <div class="col-md-2">
+          <label class="form-label">Tipo</label>
+          {{ form.tipo_item|add_class:"form-select" }}
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Descripción</label>
+          {{ form.descripcion|add_class:"form-control" }}
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Cantidad</label>
+          {{ form.cantidad|add_class:"form-control" }}
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Valor Unitario</label>
+          {{ form.valor_unitario|add_class:"form-control" }}
+        </div>
+
+        <div class="col-md-2 text-end">
+          {{ form.DELETE }}
+        </div>
+
+      </div>
+    {% endfor %}
+
+  </form>
+
+</div>
+
 {% endblock %}
