@@ -4,6 +4,9 @@
 
 {% block content %}
 
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 <div class="card p-4 shadow-sm">
 
   <h3 class="fw-bold fs-5 mb-4">Nueva Transacción</h3>
@@ -16,7 +19,7 @@
     <!-- ========================= -->
     <div class="col-md-8">
       <label class="form-label">Contrato (Placa - Cliente)</label>
-      {{ factura_form.contrato|add_class:"form-select" }}
+      {{ factura_form.contrato|add_class:"form-select select-buscable" }}
     </div>
 
     <div class="col-md-4 d-flex align-items-end justify-content-end">
@@ -68,5 +71,21 @@
   </form>
 
 </div>
+
+<!-- jQuery (requerido por Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    $('.select-buscable').select2({
+      placeholder: 'Buscar por placa o cliente...',
+      allowClear: true,
+      width: '100%'
+    });
+  });
+</script>
 
 {% endblock %}
