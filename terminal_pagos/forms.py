@@ -9,6 +9,9 @@ class FacturaForm(forms.ModelForm):
     class Meta:
         model = Factura
         fields = ["contrato"]
+        widgets = {
+            "contrato": ContratoSelect()
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -20,7 +23,6 @@ class FacturaForm(forms.ModelForm):
         self.fields["contrato"].label_from_instance = (
             lambda obj: f"{obj.vehiculo.placa} — {obj.cliente.nombre}"
         )
-
 
 
 class ItemFacturaForm(forms.ModelForm):
@@ -36,3 +38,19 @@ ItemFacturaFormSet = inlineformset_factory(
     extra=1,
     can_delete=True,
 )
+
+
+class ContratoSelect(forms.Select):
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(
+            name, value, label, selected, index, subindex=subindex, attrs=attrs
+        )
+
+        if value:
+            try:
+                contrato = Contrato.objects.get(pk=value)
+                option["attrs"]["data-tarifa"] = contrato.tarifa
+            except Contrato.DoesNotExist:
+                pass
+
+        return option
