@@ -2,6 +2,18 @@ from django.shortcuts import render, redirect
 from .models import Factura
 from .forms import FacturaForm, ItemFacturaFormSet
 
+def nueva_transaccion(request):
+    factura_form = FacturaForm()
+    item_formset = ItemFacturaFormSet()
+
+    context = {
+        "factura_form": factura_form,
+        "item_formset": item_formset,
+    }
+
+    return render(request, "terminal_pagos/terminal_pagos.html", context)
+
+
 
 def crear_factura(request):
     if request.method == "POST":
@@ -27,3 +39,4 @@ def crear_factura(request):
     }
 
     return render(request, "terminal_pagos/crear_factura.html", context)
+
