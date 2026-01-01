@@ -49,7 +49,7 @@
 
         <div class="col-md-4">
           <label class="form-label">Descripción</label>
-          {{ form.descripcion|add_class:"form-control descripcion-item" }}
+          {{ form.descripcion|add_class:"form-select descripcion-item" }}
         </div>
 
         <div class="col-md-2">
@@ -74,16 +74,14 @@
 </div>
 
 <!-- ========================= -->
-<!-- jQuery -->
+<!-- JS -->
 <!-- ========================= -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- ========================= -->
-<!-- Select2 JS -->
-<!-- ========================= -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
+  const productosAlmacen = {{ productos_json|safe }};
+
   $(document).ready(function () {
     $('.select-buscable').select2({
       placeholder: 'Buscar por placa o cliente...',
@@ -93,9 +91,8 @@
 
     inicializarItems();
 
-    // Recalcular si cambia el contrato
     $('select[name="contrato"]').on('change', function () {
-      inicializarItems();
+      recalcularTodos();
     });
   });
 
@@ -112,30 +109,54 @@
       const tipo = row.querySelector('.tipo-item');
       const descripcion = row.querySelector('.descripcion-item');
       const cantidad = row.querySelector('.cantidad-item');
-      const valorUnitario = row.querySelector('.valor-unitario-item');
+      const valor = row.querySelector('.valor-unitario-item');
 
-      if (!tipo || !cantidad || !valorUnitario) return;
+      if (!tipo || !descripcion || !cantidad || !valor) return;
 
-      // Descripción siempre bloqueada
-      descripcion.readOnly = true;
+      const aplicarLogica = () => {
+        descripcion.innerHTML = '';
 
-      const recalcular = () => {
-        if (tipo.value !== 'tarifa') return;
+        if (tipo.value === 'tarifa') {
+          descripcion.innerHTML =
+            `<option value="tarifa">Pago de tarifa</option>`;
+          descripcion.disabled = true;
 
-        const tarifa = getTarifaContrato();
-        const cant = parseFloat(cantidad.value || 0);
+          const tarifa = getTarifaContrato();
+          const cant = parseFloat(cantidad.value || 0);
+          valor.value = (tarifa * cant).toFixed(2);
+        }
 
-        valorUnitario.value = (tarifa * cant).toFixed(2);
-        descripcion.value = 'Pago de tarifa';
+        else if (tipo.value === 'almacen') {
+          descripcion.disabled = false;
+          descripcion.innerHTML =
+            `<option value="">Seleccione producto</option>`;
+
+          productosAlmacen.forEach(p => {
+            descripcion.innerHTML +=
+              `<option value="${p.id}">${p.nombre}</option>`;
+          });
+
+          valor.value = '';
+        }
+
+        else {
+          descripcion.disabled = false;
+          descripcion.innerHTML =
+            `<option value="">—</option>`;
+          valor.value = '';
+        }
       };
 
-      // Eventos clave
-      tipo.addEventListener('change', recalcular);
-      cantidad.addEventListener('input', recalcular);
-      cantidad.addEventListener('change', recalcular);
+      tipo.addEventListener('change', aplicarLogica);
+      cantidad.addEventListener('input', aplicarLogica);
+    });
+  }
+
+  function recalcularTodos() {
+    document.querySelectorAll('.item-row .tipo-item').forEach(t => {
+      t.dispatchEvent(new Event('change'));
     });
   }
 </script>
-
 
 {% endblock %}

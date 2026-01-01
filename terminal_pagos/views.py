@@ -1,17 +1,21 @@
 from django.shortcuts import render, redirect
 from .models import Factura
 from .forms import FacturaForm, ItemFacturaFormSet
+from almacen.models import Producto
+
 
 def nueva_transaccion(request):
+    productos = Producto.objects.all().values("id", "nombre")
+
     factura_form = FacturaForm()
     item_formset = ItemFacturaFormSet()
 
-    context = {
+    return render(request, "terminal_pagos/nueva_transaccion.html", {
         "factura_form": factura_form,
         "item_formset": item_formset,
-    }
+        "productos_json": list(productos),
+    })
 
-    return render(request, "terminal_pagos/terminal_pagos.html", context)
 
 def crear_factura(request):
     if request.method == "POST":

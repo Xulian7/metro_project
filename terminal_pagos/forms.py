@@ -41,6 +41,8 @@ class FacturaForm(forms.ModelForm):
 
 
 class ItemFacturaForm(forms.ModelForm):
+    descripcion = forms.ChoiceField(choices=[], required=True)
+    
     class Meta:
         model = ItemFactura
         exclude = ("factura", "subtotal")
