@@ -4,7 +4,9 @@
 
 {% block content %}
 
+<!-- ========================= -->
 <!-- Select2 CSS -->
+<!-- ========================= -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <div class="card p-4 shadow-sm">
@@ -23,14 +25,13 @@
     </div>
 
     <div class="col-md-4 d-flex align-items-end justify-content-end">
-      <button type="submit"
-              class="btn btn-primary btn-app-action w-100">
+      <button type="submit" class="btn btn-primary btn-app-action w-100">
         Guardar Factura
       </button>
     </div>
 
     <!-- ========================= -->
-    <!-- Ítems de la factura -->
+    <!-- Ítems -->
     <!-- ========================= -->
     <div class="col-12 mt-4">
       <h6 class="fw-bold mb-3">Ítems</h6>
@@ -39,26 +40,26 @@
     {{ item_formset.management_form }}
 
     {% for form in item_formset %}
-      <div class="row g-3 align-items-end border rounded p-3 mb-2">
+      <div class="row g-3 align-items-end border rounded p-3 mb-2 item-row">
 
         <div class="col-md-2">
           <label class="form-label">Tipo</label>
-          {{ form.tipo_item|add_class:"form-select" }}
+          {{ form.tipo_item|add_class:"form-select tipo-item" }}
         </div>
 
         <div class="col-md-4">
           <label class="form-label">Descripción</label>
-          {{ form.descripcion|add_class:"form-control" }}
+          {{ form.descripcion|add_class:"form-control descripcion-item" }}
         </div>
 
         <div class="col-md-2">
           <label class="form-label">Cantidad</label>
-          {{ form.cantidad|add_class:"form-control" }}
+          {{ form.cantidad|add_class:"form-control cantidad-item" }}
         </div>
 
         <div class="col-md-2">
           <label class="form-label">Valor Unitario</label>
-          {{ form.valor_unitario|add_class:"form-control" }}
+          {{ form.valor_unitario|add_class:"form-control valor-unitario-item" }}
         </div>
 
         <div class="col-md-2 text-end">
@@ -72,20 +73,78 @@
 
 </div>
 
-<!-- jQuery (requerido por Select2) -->
+<!-- ========================= -->
+<!-- jQuery -->
+<!-- ========================= -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<!-- ========================= -->
 <!-- Select2 JS -->
+<!-- ========================= -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
+  // =========================
+  // Select2 contrato
+  // =========================
   $(document).ready(function () {
     $('.select-buscable').select2({
       placeholder: 'Buscar por placa o cliente...',
       allowClear: true,
       width: '100%'
     });
+
+    inicializarItems();
   });
+
+  // =========================
+  // Obtener tarifa del contrato
+  // =========================
+  function getTarifaContrato() {
+    const contrato = document.querySelector('select[name="contrato"]');
+    if (!contrato) return 0;
+
+    const option = contrato.options[contrato.selectedIndex];
+    return parseFloat(option?.dataset?.tarifa || 0);
+  }
+
+  // =========================
+  // Lógica de ítems
+  // =========================
+  function inicializarItems() {
+    document.querySelectorAll('.item-row').forEach(row => {
+      const tipo = row.querySelector('.tipo-item');
+      const descripcion = row.querySelector('.descripcion-item');
+      const cantidad = row.querySelector('.cantidad-item');
+      const valorUnitario = row.querySelector('.valor-unitario-item');
+
+      if (!tipo) return;
+
+      // Descripción bloqueada por defecto
+      descripcion.readOnly = true;
+
+      tipo.addEventListener('change', () => {
+        if (tipo.value === 'tarifa') {
+          descripcion.value = 'Pago de tarifa';
+          descripcion.readOnly = true;
+
+          recalcularTarifa(cantidad, valorUnitario);
+        }
+      });
+
+      cantidad.addEventListener('input', () => {
+        if (tipo.value === 'tarifa') {
+          recalcularTarifa(cantidad, valorUnitario);
+        }
+      });
+    });
+  }
+
+  function recalcularTarifa(cantidadInput, valorUnitarioInput) {
+    const tarifa = getTarifaContrato();
+    const cantidad = parseFloat(cantidadInput.value || 0);
+    valorUnitarioInput.value = tarifa * cantidad;
+  }
 </script>
 
 {% endblock %}
