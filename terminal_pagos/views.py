@@ -13,8 +13,6 @@ def nueva_transaccion(request):
 
     return render(request, "terminal_pagos/terminal_pagos.html", context)
 
-
-
 def crear_factura(request):
     if request.method == "POST":
         factura_form = FacturaForm(request.POST)
