@@ -84,9 +84,6 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-  // =========================
-  // Select2 contrato
-  // =========================
   $(document).ready(function () {
     $('.select-buscable').select2({
       placeholder: 'Buscar por placa o cliente...',
@@ -95,22 +92,21 @@
     });
 
     inicializarItems();
+
+    // Recalcular si cambia el contrato
+    $('select[name="contrato"]').on('change', function () {
+      inicializarItems();
+    });
   });
 
-  // =========================
-  // Obtener tarifa del contrato
-  // =========================
   function getTarifaContrato() {
     const contrato = document.querySelector('select[name="contrato"]');
-    if (!contrato) return 0;
+    if (!contrato || contrato.selectedIndex === -1) return 0;
 
     const option = contrato.options[contrato.selectedIndex];
-    return parseFloat(option?.dataset?.tarifa || 0);
+    return parseFloat(option.dataset.tarifa || 0);
   }
 
-  // =========================
-  // Lógica de ítems
-  // =========================
   function inicializarItems() {
     document.querySelectorAll('.item-row').forEach(row => {
       const tipo = row.querySelector('.tipo-item');
@@ -118,33 +114,28 @@
       const cantidad = row.querySelector('.cantidad-item');
       const valorUnitario = row.querySelector('.valor-unitario-item');
 
-      if (!tipo) return;
+      if (!tipo || !cantidad || !valorUnitario) return;
 
-      // Descripción bloqueada por defecto
+      // Descripción siempre bloqueada
       descripcion.readOnly = true;
 
-      tipo.addEventListener('change', () => {
-        if (tipo.value === 'tarifa') {
-          descripcion.value = 'Pago de tarifa';
-          descripcion.readOnly = true;
+      const recalcular = () => {
+        if (tipo.value !== 'tarifa') return;
 
-          recalcularTarifa(cantidad, valorUnitario);
-        }
-      });
+        const tarifa = getTarifaContrato();
+        const cant = parseFloat(cantidad.value || 0);
 
-      cantidad.addEventListener('input', () => {
-        if (tipo.value === 'tarifa') {
-          recalcularTarifa(cantidad, valorUnitario);
-        }
-      });
+        valorUnitario.value = (tarifa * cant).toFixed(2);
+        descripcion.value = 'Pago de tarifa';
+      };
+
+      // Eventos clave
+      tipo.addEventListener('change', recalcular);
+      cantidad.addEventListener('input', recalcular);
+      cantidad.addEventListener('change', recalcular);
     });
   }
-
-  function recalcularTarifa(cantidadInput, valorUnitarioInput) {
-    const tarifa = getTarifaContrato();
-    const cantidad = parseFloat(cantidadInput.value || 0);
-    valorUnitarioInput.value = tarifa * cantidad;
-  }
 </script>
+
 
 {% endblock %}
