@@ -1,0 +1,27 @@
+{% extends "accounts/home.html" %}
+
+{% block content %}
+<h1>Nueva Factura</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    <fieldset>
+        <legend>Datos del cliente</legend>
+        {{ factura_form.as_p }}
+    </fieldset>
+
+    <fieldset>
+        <legend>Ítems</legend>
+        {{ item_formset.management_form }}
+
+        {% for form in item_formset %}
+            <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+                {{ form.as_p }}
+            </div>
+        {% endfor %}
+    </fieldset>
+
+    <button type="submit">Guardar factura</button>
+</form>
+{% endblock %}
