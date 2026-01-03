@@ -179,6 +179,43 @@
 
       tipo.addEventListener('change', aplicarLogica);
       cantidad.addEventListener('input', aplicarLogica);
+
+      /* =========================
+      Precio por producto (almacén)
+      ========================= */
+
+      descripcion.addEventListener('change', function () {
+        if (tipo.value !== 'almacen') return;
+        if (!descripcion.value) return;
+
+        const producto = productosAlmacen.find(
+          p => String(p.id) === String(descripcion.value)
+        );
+        if (!producto) return;
+
+        const cant = parseFloat(cantidad.value || 0);
+        const precio = parseFloat(producto.precio_venta || 0);
+
+        valor.value = (precio * cant).toFixed(2);
+      });
+
+      cantidad.addEventListener('input', function () {
+        if (tipo.value !== 'almacen') return;
+        if (!descripcion.value) return;
+
+        const producto = productosAlmacen.find(
+          p => String(p.id) === String(descripcion.value)
+        );
+        if (!producto) return;
+
+        const cant = parseFloat(cantidad.value || 0);
+        const precio = parseFloat(producto.precio_venta || 0);
+
+        valor.value = (precio * cant).toFixed(2);
+      });
+
+
+
     });
   }
 
