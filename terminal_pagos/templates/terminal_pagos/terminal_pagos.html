@@ -49,7 +49,7 @@
 
         <div class="col-md-4">
           <label class="form-label">Descripción</label>
-          {{ form.descripcion|add_class:"form-select descripcion-item" }}
+          {{ form.descripcion|add_class:"form-select descripcion-item select-buscable" }}
         </div>
 
         <div class="col-md-2">
@@ -82,13 +82,16 @@
 <script>
   const productosAlmacen = {{ productos_json|safe }};
 
-  $(document).ready(function () {
-    $('.select-buscable').select2({
-      placeholder: 'Buscar por placa o cliente...',
+  function activarSelect2(selector = '.select-buscable', placeholder = 'Buscar...') {
+    $(selector).select2({
+      placeholder: placeholder,
       allowClear: true,
       width: '100%'
     });
+  }
 
+  $(document).ready(function () {
+    activarSelect2('.select-buscable', 'Buscar...');
     inicializarItems();
 
     $('select[name="contrato"]').on('change', function () {
@@ -114,11 +117,15 @@
       if (!tipo || !descripcion || !cantidad || !valor) return;
 
       const aplicarLogica = () => {
+        // destruir select2 antes de tocar el HTML
+        if ($(descripcion).hasClass("select2-hidden-accessible")) {
+          $(descripcion).select2('destroy');
+        }
+
         descripcion.innerHTML = '';
 
         if (tipo.value === 'tarifa') {
-          descripcion.innerHTML =
-            `<option value="tarifa">Pago de tarifa</option>`;
+          descripcion.innerHTML = `<option value="tarifa">Pago de tarifa</option>`;
           descripcion.disabled = true;
 
           const tarifa = getTarifaContrato();
@@ -128,21 +135,20 @@
 
         else if (tipo.value === 'almacen') {
           descripcion.disabled = false;
-          descripcion.innerHTML =
-            `<option value="">Seleccione producto</option>`;
+          descripcion.innerHTML = `<option value="">Seleccione producto</option>`;
 
           productosAlmacen.forEach(p => {
-            descripcion.innerHTML +=
-              `<option value="${p.id}">${p.nombre}</option>`;
+            descripcion.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
           });
 
+          activarSelect2(descripcion, 'Buscar producto...');
           valor.value = '';
         }
 
         else {
           descripcion.disabled = false;
-          descripcion.innerHTML =
-            `<option value="">—</option>`;
+          descripcion.innerHTML = `<option value="">—</option>`;
+          activarSelect2(descripcion, 'Buscar...');
           valor.value = '';
         }
       };
