@@ -82,24 +82,12 @@
 <script>
   const productosAlmacen = {{ productos_json|safe }};
 
-  /* =========================
-     Select2 helper
-  ========================= */
-  function activarSelect2(selector, placeholder = 'Buscar...') {
-    $(selector).select2({
-      placeholder: placeholder,
+  $(document).ready(function () {
+    $('.select-buscable').select2({
+      placeholder: 'Buscar por placa o cliente...',
       allowClear: true,
       width: '100%'
     });
-  }
-
-  /* =========================
-     Ready
-  ========================= */
-  $(document).ready(function () {
-
-    // Select2 inicial (Contrato y cualquier select-buscable inicial)
-    activarSelect2('.select-buscable', 'Buscar por placa o cliente...');
 
     inicializarItems();
 
@@ -108,9 +96,6 @@
     });
   });
 
-  /* =========================
-     Helpers
-  ========================= */
   function getTarifaContrato() {
     const contrato = document.querySelector('select[name="contrato"]');
     if (!contrato || contrato.selectedIndex === -1) return 0;
@@ -119,9 +104,6 @@
     return parseFloat(option.dataset.tarifa || 0);
   }
 
-  /* =========================
-     Ítems
-  ========================= */
   function inicializarItems() {
     document.querySelectorAll('.item-row').forEach(row => {
       const tipo = row.querySelector('.tipo-item');
@@ -132,15 +114,8 @@
       if (!tipo || !descripcion || !cantidad || !valor) return;
 
       const aplicarLogica = () => {
-
-        // 🔥 destruir Select2 si existe antes de tocar el HTML
-        if ($(descripcion).hasClass('select2-hidden-accessible')) {
-          $(descripcion).select2('destroy');
-        }
-
         descripcion.innerHTML = '';
 
-        /* ===== TARIFA ===== */
         if (tipo.value === 'tarifa') {
           descripcion.innerHTML =
             `<option value="tarifa">Pago de tarifa</option>`;
@@ -151,7 +126,6 @@
           valor.value = (tarifa * cant).toFixed(2);
         }
 
-        /* ===== ALMACÉN ===== */
         else if (tipo.value === 'almacen') {
           descripcion.disabled = false;
           descripcion.innerHTML =
@@ -162,80 +136,27 @@
               `<option value="${p.id}">${p.nombre}</option>`;
           });
 
-          activarSelect2(descripcion, 'Buscar producto...');
           valor.value = '';
         }
 
-        /* ===== OTRO ===== */
         else {
           descripcion.disabled = false;
           descripcion.innerHTML =
             `<option value="">—</option>`;
-
-          activarSelect2(descripcion, 'Buscar...');
           valor.value = '';
         }
       };
 
-      /* =========================
-         Eventos base
-      ========================= */
       tipo.addEventListener('change', aplicarLogica);
-
-      cantidad.addEventListener('input', function () {
-        if (tipo.value === 'almacen' && descripcion.value) return;
-        aplicarLogica();
-      });
-
-      /* =========================
-         Precio por producto (almacén)
-      ========================= */
-      descripcion.addEventListener('change', function () {
-        if (tipo.value !== 'almacen') return;
-        if (!descripcion.value) return;
-
-        const producto = productosAlmacen.find(
-          p => String(p.id) === String(descripcion.value)
-        );
-        if (!producto) return;
-
-        const cant = parseFloat(cantidad.value || 0);
-        const precio = parseFloat(producto.precio_venta || 0);
-
-        valor.value = (precio * cant).toFixed(2);
-      });
-
-      cantidad.addEventListener('input', function () {
-        if (tipo.value !== 'almacen') return;
-        if (!descripcion.value) return;
-
-        const producto = productosAlmacen.find(
-          p => String(p.id) === String(descripcion.value)
-        );
-        if (!producto) return;
-
-        const cant = parseFloat(cantidad.value || 0);
-        const precio = parseFloat(producto.precio_venta || 0);
-
-        valor.value = (precio * cant).toFixed(2);
-      });
-
-      /* =========================
-         🔥 Inicialización correcta
-      ========================= */
-      aplicarLogica();
+      cantidad.addEventListener('input', aplicarLogica);
     });
   }
 
-  /* =========================
-     Recalcular
-  ========================= */
   function recalcularTodos() {
     document.querySelectorAll('.item-row .tipo-item').forEach(t => {
       t.dispatchEvent(new Event('change'));
     });
   }
 </script>
-
 
 {% endblock %}
