@@ -177,17 +177,19 @@
         }
       };
 
+      /* =========================
+         Eventos base
+      ========================= */
       tipo.addEventListener('change', aplicarLogica);
+
       cantidad.addEventListener('input', function () {
         if (tipo.value === 'almacen' && descripcion.value) return;
         aplicarLogica();
       });
 
-
       /* =========================
-      Precio por producto (almacén)
+         Precio por producto (almacén)
       ========================= */
-
       descripcion.addEventListener('change', function () {
         if (tipo.value !== 'almacen') return;
         if (!descripcion.value) return;
@@ -218,8 +220,10 @@
         valor.value = (precio * cant).toFixed(2);
       });
 
-
-
+      /* =========================
+         🔥 Inicialización correcta
+      ========================= */
+      aplicarLogica();
     });
   }
 
