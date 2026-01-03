@@ -178,7 +178,11 @@
       };
 
       tipo.addEventListener('change', aplicarLogica);
-      cantidad.addEventListener('input', aplicarLogica);
+      cantidad.addEventListener('input', function () {
+        if (tipo.value === 'almacen' && descripcion.value) return;
+        aplicarLogica();
+      });
+
 
       /* =========================
       Precio por producto (almacén)
