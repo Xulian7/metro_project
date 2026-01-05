@@ -211,7 +211,7 @@
     else if (tipo.value === 'almacen' || tipo.value === 'servicio_taller') {
       const selected = descripcion.options[descripcion.selectedIndex];
       if (selected) {
-        const precio = parseFloat(selected.dataset.precio || 0);
+        const precio = parseFloat(selected.dataset.valor || 0);
         total = precio * cant;
       }
     }
