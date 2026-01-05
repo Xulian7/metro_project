@@ -1,6 +1,4 @@
 from django.db import models
-
-
 from arrendamientos.models import Contrato
 
 class Factura(models.Model):
