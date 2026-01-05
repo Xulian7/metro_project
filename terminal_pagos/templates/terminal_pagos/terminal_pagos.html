@@ -158,7 +158,7 @@
 
       productosAlmacen.forEach(p => {
         descripcion.innerHTML += `
-          <option value="${p.id}" data-precio="${p.precio_venta}">
+          <option value="${p.id}" data-valor="${p.precio_venta}">
             ${p.nombre}
           </option>`;
       });
@@ -169,8 +169,8 @@
 
       serviciosTaller.forEach(s => {
         descripcion.innerHTML += `
-          <option value="${s.id}" data-precio="${s.precio}">
-            ${s.nombre}
+          <option value="${s.id}" data-valor="${s.valor}">
+            ${s.nombre_servicio}
           </option>`;
       });
     }
@@ -210,7 +210,6 @@
 
     else if (tipo.value === 'almacen' || tipo.value === 'servicio_taller') {
       const selected = descripcion.options[descripcion.selectedIndex];
-
       if (selected) {
         const precio = parseFloat(selected.dataset.precio || 0);
         total = precio * cant;
