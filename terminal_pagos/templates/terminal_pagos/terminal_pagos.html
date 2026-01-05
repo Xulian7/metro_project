@@ -83,18 +83,30 @@
   const productosAlmacen = {{ productos_json|safe }};
 
   $(document).ready(function () {
+    // Contrato con buscador
     $('.select-buscable').select2({
       placeholder: 'Buscar por placa o cliente...',
       allowClear: true,
       width: '100%'
     });
 
+    // Inicializar descripción con buscador
+    $('.descripcion-item').select2({
+      placeholder: 'Buscar producto...',
+      allowClear: true,
+      width: '100%'
+    });
+
+    // Lógica de ítems
     inicializarItems();
 
+    // Recalcular tarifas al cambiar contrato
     $('select[name="contrato"]').on('change', function () {
       recalcularTodos();
     });
+
   });
+
 
   function getTarifaContrato() {
     const contrato = document.querySelector('select[name="contrato"]');
@@ -114,11 +126,15 @@
       if (!tipo || !descripcion || !cantidad || !valor) return;
 
       const aplicarLogica = () => {
+        // destruir select2 si existe
+        if ($(descripcion).hasClass("select2-hidden-accessible")) {
+          $(descripcion).select2('destroy');
+        }
+
         descripcion.innerHTML = '';
 
         if (tipo.value === 'tarifa') {
-          descripcion.innerHTML =
-            `<option value="tarifa">Pago de tarifa</option>`;
+          descripcion.innerHTML = `<option value="tarifa">Pago de tarifa</option>`;
           descripcion.disabled = true;
 
           const tarifa = getTarifaContrato();
@@ -128,8 +144,7 @@
 
         else if (tipo.value === 'almacen') {
           descripcion.disabled = false;
-          descripcion.innerHTML =
-            `<option value="">Seleccione producto</option>`;
+          descripcion.innerHTML = `<option value="">Seleccione producto</option>`;
 
           productosAlmacen.forEach(p => {
             descripcion.innerHTML +=
@@ -141,11 +156,20 @@
 
         else {
           descripcion.disabled = false;
-          descripcion.innerHTML =
-            `<option value="">—</option>`;
+          descripcion.innerHTML = `<option value="">—</option>`;
           valor.value = '';
         }
+
+        // volver a activar select2
+        if (!descripcion.disabled) {
+          $(descripcion).select2({
+            placeholder: 'Buscar producto...',
+            allowClear: true,
+            width: '100%'
+          });
+        }
       };
+
 
       tipo.addEventListener('change', aplicarLogica);
       cantidad.addEventListener('input', aplicarLogica);
