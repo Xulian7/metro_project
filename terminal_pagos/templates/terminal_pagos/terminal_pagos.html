@@ -84,11 +84,16 @@
 <!-- JSON seguro para JS -->
 <!-- ========================= -->
 {{ productos_json|json_script:"productos-almacen" }}
+{{ servicios_json|json_script:"servicios-taller" }}
 
 <script>
 
   const productosAlmacen = JSON.parse(
     document.getElementById('productos-almacen').textContent
+  );
+
+  const serviciosTaller = JSON.parse(
+    document.getElementById('servicios-taller').textContent
   );
 
   $(document).ready(function () {
@@ -141,6 +146,7 @@
     }
 
     descripcion.innerHTML = '';
+    descripcion.disabled = false;
 
     if (tipo.value === 'tarifa') {
       descripcion.innerHTML = `<option value="tarifa">Pago de tarifa</option>`;
@@ -148,31 +154,40 @@
     }
 
     else if (tipo.value === 'almacen') {
-      descripcion.disabled = false;
       descripcion.innerHTML = `<option value="">Seleccione producto</option>`;
 
       productosAlmacen.forEach(p => {
-        descripcion.innerHTML +=
-          `<option value="${p.id}" data-precio="${p.precio_venta}">
+        descripcion.innerHTML += `
+          <option value="${p.id}" data-precio="${p.precio_venta}">
             ${p.nombre}
           </option>`;
       });
+    }
 
+    else if (tipo.value === 'servicio_taller') {
+      descripcion.innerHTML = `<option value="">Seleccione servicio</option>`;
+
+      serviciosTaller.forEach(s => {
+        descripcion.innerHTML += `
+          <option value="${s.id}" data-precio="${s.precio}">
+            ${s.nombre}
+          </option>`;
+      });
     }
 
     else {
-      descripcion.disabled = false;
       descripcion.innerHTML = `<option value="">—</option>`;
     }
 
     if (!descripcion.disabled) {
       $(descripcion).select2({
-        placeholder: 'Buscar producto...',
+        placeholder: 'Buscar…',
         allowClear: true,
         width: '100%'
       });
     }
   }
+
 
   // =========================
   // Recalcular valores
@@ -183,19 +198,26 @@
     const cantidad = row.querySelector('.cantidad-item');
     const valor = row.querySelector('.valor-unitario-item');
 
-    if (!tipo || !cantidad || !valor) return;
+    if (!tipo || !descripcion || !cantidad || !valor) return;
 
     const cant = parseFloat(cantidad.value || 0);
+    let total = 0;
 
     if (tipo.value === 'tarifa') {
       const tarifa = getTarifaContrato();
-      valor.value = (tarifa * cant).toFixed(2);
+      total = tarifa * cant;
     }
 
-    else if (tipo.value === 'almacen') {
-      const precio = getPrecioProducto(descripcion);
-      valor.value = (precio * cant).toFixed(2);
+    else if (tipo.value === 'almacen' || tipo.value === 'servicio_taller') {
+      const selected = descripcion.options[descripcion.selectedIndex];
+
+      if (selected) {
+        const precio = parseFloat(selected.dataset.precio || 0);
+        total = precio * cant;
+      }
     }
+
+    valor.value = total ? total.toFixed(2) : '';
   }
 
 
