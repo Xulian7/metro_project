@@ -5,7 +5,7 @@ from almacen.models import Producto
 
 
 def nueva_transaccion(request):
-    productos = Producto.objects.values("id", "nombre", "precio_venta")
+    productos = Producto.objects.all().values("id", "nombre", "precio_venta")
 
     factura_form = FacturaForm()
     item_formset = ItemFacturaFormSet()
