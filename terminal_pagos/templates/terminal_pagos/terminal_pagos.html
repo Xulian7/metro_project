@@ -131,8 +131,6 @@
           $(descripcion).select2('destroy');
         }
 
-        descripcion.innerHTML = '';
-
         if (tipo.value === 'tarifa') {
           descripcion.innerHTML = `<option value="tarifa">Pago de tarifa</option>`;
           descripcion.disabled = true;
@@ -143,13 +141,16 @@
         }
 
         else if (tipo.value === 'almacen') {
-          descripcion.disabled = false;
-          descripcion.innerHTML = `<option value="">Seleccione producto</option>`;
+          // SOLO construir si está vacío
+          if (!descripcion.options.length) {
+            descripcion.disabled = false;
+            descripcion.innerHTML = `<option value="">Seleccione producto</option>`;
 
-          productosAlmacen.forEach(p => {
-            descripcion.innerHTML +=
-              `<option value="${p.id}">${p.nombre}</option>`;
-          });
+            productosAlmacen.forEach(p => {
+              descripcion.innerHTML +=
+                `<option value="${p.id}">${p.nombre}</option>`;
+            });
+          }
 
           valor.value = '';
         }
@@ -160,7 +161,6 @@
           valor.value = '';
         }
 
-        // volver a activar select2
         if (!descripcion.disabled) {
           $(descripcion).select2({
             placeholder: 'Buscar producto...',
@@ -172,7 +172,11 @@
 
 
       tipo.addEventListener('change', aplicarLogica);
-      cantidad.addEventListener('input', aplicarLogica);
+      cantidad.addEventListener('input', () => {
+        if (tipo.value === 'tarifa') {
+          aplicarLogica();
+        }
+      });
     });
   }
 
