@@ -2,10 +2,13 @@ from django.shortcuts import render, redirect
 from .models import Factura
 from .forms import FacturaForm, ItemFacturaFormSet
 from almacen.models import Producto
+from taller.models import Servicio
 
 
 def nueva_transaccion(request):
     productos = Producto.objects.values("id", "nombre", "precio_venta")
+    servicios = Servicio.objects.values("id", "nombre_servicio", "valor")
+    
 
     factura_form = FacturaForm()
     item_formset = ItemFacturaFormSet()
@@ -14,6 +17,7 @@ def nueva_transaccion(request):
         "factura_form": factura_form,
         "item_formset": item_formset,
         "productos_json": list(productos),
+        "servicios_json": list(servicios),
     })
 
 
