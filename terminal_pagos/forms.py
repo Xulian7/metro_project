@@ -1,59 +1,78 @@
 from django import forms
 from django.forms import inlineformset_factory
-from .models import Factura, ItemFactura
-from arrendamientos.models import Contrato
-
-class ContratoSelect(forms.Select):
-    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
-        option = super().create_option(
-            name, value, label, selected, index, subindex=subindex, attrs=attrs
-        )
-
-        if value and hasattr(value, "value"):
-            try:
-                contrato = Contrato.objects.get(pk=value.value)
-                option["attrs"]["data-tarifa"] = contrato.tarifa
-            except Contrato.DoesNotExist:
-                pass
-
-        return option
+from .models import Factura, ItemFactura, PagoFactura
 
 
-
+# =========================
+# FACTURA
+# =========================
 class FacturaForm(forms.ModelForm):
     class Meta:
         model = Factura
-        fields = ["contrato"]
-        widgets = {
-            "contrato": ContratoSelect()
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields["contrato"].queryset = Contrato.objects.select_related(
-            "vehiculo", "cliente"
-        )
-
-        self.fields["contrato"].label_from_instance = (
-            lambda obj: f"{obj.vehiculo.placa} — {obj.cliente.nombre}"
+        fields = (
+            "contrato",
+            "estado",
         )
 
 
+# =========================
+# ÍTEMS DE FACTURA
+# =========================
 class ItemFacturaForm(forms.ModelForm):
-    descripcion = forms.ChoiceField(choices=[], required=True)
-    
     class Meta:
         model = ItemFactura
-        exclude = ("factura", "subtotal")
+        fields = (
+            "tipo_item",
+            "descripcion",
+            "cantidad",
+            "valor_unitario",
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        cantidad = cleaned_data.get("cantidad")
+        valor = cleaned_data.get("valor_unitario")
+
+        if cantidad is None or cantidad <= 0:
+            raise forms.ValidationError(
+                "La cantidad debe ser mayor que cero."
+            )
+
+        if valor is None or valor <= 0:
+            raise forms.ValidationError(
+                "El valor unitario debe ser mayor que cero."
+            )
+
+        return cleaned_data
 
 
 ItemFacturaFormSet = inlineformset_factory(
     Factura,
     ItemFactura,
     form=ItemFacturaForm,
-    extra=1,
-    can_delete=True,
+    extra=1,        # al menos una línea visible
+    can_delete=True # permite borrar ítems
 )
 
 
+# =========================
+# PAGOS DE FACTURA (OPCIONAL)
+# =========================
+class PagoFacturaForm(forms.ModelForm):
+    class Meta:
+        model = PagoFactura
+        fields = (
+            "medio_pago",
+            "valor",
+            "referencia",
+        )
+
+
+PagoFacturaFormSet = inlineformset_factory(
+    Factura,
+    PagoFactura,
+    form=PagoFacturaForm,
+    extra=1,
+    can_delete=True
+)

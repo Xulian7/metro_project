@@ -39,39 +39,59 @@
 
     {{ item_formset.management_form }}
 
-    {% for form in item_formset %}
-      <div class="row g-3 align-items-end border rounded p-3 mb-2 item-row">
+    <div id="items-container">
+      {% for form in item_formset %}
+        <div class="row g-3 align-items-end border rounded p-3 mb-2 item-row">
 
-        <div class="col-md-2">
-          <label class="form-label">Tipo</label>
-          {{ form.tipo_item|add_class:"form-select tipo-item" }}
+          <div class="col-md-2">
+            <label class="form-label">Tipo</label>
+            {{ form.tipo_item|add_class:"form-select tipo-item" }}
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Descripción</label>
+            {{ form.descripcion|add_class:"form-select descripcion-item" }}
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Cantidad</label>
+            {{ form.cantidad|add_class:"form-control cantidad-item" }}
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Valor</label>
+            {{ form.valor_unitario|add_class:"form-control valor-unitario-item" }}
+          </div>
+
+          <div class="col-md-2 text-end">
+            {{ form.DELETE }}
+          </div>
+
         </div>
+      {% endfor %}
+    </div>
 
-        <div class="col-md-4">
-          <label class="form-label">Descripción</label>
-          {{ form.descripcion|add_class:"form-select descripcion-item" }}
-        </div>
-
-        <div class="col-md-2">
-          <label class="form-label">Cantidad</label>
-          {{ form.cantidad|add_class:"form-control cantidad-item" }}
-        </div>
-
-        <div class="col-md-2">
-          <label class="form-label">Valor</label>
-          {{ form.valor_unitario|add_class:"form-control valor-unitario-item" }}
-        </div>
-
-        <div class="col-md-2 text-end">
-          {{ form.DELETE }}
-        </div>
-
-      </div>
-    {% endfor %}
+    <!-- ========================= -->
+    <!-- Botón agregar ítem -->
+    <!-- ========================= -->
+    <div class="col-12 text-end mt-2">
+      <button type="button" class="btn btn-outline-secondary" id="add-item">
+        + Agregar ítem
+      </button>
+    </div>
 
   </form>
-
 </div>
+
+<!-- ========================= -->
+<!-- Empty form (plantilla oculta) -->
+<!-- ========================= -->
+<div id="empty-form" class="d-none">
+  {{ item_formset.empty_form }}
+</div>
+
+
+
 
 <!-- ========================= -->
 <!-- JS -->
@@ -87,7 +107,28 @@
 {{ servicios_json|json_script:"servicios-taller" }}
 
 <script>
+  document.getElementById('add-item').addEventListener('click', () => {
+    const totalFormsInput = document.querySelector('#id_items-TOTAL_FORMS');
+    const totalForms = parseInt(totalFormsInput.value);
 
+    const emptyFormHtml = document.getElementById('empty-form').innerHTML
+      .replace(/__prefix__/g, totalForms);
+
+    const container = document.getElementById('items-container');
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = emptyFormHtml;
+
+    const newRow = tempDiv.querySelector('.item-row');
+    container.appendChild(newRow);
+
+    totalFormsInput.value = totalForms + 1;
+
+    // Re-inicializar lógica JS
+    inicializarItems();
+  });
+</script>
+
+<script>
   const productosAlmacen = JSON.parse(
     document.getElementById('productos-almacen').textContent
   );
