@@ -208,7 +208,7 @@
       total = tarifa * cant;
     }
 
-    else if (tipo.value === 'almacen' || tipo.value === 'servicio_taller') {
+    else if (tipo.value === 'almacen' || tipo.value === 'taller') {
       const selected = descripcion.options[descripcion.selectedIndex];
       if (selected) {
         const precio = parseFloat(selected.dataset.valor || 0);
