@@ -124,13 +124,6 @@
     return parseFloat(option.dataset.tarifa || 0);
   }
 
-  function getPrecioProducto(descripcionSelect) {
-  if (!descripcionSelect || descripcionSelect.selectedIndex === -1) return 0;
-
-  const option = descripcionSelect.options[descripcionSelect.selectedIndex];
-  return parseFloat(option.dataset.precio || 0);
-}
-
   // =========================
   // Descripción (select dinámico)
   // =========================
