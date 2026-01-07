@@ -244,12 +244,19 @@ function cargarDescripcion(row) {
   }
 
   if (!descripcion.disabled) {
-    $(descripcion).select2({
-      placeholder: 'Buscar…',
-      allowClear: true,
-      width: '100%'
-    });
+    $(descripcion)
+      .select2({
+        placeholder: 'Buscar…',
+        allowClear: true,
+        width: '100%'
+      })
+      .off('change.select2') // evitar duplicados
+      .on('change.select2', function () {
+        const row = this.closest('.item-row');
+        recalcularFila(row);
+      });
   }
+
 }
 
 /* =========================
@@ -318,6 +325,11 @@ function inicializarItems() {
     cargarDescripcion(row);
     recalcularFila(row);
   });
+}
+
+function inicializarItem(row) {
+  cargarDescripcion(row);
+  recalcularFila(row);
 }
 
 /* =========================
