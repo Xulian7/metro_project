@@ -304,19 +304,6 @@ $('#items-container')
   });
 
 
-/* =========================
-   SELECT2 EVENTS (CLAVE)
-========================= */
-$('#items-container').on(
-  'select2:select select2:clear',
-  '.descripcion-item',
-  function () {
-    const row = this.closest('.item-row');
-    recalcularFila(row);
-  }
-);
-
-
 
 /* =========================
    INICIALIZACIÓN
