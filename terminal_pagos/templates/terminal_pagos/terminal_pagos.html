@@ -115,37 +115,62 @@ function getTarifaContrato() {
   return parseFloat(contrato.options[contrato.selectedIndex].dataset.tarifa || 0);
 }
 
+// =========================
+// Preparamos los datos para filtrado
+// =========================
+const datosDescripcion = {
+  tarifa: [{id: 'tarifa', text: 'Pago de tarifa', valor: 0}],
+  almacen: productosAlmacen.map(p => ({id: p.id, text: p.nombre, valor: p.precio_venta})),
+  taller: serviciosTaller.map(s => ({id: s.id, text: s.nombre_servicio, valor: s.valor}))
+};
+
+// =========================
+// Cargar descripción sin destruir Select2
+// =========================
 function cargarDescripcion(row) {
   const tipo = row.querySelector('.tipo-item');
   const descripcion = row.querySelector('.descripcion-item');
   if (!tipo || !descripcion) return;
 
-  if ($(descripcion).hasClass('select2-hidden-accessible')) $(descripcion).select2('destroy');
+  const tipoValor = tipo.value;
+  const opciones = datosDescripcion[tipoValor] || [];
 
+  // Guardamos valor actual si es posible
+  const valorActual = descripcion.value;
+
+  // Limpieza del select (manteniendo select2)
   descripcion.innerHTML = '';
-  descripcion.disabled = false;
 
-  if (tipo.value === 'tarifa') {
-    descripcion.innerHTML = `<option value="tarifa">Pago de tarifa</option>`;
+  opciones.forEach(opt => {
+    const option = document.createElement('option');
+    option.value = opt.id;
+    option.textContent = opt.text;
+    option.dataset.valor = opt.valor;
+    descripcion.appendChild(option);
+  });
+
+  if (opciones.length === 1 && tipoValor === 'tarifa') {
     descripcion.disabled = true;
-  } else if (tipo.value === 'almacen') {
-    descripcion.innerHTML = `<option value="">Seleccione producto</option>`;
-    productosAlmacen.forEach(p => {
-      descripcion.innerHTML += `<option value="${p.id}" data-valor="${p.precio_venta}">${p.nombre}</option>`;
-    });
-  } else if (tipo.value === 'taller') {
-    descripcion.innerHTML = `<option value="">Seleccione servicio</option>`;
-    serviciosTaller.forEach(s => {
-      descripcion.innerHTML += `<option value="${s.id}" data-valor="${s.valor}">${s.nombre_servicio}</option>`;
-    });
   } else {
-    descripcion.innerHTML = `<option value="">—</option>`;
+    descripcion.disabled = false;
   }
 
-  if (!descripcion.disabled) {
-    $(descripcion).select2({ placeholder: 'Buscar…', allowClear: true, width: '100%' });
+  // Restaurar valor si existe en las opciones
+  if (Array.from(descripcion.options).some(o => o.value === valorActual)) {
+    descripcion.value = valorActual;
+  } else {
+    descripcion.value = '';
+  }
+
+  // Inicializar Select2 si no lo estaba
+  if (!$(descripcion).hasClass('select2-hidden-accessible')) {
+    $(descripcion).select2({placeholder: 'Buscar…', allowClear: true, width: '100%'});
+  } else {
+    // Actualizamos Select2 para reflejar cambios
+    $(descripcion).trigger('change.select2');
   }
 }
+
 
 function recalcularFila(row) {
   const tipo = row.querySelector('.tipo-item');
