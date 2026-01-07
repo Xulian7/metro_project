@@ -46,9 +46,7 @@
 
     {{ item_formset.management_form }}
 
-    {% for form in item_formset %}
-
-      <div id="empty-form" class="d-none">
+    <div id="empty-form" class="d-none">
         <div class="row g-3 align-items-end border rounded p-3 mb-2 item-row">
 
           <div class="col-md-2">
@@ -72,7 +70,9 @@
           </div>
 
         </div>
-      </div>
+    </div>
+
+    {% for form in item_formset %}
 
       <div class="row g-3 align-items-end border rounded p-3 mb-2 item-row">
 
