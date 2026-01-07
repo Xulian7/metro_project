@@ -149,178 +149,187 @@ document.getElementById('add-item').addEventListener('click', function () {
 
 
 <script>
+/* =========================
+   DATA
+========================= */
+const productosAlmacen = JSON.parse(
+  document.getElementById('productos-almacen').textContent
+);
 
-  const productosAlmacen = JSON.parse(
-    document.getElementById('productos-almacen').textContent
-  );
+const serviciosTaller = JSON.parse(
+  document.getElementById('servicios-taller').textContent
+);
 
-  const serviciosTaller = JSON.parse(
-    document.getElementById('servicios-taller').textContent
-  );
+/* =========================
+   READY
+========================= */
+$(document).ready(function () {
 
-  $(document).ready(function () {
-    // Contrato con buscador
-    $('.select-buscable').select2({
-      placeholder: 'Buscar por placa o cliente...',
+  // Select contrato
+  $('.select-buscable').select2({
+    placeholder: 'Buscar por placa o cliente...',
+    allowClear: true,
+    width: '100%'
+  });
+
+  // Estado inicial de ítems
+  inicializarItems();
+
+  // Cambio de contrato → recalcular tarifas
+  $('select[name="contrato"]').on('change', function () {
+    recalcularTodos();
+  });
+});
+
+/* =========================
+   UTILIDADES
+========================= */
+function getTarifaContrato() {
+  const contrato = document.querySelector('select[name="contrato"]');
+  if (!contrato || contrato.selectedIndex === -1) return 0;
+
+  const option = contrato.options[contrato.selectedIndex];
+  return parseFloat(option.dataset.tarifa || 0);
+}
+
+/* =========================
+   DESCRIPCIÓN DINÁMICA
+========================= */
+function cargarDescripcion(row) {
+  const tipo = row.querySelector('.tipo-item');
+  const descripcion = row.querySelector('.descripcion-item');
+
+  if (!tipo || !descripcion) return;
+
+  // destruir select2 si existe
+  if ($(descripcion).hasClass('select2-hidden-accessible')) {
+    $(descripcion).select2('destroy');
+  }
+
+  descripcion.innerHTML = '';
+  descripcion.disabled = false;
+
+  if (tipo.value === 'tarifa') {
+    descripcion.innerHTML =
+      `<option value="tarifa">Pago de tarifa</option>`;
+    descripcion.disabled = true;
+  }
+
+  else if (tipo.value === 'almacen') {
+    descripcion.innerHTML =
+      `<option value="">Seleccione producto</option>`;
+
+    productosAlmacen.forEach(p => {
+      descripcion.innerHTML += `
+        <option value="${p.id}" data-valor="${p.precio_venta}">
+          ${p.nombre}
+        </option>`;
+    });
+  }
+
+  else if (tipo.value === 'taller') {
+    descripcion.innerHTML =
+      `<option value="">Seleccione servicio</option>`;
+
+    serviciosTaller.forEach(s => {
+      descripcion.innerHTML += `
+        <option value="${s.id}" data-valor="${s.valor}">
+          ${s.nombre_servicio}
+        </option>`;
+    });
+  }
+
+  else {
+    descripcion.innerHTML = `<option value="">—</option>`;
+  }
+
+  if (!descripcion.disabled) {
+    $(descripcion).select2({
+      placeholder: 'Buscar…',
       allowClear: true,
       width: '100%'
     });
+  }
+}
 
-    // Inicializar ítems
-    inicializarItems();
+/* =========================
+   RECÁLCULO DE FILA
+========================= */
+function recalcularFila(row) {
+  const tipo = row.querySelector('.tipo-item');
+  const descripcion = row.querySelector('.descripcion-item');
+  const cantidad = row.querySelector('.cantidad-item');
+  const valor = row.querySelector('.valor-unitario-item');
 
-    // Recalcular tarifas al cambiar contrato
-    $('select[name="contrato"]').on('change', function () {
-      recalcularTodos();
-    });
-  });
+  if (!tipo || !descripcion || !cantidad || !valor) return;
 
-  // =========================
-  // Utilidades
-  // =========================
-  function getTarifaContrato() {
-    const contrato = document.querySelector('select[name="contrato"]');
-    if (!contrato || contrato.selectedIndex === -1) return 0;
+  const cant = parseFloat(cantidad.value || 0);
+  let total = 0;
 
-    const option = contrato.options[contrato.selectedIndex];
-    return parseFloat(option.dataset.tarifa || 0);
+  if (tipo.value === 'tarifa') {
+    total = getTarifaContrato() * cant;
   }
 
-  
-  // =========================
-  // Descripción (select dinámico)
-  // =========================
-  function cargarDescripcion(row) {
-    const tipo = row.querySelector('.tipo-item');
-    const descripcion = row.querySelector('.descripcion-item');
-
-    if (!tipo || !descripcion) return;
-
-    // destruir select2 si existe
-    if ($(descripcion).hasClass('select2-hidden-accessible')) {
-      $(descripcion).select2('destroy');
-    }
-
-    descripcion.innerHTML = '';
-    descripcion.disabled = false;
-
-    if (tipo.value === 'tarifa') {
-      descripcion.innerHTML = `<option value="tarifa">Pago de tarifa</option>`;
-      descripcion.disabled = true;
-    }
-
-    else if (tipo.value === 'almacen') {
-      descripcion.innerHTML = `<option value="">Seleccione producto</option>`;
-
-      productosAlmacen.forEach(p => {
-        descripcion.innerHTML += `
-          <option value="${p.id}" data-valor="${p.precio_venta}">
-            ${p.nombre}
-          </option>`;
-      });
-    }
-
-    else if (tipo.value === 'taller') {
-      descripcion.innerHTML = `<option value="">Seleccione servicio</option>`;
-
-      serviciosTaller.forEach(s => {
-        descripcion.innerHTML += `
-          <option value="${s.id}" data-valor="${s.valor}">
-            ${s.nombre_servicio}
-          </option>`;
-      });
-    }
-
-    else {
-      descripcion.innerHTML = `<option value="">—</option>`;
-    }
-
-    if (!descripcion.disabled) {
-      $(descripcion).select2({
-        placeholder: 'Buscar…',
-        allowClear: true,
-        width: '100%'
-      });
+  else if (tipo.value === 'almacen' || tipo.value === 'taller') {
+    const selected = descripcion.options[descripcion.selectedIndex];
+    if (selected) {
+      total = (parseFloat(selected.dataset.valor || 0)) * cant;
     }
   }
 
+  valor.value = total ? total.toFixed(2) : '';
+}
 
-  // =========================
-  // Recalcular valores
-  // =========================
-  function recalcularFila(row) {
-    const tipo = row.querySelector('.tipo-item');
-    const descripcion = row.querySelector('.descripcion-item');
-    const cantidad = row.querySelector('.cantidad-item');
-    const valor = row.querySelector('.valor-unitario-item');
+/* =========================
+   EVENT DELEGATION (CLAVE)
+========================= */
+const itemsContainer = document.getElementById('items-container');
 
-    if (!tipo || !descripcion || !cantidad || !valor) return;
+itemsContainer.addEventListener('change', function (e) {
 
-    const cant = parseFloat(cantidad.value || 0);
-    let total = 0;
+  const row = e.target.closest('.item-row');
+  if (!row) return;
 
-    if (tipo.value === 'tarifa') {
-      const tarifa = getTarifaContrato();
-      total = tarifa * cant;
-    }
-
-    else if (tipo.value === 'almacen' || tipo.value === 'taller') {
-      const selected = descripcion.options[descripcion.selectedIndex];
-      if (selected) {
-        const precio = parseFloat(selected.dataset.valor || 0);
-        total = precio * cant;
-      }
-    }
-
-    valor.value = total ? total.toFixed(2) : '';
-  }
-
-
-  // =========================
-  // Inicialización general
-  // =========================
-  function inicializarItems() {
-    document.querySelectorAll('.item-row').forEach(row => {
-      inicializarItem(row);
-    });
-  }
-
-
-
-  function inicializarItem(row) {
-    const tipo = row.querySelector('.tipo-item');
-    const cantidad = row.querySelector('.cantidad-item');
-    const descripcion = row.querySelector('.descripcion-item');
-
-    if (!tipo || !cantidad) return;
-
-    tipo.addEventListener('change', () => {
-      cargarDescripcion(row);
-      recalcularFila(row);
-    });
-
-    descripcion.addEventListener('change', () => {
-      recalcularFila(row);
-    });
-
-    cantidad.addEventListener('input', () => {
-      recalcularFila(row);
-    });
-
+  if (e.target.classList.contains('tipo-item')) {
     cargarDescripcion(row);
     recalcularFila(row);
   }
 
-
-  // =========================
-  // Recalcular todo
-  // =========================
-  function recalcularTodos() {
-    document.querySelectorAll('.item-row').forEach(row => {
-      recalcularFila(row);
-    });
+  if (e.target.classList.contains('descripcion-item')) {
+    recalcularFila(row);
   }
+});
+
+itemsContainer.addEventListener('input', function (e) {
+
+  if (!e.target.classList.contains('cantidad-item')) return;
+
+  const row = e.target.closest('.item-row');
+  if (!row) return;
+
+  recalcularFila(row);
+});
+
+/* =========================
+   INICIALIZACIÓN
+========================= */
+function inicializarItems() {
+  document.querySelectorAll('.item-row').forEach(row => {
+    cargarDescripcion(row);
+    recalcularFila(row);
+  });
+}
+
+/* =========================
+   RECÁLCULO GLOBAL
+========================= */
+function recalcularTodos() {
+  document.querySelectorAll('.item-row').forEach(row => {
+    recalcularFila(row);
+  });
+}
 </script>
+
 
 
 {% endblock %}
