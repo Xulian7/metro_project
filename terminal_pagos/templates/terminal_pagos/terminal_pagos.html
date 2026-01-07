@@ -122,19 +122,25 @@
 
 
 <script>
-  document.getElementById('add-item').addEventListener('click', function () {
-    const totalFormsInput = document.getElementById('id_item_set-TOTAL_FORMS');
-    const totalForms = parseInt(totalFormsInput.value);
+document.getElementById('add-item').addEventListener('click', function () {
 
-    const emptyForm = document.getElementById('empty-form').innerHTML;
-    const newFormHtml = emptyForm.replace(/__prefix__/g, totalForms);
+  const totalFormsInput = document.querySelector(
+    'input[name$="-TOTAL_FORMS"]'
+  );
+  const totalForms = parseInt(totalFormsInput.value);
 
-    const container = document.querySelector('.item-row').parentElement;
-    container.insertAdjacentHTML('beforeend', newFormHtml);
+  const emptyFormHtml = document
+    .getElementById('empty-form')
+    .innerHTML
+    .replace(/__prefix__/g, totalForms);
 
-    totalFormsInput.value = totalForms + 1;
-  });
+  const container = document.getElementById('items-container');
+  container.insertAdjacentHTML('beforeend', emptyFormHtml);
+
+  totalFormsInput.value = totalForms + 1;
+});
 </script>
+
 
 
 <script>
