@@ -102,6 +102,81 @@
       </div>
     </div>
 
+
+    <!-- ========================= -->
+    <!-- PAGOS -->
+    <!-- ========================= -->
+    <div class="col-12 mt-5">
+      <h6 class="fw-bold mb-2">Pagos</h6>
+    </div>
+
+    <div class="col-12">
+      <div class="row text-muted fw-semibold small border-bottom pb-2 mb-2">
+        <div class="col-md-4">Medio de pago</div>
+        <div class="col-md-4 text-end">Valor</div>
+        <div class="col-md-4 text-center">Acción</div>
+      </div>
+    </div>
+
+    <div class="col-12 d-flex justify-content-between align-items-center mb-2">
+      <span class="text-muted small">
+        Registra los pagos realizados
+      </span>
+      <button type="button" class="btn btn-outline-success btn-sm" id="add-pago">
+        + Agregar pago
+      </button>
+    </div>
+
+    <input type="hidden" name="pagos-TOTAL_FORMS" value="0" id="pagos-total-forms">
+
+    <!-- TEMPLATE PAGO -->
+    <div id="empty-pago" class="d-none">
+      <div class="row align-items-center border rounded-3 px-3 py-2 mb-2 pago-row bg-light">
+
+        <div class="col-md-4">
+          <select class="form-select form-select-sm pago-medio">
+            <option value="">Seleccione…</option>
+            <option value="efectivo">Efectivo</option>
+            <option value="tarjeta">Tarjeta</option>
+            <option value="nequi">Nequi</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <input type="number" step="0.01"
+                class="form-control form-control-sm pago-valor text-end"
+                placeholder="0.00">
+        </div>
+
+        <div class="col-md-4 text-center">
+          <button type="button" class="btn btn-outline-danger btn-sm remove-pago">
+            ✖
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="pagos-container" class="col-12"></div>
+
+    <!-- RESUMEN PAGOS -->
+    <div class="col-12 mt-3">
+      <div class="d-flex justify-content-end">
+        <div class="text-end">
+          <div class="d-flex justify-content-between gap-4">
+            <span class="text-muted">Total pagado:</span>
+            <strong id="total-pagado">$0</strong>
+          </div>
+          <div class="d-flex justify-content-between gap-4">
+            <span class="text-muted">Saldo pendiente:</span>
+            <strong id="saldo-pendiente">$0</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
   </form>
 </div>
 
@@ -212,5 +287,80 @@ function recalcularTodos() {
   document.querySelectorAll('.item-row').forEach(recalcularFila);
 }
 </script>
+
+<script>
+/* =========================
+   PAGOS
+========================= */
+
+document.getElementById('add-pago').addEventListener('click', () => {
+  const totalForms = document.getElementById('pagos-total-forms');
+  const index = parseInt(totalForms.value);
+
+  const html = document.getElementById('empty-pago').innerHTML
+    .replace(/__prefix__/g, index);
+
+  document.getElementById('pagos-container')
+    .insertAdjacentHTML('beforeend', html);
+
+  totalForms.value = index + 1;
+  recalcularPagos();
+});
+
+/* =========================
+   RECÁLCULOS
+========================= */
+
+function obtenerTotalFactura() {
+  const totalText = document.getElementById('total').innerText
+    .replace(/\./g, '')
+    .replace(',', '.');
+
+  return parseFloat(totalText) || 0;
+}
+
+function recalcularPagos() {
+  let pagado = 0;
+
+  document.querySelectorAll('.pago-valor').forEach(input => {
+    pagado += parseFloat(input.value || 0);
+  });
+
+  const totalFactura = obtenerTotalFactura();
+  const saldo = Math.max(totalFactura - pagado, 0);
+
+  document.getElementById('total-pagado')
+    .innerText = pagado.toLocaleString('es-CO');
+
+  document.getElementById('saldo-pendiente')
+    .innerText = saldo.toLocaleString('es-CO');
+
+  // 🔒 No permitir pagar de más
+  document.querySelectorAll('.pago-valor').forEach(input => {
+    const max = totalFactura - (pagado - parseFloat(input.value || 0));
+    input.max = max >= 0 ? max.toFixed(2) : 0;
+  });
+}
+
+/* =========================
+   EVENTOS
+========================= */
+
+document.getElementById('pagos-container')
+  .addEventListener('input', e => {
+    if (e.target.classList.contains('pago-valor')) {
+      recalcularPagos();
+    }
+  });
+
+document.getElementById('pagos-container')
+  .addEventListener('click', e => {
+    if (e.target.classList.contains('remove-pago')) {
+      e.target.closest('.pago-row').remove();
+      recalcularPagos();
+    }
+  });
+</script>
+
 
 {% endblock %}
