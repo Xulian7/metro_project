@@ -283,31 +283,26 @@ function recalcularFila(row) {
 }
 
 /* =========================
-   EVENT DELEGATION (CLAVE)
+   EVENTOS (DELEGACIÓN REAL)
 ========================= */
-const itemsContainer = document.getElementById('items-container');
+$('#items-container')
 
-itemsContainer.addEventListener('change', function (e) {
-
-  const row = e.target.closest('.item-row');
-  if (!row) return;
-
-  if (e.target.classList.contains('tipo-item')) {
+  .on('change', '.tipo-item', function () {
+    const row = this.closest('.item-row');
     cargarDescripcion(row);
     recalcularFila(row);
-  }
+  })
 
-});
+  .on('input', '.cantidad-item', function () {
+    const row = this.closest('.item-row');
+    recalcularFila(row);
+  })
 
-itemsContainer.addEventListener('input', function (e) {
+  .on('select2:select select2:clear', '.descripcion-item', function () {
+    const row = this.closest('.item-row');
+    recalcularFila(row);
+  });
 
-  if (!e.target.classList.contains('cantidad-item')) return;
-
-  const row = e.target.closest('.item-row');
-  if (!row) return;
-
-  recalcularFila(row);
-});
 
 /* =========================
    SELECT2 EVENTS (CLAVE)
