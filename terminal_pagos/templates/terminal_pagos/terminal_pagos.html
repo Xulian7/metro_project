@@ -37,6 +37,13 @@
       <h6 class="fw-bold mb-3">Ítems</h6>
     </div>
 
+    <div class="col-12 mb-2">
+      <button type="button" class="btn btn-outline-secondary" id="add-item">
+        + Agregar ítem
+      </button>
+    </div>
+
+
     {{ item_formset.management_form }}
 
     {% for form in item_formset %}
