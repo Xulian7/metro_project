@@ -7,20 +7,13 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <style>
-  /* Animación suave al agregar ítems */
   .item-row {
     animation: fadeInUp 0.25s ease-out;
   }
 
   @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(6px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 </style>
 
@@ -30,9 +23,7 @@
   <form method="post" class="row g-3">
     {% csrf_token %}
 
-    <!-- ========================= -->
     <!-- CONTRATO -->
-    <!-- ========================= -->
     <div class="col-md-8">
       <label class="form-label">Contrato (Placa - Cliente)</label>
       {{ factura_form.contrato|add_class:"form-select select-buscable" }}
@@ -44,14 +35,11 @@
       </button>
     </div>
 
-    <!-- ========================= -->
     <!-- ÍTEMS -->
-    <!-- ========================= -->
     <div class="col-12 mt-4">
       <h6 class="fw-bold mb-2">Ítems</h6>
     </div>
 
-    <!-- Encabezado tipo tabla -->
     <div class="col-12">
       <div class="row text-muted fw-semibold small border-bottom pb-2 mb-2">
         <div class="col-md-2">Tipo</div>
@@ -62,11 +50,8 @@
       </div>
     </div>
 
-    <!-- Botón agregar -->
     <div class="col-12 d-flex justify-content-between align-items-center mb-2">
-      <span class="text-muted small">
-        Agrega productos, servicios o tarifas
-      </span>
+      <span class="text-muted small">Agrega productos, servicios o tarifas</span>
       <button type="button" class="btn btn-outline-primary btn-sm" id="add-item">
         + Agregar ítem
       </button>
@@ -74,11 +59,10 @@
 
     {{ item_formset.management_form }}
 
-    <!-- ========================= -->
-    <!-- TEMPLATE DE ITEM -->
-    <!-- ========================= -->
+    <!-- EMPTY FORM -->
     <div id="empty-form" class="d-none">
-      <div class="row align-items-center border rounded-3 px-3 py-2 mb-2 item-row bg-light">
+      <div class="row align-items-center border rounded-3 px-3 py-2 mb-2 item-row bg-light"
+           data-subtotal="0">
 
         <div class="col-md-2">
           {{ item_formset.empty_form.tipo_item|add_class:"form-select form-select-sm tipo-item" }}
@@ -97,35 +81,32 @@
         </div>
 
         <div class="col-md-2 text-center">
-          {{ item_formset.empty_form.DELETE }}
+          <button type="button" class="btn btn-outline-danger btn-sm remove-item">✖</button>
         </div>
 
       </div>
     </div>
 
-    <!-- Ítems dinámicos -->
     <div id="items-container" class="col-12"></div>
 
-    <!-- ========================= -->
     <!-- TOTALES -->
-    <!-- ========================= -->
     <div class="col-12 mt-4">
       <div class="border-top pt-3 d-flex justify-content-end">
         <div class="text-end">
 
           <div class="d-flex justify-content-between gap-4">
             <span class="text-muted">Subtotal:</span>
-            <strong id="subtotal">$0.00</strong>
+            <strong id="subtotal">$0</strong>
           </div>
 
           <div class="d-flex justify-content-between gap-4">
-            <span class="text-muted">Impuestos:</span>
-            <strong id="impuestos">$0.00</strong>
+            <span class="text-muted">Impuestos (19%):</span>
+            <strong id="impuestos">$0</strong>
           </div>
 
           <div class="d-flex justify-content-between gap-4 fs-5 mt-1">
             <span>Total:</span>
-            <strong id="total">$0.00</strong>
+            <strong id="total">$0</strong>
           </div>
 
         </div>
@@ -134,7 +115,6 @@
 
   </form>
 </div>
-
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -145,123 +125,91 @@
 <script>
 const productosAlmacen = JSON.parse(document.getElementById('productos-almacen').textContent);
 const serviciosTaller = JSON.parse(document.getElementById('servicios-taller').textContent);
+const IVA = 0.19;
 
-// Inicializa select contrato
-$(document).ready(function () {
-  $('.select-buscable').select2({
-    placeholder: 'Buscar por placa o cliente...',
-    allowClear: true,
-    width: '100%'
-  });
-
-  // Recalcular tarifas si cambia contrato
+/* ================= INIT ================= */
+$(document).ready(() => {
+  $('.select-buscable').select2({ width:'100%', placeholder:'Buscar…', allowClear:true });
   $('select[name="contrato"]').on('change', recalcularTodos);
 });
 
-// Agregar item dinámico
-document.getElementById('add-item').addEventListener('click', function () {
-  const totalFormsInput = document.querySelector('input[name$="-TOTAL_FORMS"]');
-  const totalForms = parseInt(totalFormsInput.value);
+/* ================= ADD ITEM ================= */
+document.getElementById('add-item').addEventListener('click', () => {
+  const totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');
+  const index = parseInt(totalForms.value);
 
-  const emptyFormHtml = document.getElementById('empty-form')
-    .innerHTML
-    .replace(/__prefix__/g, totalForms);
+  const html = document.getElementById('empty-form').innerHTML
+    .replace(/__prefix__/g, index);
 
   const container = document.getElementById('items-container');
-  container.insertAdjacentHTML('beforeend', emptyFormHtml);
-  totalFormsInput.value = totalForms + 1;
+  container.insertAdjacentHTML('beforeend', html);
+  totalForms.value = index + 1;
 
-  // Inicializar el nuevo row
-  const newRow = container.querySelectorAll('.item-row');
-  setTimeout(() => inicializarItem(newRow[newRow.length - 1]), 0);
+  inicializarItem(container.lastElementChild);
 });
 
-// =========================
-// Funciones de utilidad
-// =========================
-function getTarifaContrato() {
-  const contrato = document.querySelector('select[name="contrato"]');
-  if (!contrato || contrato.selectedIndex === -1) return 0;
-  return parseFloat(contrato.options[contrato.selectedIndex].dataset.tarifa || 0);
-}
-
-// =========================
-// Preparamos los datos para filtrado
-// =========================
+/* ================= DATA ================= */
 const datosDescripcion = {
-  tarifa: [{id: 'tarifa', text: 'Pago de tarifa', valor: 0}],
-  almacen: productosAlmacen.map(p => ({id: p.id, text: p.nombre, valor: p.precio_venta})),
-  taller: serviciosTaller.map(s => ({id: s.id, text: s.nombre_servicio, valor: s.valor}))
+  tarifa: [{id:'tarifa', text:'Pago de tarifa', valor:0}],
+  almacen: productosAlmacen.map(p => ({id:p.id, text:p.nombre, valor:p.precio_venta})),
+  taller: serviciosTaller.map(s => ({id:s.id, text:s.nombre_servicio, valor:s.valor}))
 };
 
-// =========================
-// Cargar descripción sin destruir Select2
-// =========================
+function getTarifaContrato() {
+  const sel = document.querySelector('select[name="contrato"]');
+  return sel?.selectedOptions[0]?.dataset.tarifa || 0;
+}
+
+/* ================= CORE LOGIC ================= */
 function cargarDescripcion(row) {
   const tipo = row.querySelector('.tipo-item');
-  const descripcion = row.querySelector('.descripcion-item');
-  if (!tipo || !descripcion) return;
+  const desc = row.querySelector('.descripcion-item');
+  const opciones = datosDescripcion[tipo.value] || [];
 
-  const tipoValor = tipo.value;
-  const opciones = datosDescripcion[tipoValor] || [];
-
-  // Guardamos valor actual si es posible
-  const valorActual = descripcion.value;
-
-  // Limpieza del select (manteniendo select2)
-  descripcion.innerHTML = '';
-
-  opciones.forEach(opt => {
-    const option = document.createElement('option');
-    option.value = opt.id;
-    option.textContent = opt.text;
-    option.dataset.valor = opt.valor;
-    descripcion.appendChild(option);
+  desc.innerHTML = '';
+  opciones.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o.id;
+    opt.textContent = o.text;
+    opt.dataset.valor = o.valor;
+    desc.appendChild(opt);
   });
 
-  if (opciones.length === 1 && tipoValor === 'tarifa') {
-    descripcion.disabled = true;
-  } else {
-    descripcion.disabled = false;
-  }
-
-  // Restaurar valor si existe en las opciones
-  if (Array.from(descripcion.options).some(o => o.value === valorActual)) {
-    descripcion.value = valorActual;
-  } else {
-    descripcion.value = '';
-  }
-
-  // Inicializar Select2 si no lo estaba
-  if (!$(descripcion).hasClass('select2-hidden-accessible')) {
-    $(descripcion).select2({placeholder: 'Buscar…', allowClear: true, width: '100%'});
-  } else {
-    // Actualizamos Select2 para reflejar cambios
-    $(descripcion).trigger('change.select2');
-  }
+  $(desc).select2({ width:'100%', placeholder:'Buscar…', allowClear:true });
 }
-
 
 function recalcularFila(row) {
-  const tipo = row.querySelector('.tipo-item');
-  const descripcion = row.querySelector('.descripcion-item');
-  const cantidad = row.querySelector('.cantidad-item');
-  const valor = row.querySelector('.valor-unitario-item');
-  if (!tipo || !descripcion || !cantidad || !valor) return;
+  const tipo = row.querySelector('.tipo-item').value;
+  const cant = parseFloat(row.querySelector('.cantidad-item').value || 0);
+  let subtotal = 0;
 
-  let total = 0;
-  const cant = parseFloat(cantidad.value || 0);
-
-  if (tipo.value === 'tarifa') total = getTarifaContrato() * cant;
-  else {
-    const selected = descripcion.options[descripcion.selectedIndex];
-    if (selected) total = (parseFloat(selected.dataset.valor || 0)) * cant;
+  if (tipo === 'tarifa') {
+    subtotal = getTarifaContrato() * cant;
+  } else {
+    const opt = row.querySelector('.descripcion-item').selectedOptions[0];
+    subtotal = (opt?.dataset.valor || 0) * cant;
   }
 
-  valor.value = total ? total.toFixed(2) : '';
+  row.dataset.subtotal = subtotal;
+  row.querySelector('.valor-unitario-item').value = subtotal ? subtotal.toFixed(2) : '';
+  recalcularTotales();
 }
 
-// Delegación de eventos
+function recalcularTotales() {
+  let subtotal = 0;
+  document.querySelectorAll('.item-row').forEach(r => {
+    subtotal += parseFloat(r.dataset.subtotal || 0);
+  });
+
+  const impuestos = subtotal * IVA;
+  const total = subtotal + impuestos;
+
+  document.getElementById('subtotal').innerText = subtotal.toLocaleString('es-CO');
+  document.getElementById('impuestos').innerText = impuestos.toLocaleString('es-CO');
+  document.getElementById('total').innerText = total.toLocaleString('es-CO');
+}
+
+/* ================= EVENTS ================= */
 $('#items-container')
   .on('change', '.tipo-item', function () {
     const row = this.closest('.item-row');
@@ -269,23 +217,21 @@ $('#items-container')
     recalcularFila(row);
   })
   .on('input', '.cantidad-item', function () {
-    const row = this.closest('.item-row');
-    recalcularFila(row);
+    recalcularFila(this.closest('.item-row'));
   })
   .on('select2:select select2:clear', '.descripcion-item', function () {
-    const row = this.closest('.item-row');
-    recalcularFila(row);
+    recalcularFila(this.closest('.item-row'));
+  })
+  .on('click', '.remove-item', function () {
+    this.closest('.item-row').remove();
+    recalcularTotales();
   });
 
-// Inicialización individual
 function inicializarItem(row) {
   cargarDescripcion(row);
-  recalcularFila(row);
 }
-
-// Recalculo global
 function recalcularTodos() {
-  document.querySelectorAll('.item-row').forEach(row => recalcularFila(row));
+  document.querySelectorAll('.item-row').forEach(recalcularFila);
 }
 </script>
 
