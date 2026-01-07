@@ -4,21 +4,14 @@
 
 {% block content %}
 
-<!-- ========================= -->
-<!-- Select2 CSS -->
-<!-- ========================= -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <div class="card p-4 shadow-sm">
-
   <h3 class="fw-bold fs-5 mb-4">Nueva Transacción</h3>
 
   <form method="post" class="row g-3">
     {% csrf_token %}
 
-    <!-- ========================= -->
-    <!-- Contrato -->
-    <!-- ========================= -->
     <div class="col-md-8">
       <label class="form-label">Contrato (Placa - Cliente)</label>
       {{ factura_form.contrato|add_class:"form-select select-buscable" }}
@@ -30,9 +23,6 @@
       </button>
     </div>
 
-    <!-- ========================= -->
-    <!-- Ítems -->
-    <!-- ========================= -->
     <div class="col-12 mt-4">
       <h6 class="fw-bold mb-3">Ítems</h6>
     </div>
@@ -43,293 +33,165 @@
       </button>
     </div>
 
-
     {{ item_formset.management_form }}
 
     <div id="empty-form" class="d-none">
-        <div class="row g-3 align-items-end border rounded p-3 mb-2 item-row">
+      <div class="row g-3 align-items-end border rounded p-3 mb-2 item-row">
 
-          <div class="col-md-2">
-            {{ item_formset.empty_form.tipo_item|add_class:"form-select tipo-item" }}
-          </div>
-
-          <div class="col-md-4">
-            {{ item_formset.empty_form.descripcion|add_class:"form-select descripcion-item" }}
-          </div>
-
-          <div class="col-md-2">
-            {{ item_formset.empty_form.cantidad|add_class:"form-control cantidad-item" }}
-          </div>
-
-          <div class="col-md-2">
-            {{ item_formset.empty_form.valor_unitario|add_class:"form-control valor-unitario-item" }}
-          </div>
-
-          <div class="col-md-2 text-end">
-            {{ item_formset.empty_form.DELETE }}
-          </div>
-
+        <div class="col-md-2">
+          {{ item_formset.empty_form.tipo_item|add_class:"form-select tipo-item" }}
         </div>
+
+        <div class="col-md-4">
+          {{ item_formset.empty_form.descripcion|add_class:"form-select descripcion-item" }}
+        </div>
+
+        <div class="col-md-2">
+          {{ item_formset.empty_form.cantidad|add_class:"form-control cantidad-item" }}
+        </div>
+
+        <div class="col-md-2">
+          {{ item_formset.empty_form.valor_unitario|add_class:"form-control valor-unitario-item" }}
+        </div>
+
+        <div class="col-md-2 text-end">
+          {{ item_formset.empty_form.DELETE }}
+        </div>
+
+      </div>
     </div>
 
-    <div id="items-container" class="col-12">
-      {% for form in item_formset %}
-
-        <div class="row g-3 align-items-end border rounded p-3 mb-2 item-row">
-
-          <div class="col-md-2">
-            <label class="form-label">Tipo</label>
-            {{ form.tipo_item|add_class:"form-select tipo-item" }}
-          </div>
-
-          <div class="col-md-4">
-            <label class="form-label">Descripción</label>
-            {{ form.descripcion|add_class:"form-select descripcion-item" }}
-          </div>
-
-          <div class="col-md-2">
-            <label class="form-label">Cantidad</label>
-            {{ form.cantidad|add_class:"form-control cantidad-item" }}
-          </div>
-
-          <div class="col-md-2">
-            <label class="form-label">Valor</label>
-            {{ form.valor_unitario|add_class:"form-control valor-unitario-item" }}
-          </div>
-
-          <div class="col-md-2 text-end">
-            {{ form.DELETE }}
-          </div>
-
-        </div>
-      {% endfor %}
-    </div>
+    <div id="items-container" class="col-12"></div>
 
   </form>
-
 </div>
 
-<!-- ========================= -->
-<!-- JS -->
-<!-- ========================= -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-
-<!-- ========================= -->
-<!-- JSON seguro para JS -->
-<!-- ========================= -->
 {{ productos_json|json_script:"productos-almacen" }}
 {{ servicios_json|json_script:"servicios-taller" }}
 
-
 <script>
-document.getElementById('add-item').addEventListener('click', function () {
+const productosAlmacen = JSON.parse(document.getElementById('productos-almacen').textContent);
+const serviciosTaller = JSON.parse(document.getElementById('servicios-taller').textContent);
 
-  const totalFormsInput = document.querySelector(
-    'input[name$="-TOTAL_FORMS"]'
-  );
-  const totalForms = parseInt(totalFormsInput.value);
-
-  const emptyFormHtml = document
-    .getElementById('empty-form')
-    .innerHTML
-    .replace(/__prefix__/g, totalForms);
-
-  const container = document.getElementById('items-container');
-  container.insertAdjacentHTML('beforeend', emptyFormHtml);
-
-  totalFormsInput.value = totalForms + 1;
-
-  // 🔥 inicializar SOLO el último item agregado
-  const newRow = container.querySelectorAll('.item-row');
-  inicializarItem(newRow[newRow.length - 1]);
-});
-</script>
-
-
-<script>
-/* =========================
-   DATA
-========================= */
-const productosAlmacen = JSON.parse(
-  document.getElementById('productos-almacen').textContent
-);
-
-const serviciosTaller = JSON.parse(
-  document.getElementById('servicios-taller').textContent
-);
-
-/* =========================
-   READY
-========================= */
+// Inicializa select contrato
 $(document).ready(function () {
-
-  // Select contrato
   $('.select-buscable').select2({
     placeholder: 'Buscar por placa o cliente...',
     allowClear: true,
     width: '100%'
   });
 
-  // Estado inicial de ítems
-  inicializarItems();
-
-  // Cambio de contrato → recalcular tarifas
-  $('select[name="contrato"]').on('change', function () {
-    recalcularTodos();
-  });
+  // Recalcular tarifas si cambia contrato
+  $('select[name="contrato"]').on('change', recalcularTodos);
 });
 
-/* =========================
-   UTILIDADES
-========================= */
+// Agregar item dinámico
+document.getElementById('add-item').addEventListener('click', function () {
+  const totalFormsInput = document.querySelector('input[name$="-TOTAL_FORMS"]');
+  const totalForms = parseInt(totalFormsInput.value);
+
+  const emptyFormHtml = document.getElementById('empty-form')
+    .innerHTML
+    .replace(/__prefix__/g, totalForms);
+
+  const container = document.getElementById('items-container');
+  container.insertAdjacentHTML('beforeend', emptyFormHtml);
+  totalFormsInput.value = totalForms + 1;
+
+  // Inicializar el nuevo row
+  const newRow = container.querySelectorAll('.item-row');
+  setTimeout(() => inicializarItem(newRow[newRow.length - 1]), 0);
+});
+
+// =========================
+// Funciones de utilidad
+// =========================
 function getTarifaContrato() {
   const contrato = document.querySelector('select[name="contrato"]');
   if (!contrato || contrato.selectedIndex === -1) return 0;
-
-  const option = contrato.options[contrato.selectedIndex];
-  return parseFloat(option.dataset.tarifa || 0);
+  return parseFloat(contrato.options[contrato.selectedIndex].dataset.tarifa || 0);
 }
 
-/* =========================
-   DESCRIPCIÓN DINÁMICA
-========================= */
 function cargarDescripcion(row) {
   const tipo = row.querySelector('.tipo-item');
   const descripcion = row.querySelector('.descripcion-item');
-
   if (!tipo || !descripcion) return;
 
-  // destruir select2 si existe
-  if ($(descripcion).hasClass('select2-hidden-accessible')) {
-    $(descripcion).select2('destroy');
-  }
+  if ($(descripcion).hasClass('select2-hidden-accessible')) $(descripcion).select2('destroy');
 
   descripcion.innerHTML = '';
   descripcion.disabled = false;
 
   if (tipo.value === 'tarifa') {
-    descripcion.innerHTML =
-      `<option value="tarifa">Pago de tarifa</option>`;
+    descripcion.innerHTML = `<option value="tarifa">Pago de tarifa</option>`;
     descripcion.disabled = true;
-  }
-
-  else if (tipo.value === 'almacen') {
-    descripcion.innerHTML =
-      `<option value="">Seleccione producto</option>`;
-
+  } else if (tipo.value === 'almacen') {
+    descripcion.innerHTML = `<option value="">Seleccione producto</option>`;
     productosAlmacen.forEach(p => {
-      descripcion.innerHTML += `
-        <option value="${p.id}" data-valor="${p.precio_venta}">
-          ${p.nombre}
-        </option>`;
+      descripcion.innerHTML += `<option value="${p.id}" data-valor="${p.precio_venta}">${p.nombre}</option>`;
     });
-  }
-
-  else if (tipo.value === 'taller') {
-    descripcion.innerHTML =
-      `<option value="">Seleccione servicio</option>`;
-
+  } else if (tipo.value === 'taller') {
+    descripcion.innerHTML = `<option value="">Seleccione servicio</option>`;
     serviciosTaller.forEach(s => {
-      descripcion.innerHTML += `
-        <option value="${s.id}" data-valor="${s.valor}">
-          ${s.nombre_servicio}
-        </option>`;
+      descripcion.innerHTML += `<option value="${s.id}" data-valor="${s.valor}">${s.nombre_servicio}</option>`;
     });
-  }
-
-  else {
+  } else {
     descripcion.innerHTML = `<option value="">—</option>`;
   }
 
   if (!descripcion.disabled) {
-    $(descripcion)
-      .select2({
-        placeholder: 'Buscar…',
-        allowClear: true,
-        width: '100%'
-      })
+    $(descripcion).select2({ placeholder: 'Buscar…', allowClear: true, width: '100%' });
   }
-
 }
 
-/* =========================
-   RECÁLCULO DE FILA
-========================= */
 function recalcularFila(row) {
   const tipo = row.querySelector('.tipo-item');
   const descripcion = row.querySelector('.descripcion-item');
   const cantidad = row.querySelector('.cantidad-item');
   const valor = row.querySelector('.valor-unitario-item');
-
   if (!tipo || !descripcion || !cantidad || !valor) return;
 
-  const cant = parseFloat(cantidad.value || 0);
   let total = 0;
+  const cant = parseFloat(cantidad.value || 0);
 
-  if (tipo.value === 'tarifa') {
-    total = getTarifaContrato() * cant;
-  }
-
-  else if (tipo.value === 'almacen' || tipo.value === 'taller') {
+  if (tipo.value === 'tarifa') total = getTarifaContrato() * cant;
+  else {
     const selected = descripcion.options[descripcion.selectedIndex];
-    if (selected) {
-      total = (parseFloat(selected.dataset.valor || 0)) * cant;
-    }
+    if (selected) total = (parseFloat(selected.dataset.valor || 0)) * cant;
   }
 
   valor.value = total ? total.toFixed(2) : '';
 }
 
-/* =========================
-   EVENTOS (DELEGACIÓN REAL)
-========================= */
+// Delegación de eventos
 $('#items-container')
-
   .on('change', '.tipo-item', function () {
     const row = this.closest('.item-row');
     cargarDescripcion(row);
     recalcularFila(row);
   })
-
   .on('input', '.cantidad-item', function () {
     const row = this.closest('.item-row');
     recalcularFila(row);
   })
-
   .on('select2:select select2:clear', '.descripcion-item', function () {
     const row = this.closest('.item-row');
     recalcularFila(row);
   });
 
-
-
-/* =========================
-   INICIALIZACIÓN
-========================= */
-function inicializarItems() {
-  document.querySelectorAll('.item-row').forEach(row => {
-    cargarDescripcion(row);
-    recalcularFila(row);
-  });
-}
-
+// Inicialización individual
 function inicializarItem(row) {
   cargarDescripcion(row);
   recalcularFila(row);
 }
 
-/* =========================
-   RECÁLCULO GLOBAL
-========================= */
+// Recalculo global
 function recalcularTodos() {
-  document.querySelectorAll('.item-row').forEach(row => {
-    recalcularFila(row);
-  });
+  document.querySelectorAll('.item-row').forEach(row => recalcularFila(row));
 }
 </script>
-
-
 
 {% endblock %}
