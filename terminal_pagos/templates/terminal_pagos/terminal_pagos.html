@@ -6,65 +6,135 @@
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
+<style>
+  /* Animación suave al agregar ítems */
+  .item-row {
+    animation: fadeInUp 0.25s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
 <div class="card p-4 shadow-sm">
   <h3 class="fw-bold fs-5 mb-4">Nueva Transacción</h3>
 
   <form method="post" class="row g-3">
     {% csrf_token %}
 
+    <!-- ========================= -->
+    <!-- CONTRATO -->
+    <!-- ========================= -->
     <div class="col-md-8">
       <label class="form-label">Contrato (Placa - Cliente)</label>
       {{ factura_form.contrato|add_class:"form-select select-buscable" }}
     </div>
 
-    <div class="col-md-4 d-flex align-items-end justify-content-end">
-      <button type="submit" class="btn btn-primary btn-app-action w-100">
+    <div class="col-md-4 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary w-100">
         Guardar Factura
       </button>
     </div>
 
+    <!-- ========================= -->
+    <!-- ÍTEMS -->
+    <!-- ========================= -->
     <div class="col-12 mt-4">
-      <h6 class="fw-bold mb-3">Ítems</h6>
+      <h6 class="fw-bold mb-2">Ítems</h6>
     </div>
 
-    <div class="col-12 mb-2">
-      <button type="button" class="btn btn-outline-secondary" id="add-item">
+    <!-- Encabezado tipo tabla -->
+    <div class="col-12">
+      <div class="row text-muted fw-semibold small border-bottom pb-2 mb-2">
+        <div class="col-md-2">Tipo</div>
+        <div class="col-md-4">Descripción</div>
+        <div class="col-md-2 text-center">Cantidad</div>
+        <div class="col-md-2 text-end">Valor</div>
+        <div class="col-md-2 text-center">Acción</div>
+      </div>
+    </div>
+
+    <!-- Botón agregar -->
+    <div class="col-12 d-flex justify-content-between align-items-center mb-2">
+      <span class="text-muted small">
+        Agrega productos, servicios o tarifas
+      </span>
+      <button type="button" class="btn btn-outline-primary btn-sm" id="add-item">
         + Agregar ítem
       </button>
     </div>
 
     {{ item_formset.management_form }}
 
+    <!-- ========================= -->
+    <!-- TEMPLATE DE ITEM -->
+    <!-- ========================= -->
     <div id="empty-form" class="d-none">
-      <div class="row g-3 align-items-end border rounded p-3 mb-2 item-row">
+      <div class="row align-items-center border rounded-3 px-3 py-2 mb-2 item-row bg-light">
 
         <div class="col-md-2">
-          {{ item_formset.empty_form.tipo_item|add_class:"form-select tipo-item" }}
+          {{ item_formset.empty_form.tipo_item|add_class:"form-select form-select-sm tipo-item" }}
         </div>
 
         <div class="col-md-4">
-          {{ item_formset.empty_form.descripcion|add_class:"form-select descripcion-item" }}
+          {{ item_formset.empty_form.descripcion|add_class:"form-select form-select-sm descripcion-item" }}
         </div>
 
         <div class="col-md-2">
-          {{ item_formset.empty_form.cantidad|add_class:"form-control cantidad-item" }}
+          {{ item_formset.empty_form.cantidad|add_class:"form-control form-control-sm cantidad-item text-center" }}
         </div>
 
         <div class="col-md-2">
-          {{ item_formset.empty_form.valor_unitario|add_class:"form-control valor-unitario-item" }}
+          {{ item_formset.empty_form.valor_unitario|add_class:"form-control form-control-sm valor-unitario-item text-end" }}
         </div>
 
-        <div class="col-md-2 text-end">
+        <div class="col-md-2 text-center">
           {{ item_formset.empty_form.DELETE }}
         </div>
 
       </div>
     </div>
 
+    <!-- Ítems dinámicos -->
     <div id="items-container" class="col-12"></div>
+
+    <!-- ========================= -->
+    <!-- TOTALES -->
+    <!-- ========================= -->
+    <div class="col-12 mt-4">
+      <div class="border-top pt-3 d-flex justify-content-end">
+        <div class="text-end">
+
+          <div class="d-flex justify-content-between gap-4">
+            <span class="text-muted">Subtotal:</span>
+            <strong id="subtotal">$0.00</strong>
+          </div>
+
+          <div class="d-flex justify-content-between gap-4">
+            <span class="text-muted">Impuestos:</span>
+            <strong id="impuestos">$0.00</strong>
+          </div>
+
+          <div class="d-flex justify-content-between gap-4 fs-5 mt-1">
+            <span>Total:</span>
+            <strong id="total">$0.00</strong>
+          </div>
+
+        </div>
+      </div>
+    </div>
 
   </form>
 </div>
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
