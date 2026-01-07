@@ -47,6 +47,33 @@
     {{ item_formset.management_form }}
 
     {% for form in item_formset %}
+
+      <div id="empty-form" class="d-none">
+        <div class="row g-3 align-items-end border rounded p-3 mb-2 item-row">
+
+          <div class="col-md-2">
+            {{ item_formset.empty_form.tipo_item|add_class:"form-select tipo-item" }}
+          </div>
+
+          <div class="col-md-4">
+            {{ item_formset.empty_form.descripcion|add_class:"form-select descripcion-item" }}
+          </div>
+
+          <div class="col-md-2">
+            {{ item_formset.empty_form.cantidad|add_class:"form-control cantidad-item" }}
+          </div>
+
+          <div class="col-md-2">
+            {{ item_formset.empty_form.valor_unitario|add_class:"form-control valor-unitario-item" }}
+          </div>
+
+          <div class="col-md-2 text-end">
+            {{ item_formset.empty_form.DELETE }}
+          </div>
+
+        </div>
+      </div>
+
       <div class="row g-3 align-items-end border rounded p-3 mb-2 item-row">
 
         <div class="col-md-2">
@@ -92,6 +119,23 @@
 <!-- ========================= -->
 {{ productos_json|json_script:"productos-almacen" }}
 {{ servicios_json|json_script:"servicios-taller" }}
+
+
+<script>
+  document.getElementById('add-item').addEventListener('click', function () {
+    const totalFormsInput = document.getElementById('id_item_set-TOTAL_FORMS');
+    const totalForms = parseInt(totalFormsInput.value);
+
+    const emptyForm = document.getElementById('empty-form').innerHTML;
+    const newFormHtml = emptyForm.replace(/__prefix__/g, totalForms);
+
+    const container = document.querySelector('.item-row').parentElement;
+    container.insertAdjacentHTML('beforeend', newFormHtml);
+
+    totalFormsInput.value = totalForms + 1;
+  });
+</script>
+
 
 <script>
 
