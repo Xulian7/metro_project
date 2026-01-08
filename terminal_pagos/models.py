@@ -1,11 +1,21 @@
 from django.db import models
 from arrendamientos.models import Contrato
 
+
+# =========================
+# FACTURA
+# =========================
 class Factura(models.Model):
     ESTADOS = (
         ("borrador", "Borrador"),
         ("confirmada", "Confirmada"),
         ("anulada", "Anulada"),
+    )
+
+    ESTADOS_PAGO = (
+        ("pendiente", "Pendiente"),
+        ("parcial", "Parcial"),
+        ("pagada", "Pagada"),
     )
 
     contrato = models.ForeignKey(
@@ -15,16 +25,38 @@ class Factura(models.Model):
     )
 
     fecha = models.DateTimeField(auto_now_add=True)
-    estado = models.CharField(max_length=20, choices=ESTADOS, default="borrador")
+
+    estado = models.CharField(
+        max_length=20,
+        choices=ESTADOS,
+        default="borrador"
+    )
+
+    estado_pago = models.CharField(
+        max_length=20,
+        choices=ESTADOS_PAGO,
+        default="pendiente"
+    )
 
     total = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
+
+    total_pagado = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0
     )
 
     def __str__(self):
         return f"Factura #{self.id} - {self.fecha.date()}"
 
 
+# =========================
+# ITEMS DE FACTURA
+# =========================
 class ItemFactura(models.Model):
     TIPOS_ITEM = (
         ("tarifa", "Tarifa"),
@@ -34,17 +66,35 @@ class ItemFactura(models.Model):
     )
 
     factura = models.ForeignKey(
-        Factura, related_name="items", on_delete=models.CASCADE
+        Factura,
+        related_name="items",
+        on_delete=models.CASCADE
     )
 
-    tipo_item = models.CharField(max_length=20, choices=TIPOS_ITEM)
+    tipo_item = models.CharField(
+        max_length=20,
+        choices=TIPOS_ITEM
+    )
 
-    descripcion = models.CharField(max_length=255, blank=True)
-    cantidad = models.PositiveIntegerField(default=1)
-    valor_unitario = models.DecimalField(max_digits=12, decimal_places=2)
-    subtotal = models.DecimalField(max_digits=12, decimal_places=2)
+    descripcion = models.CharField(
+        max_length=255,
+        blank=True
+    )
 
-    # Referencias opcionales
+    cantidad = models.PositiveIntegerField(
+        default=1
+    )
+
+    valor_unitario = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    subtotal = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
     producto_almacen = models.ForeignKey(
         "almacen.Producto",
         on_delete=models.SET_NULL,
@@ -63,24 +113,95 @@ class ItemFactura(models.Model):
         return f"{self.get_tipo_item_display()} - {self.subtotal}"
 
 
-class PagoFactura(models.Model):
-    MEDIOS_PAGO = (
-        ("efectivo", "Efectivo"),
-        ("tarjeta", "Tarjeta"),
-        ("nequi", "Nequi"),
-        ("otro", "Otro"),
+# =========================
+# CATÁLOGO DE CUENTAS
+# =========================
+class Cuenta(models.Model):
+    nombre = models.CharField(
+        max_length=50,
+        unique=True
     )
 
-    factura = models.ForeignKey(
-        Factura, related_name="pagos", on_delete=models.CASCADE
+    activa = models.BooleanField(
+        default=True
     )
-
-    medio_pago = models.CharField(max_length=20, choices=MEDIOS_PAGO)
-    valor = models.DecimalField(max_digits=12, decimal_places=2)
-
-    referencia = models.CharField(max_length=100, blank=True)
-    fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.get_medio_pago_display()} - {self.valor}"
+        return self.nombre
 
+
+# =========================
+# CATÁLOGO DE TIPOS DE PAGO
+# =========================
+class TipoPago(models.Model):
+    codigo = models.CharField(
+        max_length=30,
+        unique=True
+    )
+
+    nombre = models.CharField(
+        max_length=50
+    )
+
+    requiere_origen = models.BooleanField(
+        default=False
+    )
+
+    requiere_referencia = models.BooleanField(
+        default=False
+    )
+
+    es_egreso = models.BooleanField(
+        default=False
+    )
+
+    activo = models.BooleanField(
+        default=True
+    )
+
+    def __str__(self):
+        return self.nombre
+
+
+# =========================
+# PAGOS DE FACTURA
+# =========================
+class PagoFactura(models.Model):
+
+    factura = models.ForeignKey(
+        Factura,
+        related_name="pagos",
+        on_delete=models.CASCADE
+    )
+
+    tipo_pago = models.ForeignKey(
+        TipoPago,
+        on_delete=models.PROTECT
+    )
+
+    cuenta = models.ForeignKey(
+        Cuenta,
+        on_delete=models.PROTECT
+    )
+
+    valor = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    origen = models.CharField(
+        max_length=50,
+        blank=True
+    )
+
+    referencia = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    fecha = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return f"{self.tipo_pago} | {self.cuenta} | {self.valor}"
