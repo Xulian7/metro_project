@@ -300,17 +300,16 @@ function recalcularTodos() {
    PAGOS
 ========================= */
 
-document.getElementById('add-pago').addEventListener('click', () => {
-  const totalForms = document.getElementById('pagos-total-forms');
-  const index = parseInt(totalForms.value);
+const btnAddPago = document.getElementById('add-pago');
+const pagosContainer = document.getElementById('pagos-container');
+const totalFormsInput = document.getElementById('pagos-total-forms');
 
-  const html = document.getElementById('empty-pago').innerHTML
-    .replace(/__prefix__/g, index);
+btnAddPago.addEventListener('click', () => {
+  const template = document.getElementById('empty-pago').firstElementChild.cloneNode(true);
 
-  document.getElementById('pagos-container')
-    .insertAdjacentHTML('beforeend', html);
+  pagosContainer.appendChild(template);
 
-  totalForms.value = index + 1;
+  totalFormsInput.value = pagosContainer.querySelectorAll('.pago-row').length;
   recalcularPagos();
 });
 
@@ -319,7 +318,10 @@ document.getElementById('add-pago').addEventListener('click', () => {
 ========================= */
 
 function obtenerTotalFactura() {
-  const totalText = document.getElementById('total').innerText
+  const totalEl = document.getElementById('total');
+  if (!totalEl) return 0;
+
+  const totalText = totalEl.innerText
     .replace(/\./g, '')
     .replace(',', '.');
 
@@ -329,45 +331,48 @@ function obtenerTotalFactura() {
 function recalcularPagos() {
   let pagado = 0;
 
-  document.querySelectorAll('.pago-valor').forEach(input => {
+  const inputsValor = pagosContainer.querySelectorAll('.pago-valor');
+
+  inputsValor.forEach(input => {
     pagado += parseFloat(input.value || 0);
   });
 
   const totalFactura = obtenerTotalFactura();
   const saldo = Math.max(totalFactura - pagado, 0);
 
-  document.getElementById('total-pagado')
-    .innerText = pagado.toLocaleString('es-CO');
+  document.getElementById('total-pagado').innerText =
+    pagado.toLocaleString('es-CO', { minimumFractionDigits: 2 });
 
-  document.getElementById('saldo-pendiente')
-    .innerText = saldo.toLocaleString('es-CO');
+  document.getElementById('saldo-pendiente').innerText =
+    saldo.toLocaleString('es-CO', { minimumFractionDigits: 2 });
 
-  // 🔒 No permitir pagar de más
-  document.querySelectorAll('.pago-valor').forEach(input => {
-    const max = totalFactura - (pagado - parseFloat(input.value || 0));
-    input.max = max >= 0 ? max.toFixed(2) : 0;
+  // 🔒 Anti-overpay: cada input sabe cuánto le queda
+  inputsValor.forEach(input => {
+    const actual = parseFloat(input.value || 0);
+    const max = totalFactura - (pagado - actual);
+    input.max = max > 0 ? max.toFixed(2) : 0;
   });
 }
 
 /* =========================
-   EVENTOS
+   EVENTOS DINÁMICOS
 ========================= */
 
-document.getElementById('pagos-container')
-  .addEventListener('input', e => {
-    if (e.target.classList.contains('pago-valor')) {
-      recalcularPagos();
-    }
-  });
+pagosContainer.addEventListener('input', e => {
+  if (e.target.classList.contains('pago-valor')) {
+    recalcularPagos();
+  }
+});
 
-document.getElementById('pagos-container')
-  .addEventListener('click', e => {
-    if (e.target.classList.contains('remove-pago')) {
-      e.target.closest('.pago-row').remove();
-      recalcularPagos();
-    }
-  });
+pagosContainer.addEventListener('click', e => {
+  if (e.target.classList.contains('remove-pago')) {
+    e.target.closest('.pago-row').remove();
+    totalFormsInput.value = pagosContainer.querySelectorAll('.pago-row').length;
+    recalcularPagos();
+  }
+});
 </script>
+
 
 
 {% endblock %}
