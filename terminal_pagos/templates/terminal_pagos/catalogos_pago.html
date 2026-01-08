@@ -1,44 +1,67 @@
+{% extends "accounts/home.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block content %}
+
 <h5 class="mb-3">Administración de pagos</h5>
 
-<ul class="nav nav-tabs mb-3">
-  <li class="nav-item">
-    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#cuentas">
+<ul class="nav nav-tabs mb-3" id="catalogosTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active"
+            id="cuentas-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#cuentas"
+            type="button"
+            role="tab">
       Cuentas
     </button>
   </li>
-  <li class="nav-item">
-    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tipos">
+
+  <li class="nav-item" role="presentation">
+    <button class="nav-link"
+            id="tipos-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#tipos"
+            type="button"
+            role="tab">
       Tipos de pago
     </button>
   </li>
 </ul>
 
-<div class="tab-content">
+<div class="tab-content" id="catalogosTabsContent">
 
   <!-- ================= CUENTAS ================= -->
-  <div class="tab-pane fade show active" id="cuentas">
+  <div class="tab-pane fade show active"
+       id="cuentas"
+       role="tabpanel"
+       aria-labelledby="cuentas-tab">
 
     <form method="post" class="card card-body mb-4">
       {% csrf_token %}
-      {{ cuenta_form.nombre.label_tag }}
-      {{ cuenta_form.nombre }}
 
-      <div class="form-check mt-2">
-        {{ cuenta_form.activa }}
-        {{ cuenta_form.activa.label_tag }}
+      <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        {{ cuenta_form.nombre|add_class:"form-control" }}
       </div>
 
-      <button class="btn btn-primary btn-sm mt-3" name="guardar_cuenta">
+      <div class="form-check mb-3">
+        {{ cuenta_form.activa|add_class:"form-check-input" }}
+        <label class="form-check-label">Activa</label>
+      </div>
+
+      <button class="btn btn-primary btn-sm" name="guardar_cuenta">
         Guardar cuenta
       </button>
     </form>
 
-    <table class="table table-sm">
-      <thead>
+    <table class="table table-sm table-hover">
+      <thead class="table-light">
         <tr>
           <th>Nombre</th>
           <th>Activa</th>
-          <th></th>
+          <th class="text-end"></th>
         </tr>
       </thead>
       <tbody>
@@ -47,9 +70,16 @@
           <td>{{ c.nombre }}</td>
           <td>{{ c.activa|yesno:"Sí,No" }}</td>
           <td class="text-end">
-            <a href="?cuenta={{ c.id }}" class="btn btn-outline-primary btn-sm">
+            <a href="?cuenta={{ c.id }}"
+               class="btn btn-outline-primary btn-sm">
               Editar
             </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="3" class="text-muted text-center">
+            No hay cuentas registradas
           </td>
         </tr>
         {% endfor %}
@@ -59,30 +89,44 @@
   </div>
 
   <!-- ================= TIPOS DE PAGO ================= -->
-  <div class="tab-pane fade" id="tipos">
+  <div class="tab-pane fade"
+       id="tipos"
+       role="tabpanel"
+       aria-labelledby="tipos-tab">
 
     <form method="post" class="card card-body mb-4">
       {% csrf_token %}
 
       {% for field in tipo_form %}
-        <div class="mb-2">
-          {{ field.label_tag }}
-          {{ field }}
+        <div class="mb-3">
+          <label class="form-label">{{ field.label }}</label>
+
+          {% if field.field.widget.input_type == "checkbox" %}
+            <div class="form-check">
+              {{ field|add_class:"form-check-input" }}
+            </div>
+          {% else %}
+            {{ field|add_class:"form-control" }}
+          {% endif %}
+
+          {% if field.help_text %}
+            <small class="text-muted">{{ field.help_text }}</small>
+          {% endif %}
         </div>
       {% endfor %}
 
       <button class="btn btn-primary btn-sm" name="guardar_tipo">
-        Guardar tipo
+        Guardar tipo de pago
       </button>
     </form>
 
-    <table class="table table-sm">
-      <thead>
+    <table class="table table-sm table-hover">
+      <thead class="table-light">
         <tr>
           <th>Código</th>
           <th>Nombre</th>
           <th>Activo</th>
-          <th></th>
+          <th class="text-end"></th>
         </tr>
       </thead>
       <tbody>
@@ -92,9 +136,16 @@
           <td>{{ t.nombre }}</td>
           <td>{{ t.activo|yesno:"Sí,No" }}</td>
           <td class="text-end">
-            <a href="?tipo={{ t.id }}#tipos" class="btn btn-outline-primary btn-sm">
+            <a href="?tipo={{ t.id }}#tipos"
+               class="btn btn-outline-primary btn-sm">
               Editar
             </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="text-muted text-center">
+            No hay tipos de pago registrados
           </td>
         </tr>
         {% endfor %}
@@ -104,3 +155,5 @@
   </div>
 
 </div>
+
+{% endblock %}
