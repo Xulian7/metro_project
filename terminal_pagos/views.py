@@ -73,11 +73,11 @@ def catalogos_pago(request):
     if request.method == "POST":
         if "guardar_cuenta" in request.POST and cuenta_form.is_valid():
             cuenta_form.save()
-            return redirect("catalogos_pago")
+            return redirect("terminal_pagos:catalogos_pago")
 
         if "guardar_tipo" in request.POST and tipo_form.is_valid():
             tipo_form.save()
-            return redirect("catalogos_pago")
+            return redirect("terminal_pagos:catalogos_pago")
 
     return render(request, "terminal_pagos/catalogos_pago.html", {
         "cuentas": Cuenta.objects.all(),
