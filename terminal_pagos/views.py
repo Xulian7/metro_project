@@ -5,6 +5,8 @@ from almacen.models import Producto
 from taller.models import Servicio
 from .models import Cuenta, TipoPago
 from .forms import CuentaForm, TipoPagoForm
+from django.utils import timezone
+from terminal_pagos.models import TipoPago, Cuenta
 
 
 def nueva_transaccion(request):
@@ -23,12 +25,19 @@ def nueva_transaccion(request):
     })
 
 
+from django.utils import timezone
+from terminal_pagos.models import TipoPago, Cuenta
+
+
 def crear_factura(request):
     if request.method == "POST":
         factura_form = FacturaForm(request.POST)
         factura = Factura()
 
-        item_formset = ItemFacturaFormSet(request.POST, instance=factura)
+        item_formset = ItemFacturaFormSet(
+            request.POST,
+            instance=factura
+        )
 
         if factura_form.is_valid() and item_formset.is_valid():
             factura = factura_form.save()
@@ -41,12 +50,26 @@ def crear_factura(request):
         factura_form = FacturaForm()
         item_formset = ItemFacturaFormSet()
 
+    # 🔹 NUEVO: catálogos de pagos
+    tipos_pago = TipoPago.objects.filter(activo=True)
+    cuentas = Cuenta.objects.filter(activa=True)
+
     context = {
         "factura_form": factura_form,
         "item_formset": item_formset,
+
+        # 🔽 no interfiere con nada existente
+        "tipos_pago": tipos_pago,
+        "cuentas": cuentas,
+        "today": timezone.now().date(),
     }
 
-    return render(request, "terminal_pagos/crear_factura.html", context)
+    return render(
+        request,
+        "terminal_pagos/crear_factura.html",
+        context
+    )
+
 
 
 
