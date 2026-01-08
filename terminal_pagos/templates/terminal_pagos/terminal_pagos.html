@@ -337,51 +337,39 @@ function recalcularTodos() {
 
 <script>
 /* =========================
+   PAGOS
+========================= */
+
+const pagosContainer = document.getElementById('pagos-container');
+const addPagoBtn = document.getElementById('add-pago');
+
+/* =========================
    AGREGAR PAGO
 ========================= */
-document.getElementById('add-pago').addEventListener('click', () => {
-  const totalForms = document.getElementById('pagos-total-forms');
-  const index = parseInt(totalForms.value);
-
-  const html = document.getElementById('empty-pago').innerHTML;
-  document.getElementById('pagos-container')
-    .insertAdjacentHTML('beforeend', html);
-
-  totalForms.value = index + 1;
+addPagoBtn.addEventListener('click', () => {
+  const template = document.getElementById('empty-pago').innerHTML;
+  pagosContainer.insertAdjacentHTML('beforeend', template);
+  recalcularPagos();
 });
 
 /* =========================
-   TIPO DE PAGO → REFERENCIA
-========================= */
-document.getElementById('pagos-container')
-  .addEventListener('change', e => {
-
-    if (e.target.classList.contains('pago-tipo')) {
-      const row = e.target.closest('.pago-row');
-      const refInput = row.querySelector('.pago-referencia');
-
-      const requiere = e.target.selectedOptions[0]
-        ?.dataset.referencia === '1';
-
-      refInput.disabled = !requiere;
-      refInput.required = requiere;
-
-      if (!requiere) refInput.value = '';
-    }
-});
-
-/* =========================
-   RECÁLCULOS
+   TOTAL FACTURA
 ========================= */
 function obtenerTotalFactura() {
-  const totalText = document.getElementById('total')
-    ?.innerText
-    ?.replace(/\./g, '')
-    ?.replace(',', '.');
+  const totalEl = document.getElementById('total');
+  if (!totalEl) return 0;
 
-  return parseFloat(totalText) || 0;
+  const texto = totalEl.innerText
+    .replace(/\./g, '')
+    .replace(',', '.')
+    .replace('$', '');
+
+  return parseFloat(texto) || 0;
 }
 
+/* =========================
+   RECÁLCULO
+========================= */
 function recalcularPagos() {
   let pagado = 0;
 
@@ -392,36 +380,74 @@ function recalcularPagos() {
   const totalFactura = obtenerTotalFactura();
   const saldo = Math.max(totalFactura - pagado, 0);
 
-  document.getElementById('total-pagado')
-    .innerText = pagado.toLocaleString('es-CO');
+  document.getElementById('total-pagado').innerText =
+    pagado.toLocaleString('es-CO', { minimumFractionDigits: 2 });
 
-  document.getElementById('saldo-pendiente')
-    .innerText = saldo.toLocaleString('es-CO');
+  document.getElementById('saldo-pendiente').innerText =
+    saldo.toLocaleString('es-CO', { minimumFractionDigits: 2 });
 
+  // 🔒 No permitir pagar de más
   document.querySelectorAll('.pago-valor').forEach(input => {
-    const max = totalFactura - (pagado - parseFloat(input.value || 0));
-    input.max = max >= 0 ? max.toFixed(2) : 0;
+    const actual = parseFloat(input.value || 0);
+    const max = totalFactura - (pagado - actual);
+    input.max = max > 0 ? max.toFixed(2) : 0;
   });
 }
 
 /* =========================
-   EVENTOS
+   EVENTOS DINÁMICOS
 ========================= */
-document.getElementById('pagos-container')
-  .addEventListener('input', e => {
-    if (e.target.classList.contains('pago-valor')) {
-      recalcularPagos();
-    }
-  });
+pagosContainer.addEventListener('input', e => {
+  if (e.target.classList.contains('pago-valor')) {
+    recalcularPagos();
+  }
+});
 
-document.getElementById('pagos-container')
-  .addEventListener('click', e => {
-    if (e.target.classList.contains('remove-pago')) {
-      e.target.closest('.pago-row').remove();
-      recalcularPagos();
-    }
-  });
+pagosContainer.addEventListener('change', e => {
+  if (e.target.classList.contains('pago-tipo')) {
+    manejarTipoPago(e.target);
+  }
+});
+
+pagosContainer.addEventListener('click', e => {
+  if (e.target.classList.contains('remove-pago')) {
+    e.target.closest('.pago-row').remove();
+    recalcularPagos();
+  }
+});
+
+/* =========================
+   LÓGICA POR TIPO DE PAGO
+========================= */
+function manejarTipoPago(select) {
+  const row = select.closest('.pago-row');
+
+  const origenInput = row.querySelector('.pago-origen');
+  const referenciaInput = row.querySelector('.pago-referencia');
+
+  const option = select.selectedOptions[0];
+
+  const requiereOrigen = option?.dataset.origen === "1";
+  const requiereReferencia = option?.dataset.referencia === "1";
+
+  // ORIGEN
+  if (requiereOrigen) {
+    origenInput.readOnly = false;
+  } else {
+    origenInput.value = "";
+    origenInput.readOnly = true;
+  }
+
+  // REFERENCIA
+  if (requiereReferencia) {
+    referenciaInput.readOnly = false;
+  } else {
+    referenciaInput.value = "";
+    referenciaInput.readOnly = true;
+  }
+}
 </script>
+
 
 
 
