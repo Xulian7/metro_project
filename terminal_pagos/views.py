@@ -5,7 +5,7 @@ from almacen.models import Producto
 from taller.models import Servicio
 from .models import Cuenta, TipoPago
 from .forms import CuentaForm, TipoPagoForm
-from django.utils import timezone
+from django.utils.timezone import now
 from terminal_pagos.models import TipoPago, Cuenta
 
 
@@ -25,51 +25,35 @@ def nueva_transaccion(request):
     })
 
 
-from django.utils import timezone
-from terminal_pagos.models import TipoPago, Cuenta
-
-
 def crear_factura(request):
     if request.method == "POST":
         factura_form = FacturaForm(request.POST)
         factura = Factura()
-
-        item_formset = ItemFacturaFormSet(
-            request.POST,
-            instance=factura
-        )
+        item_formset = ItemFacturaFormSet(request.POST, instance=factura)
 
         if factura_form.is_valid() and item_formset.is_valid():
             factura = factura_form.save()
             item_formset.instance = factura
             item_formset.save()
 
+            # 🔥 aquí luego procesas los pagos manuales
             return redirect("terminal_pagos:crear_factura")
 
     else:
         factura_form = FacturaForm()
         item_formset = ItemFacturaFormSet()
 
-    # 🔹 NUEVO: catálogos de pagos
-    tipos_pago = TipoPago.objects.filter(activo=True)
-    cuentas = Cuenta.objects.filter(activa=True)
-
     context = {
         "factura_form": factura_form,
         "item_formset": item_formset,
 
-        # 🔽 no interfiere con nada existente
-        "tipos_pago": tipos_pago,
-        "cuentas": cuentas,
-        "today": timezone.now().date(),
+        # 🔑 ESTO ES LO QUE FALTABA
+        "tipos_pago": TipoPago.objects.filter(activo=True).order_by("nombre"),
+        "cuentas": Cuenta.objects.filter(activa=True).order_by("nombre"),
+        "today": now(),
     }
 
-    return render(
-        request,
-        "terminal_pagos/crear_factura.html",
-        context
-    )
-
+    return render(request, "terminal_pagos/crear_factura.html", context)
 
 
 
