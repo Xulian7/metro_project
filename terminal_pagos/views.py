@@ -79,7 +79,7 @@ def catalogos_pago(request):
             tipo_form.save()
             return redirect("catalogos_pago")
 
-    return render(request, "pagos/catalogos_pago.html", {
+    return render(request, "terminal_pagos/catalogos_pago.html", {
         "cuentas": Cuenta.objects.all(),
         "tipos": TipoPago.objects.all(),
         "cuenta_form": cuenta_form,
