@@ -1,0 +1,106 @@
+<h5 class="mb-3">Administración de pagos</h5>
+
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item">
+    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#cuentas">
+      Cuentas
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tipos">
+      Tipos de pago
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content">
+
+  <!-- ================= CUENTAS ================= -->
+  <div class="tab-pane fade show active" id="cuentas">
+
+    <form method="post" class="card card-body mb-4">
+      {% csrf_token %}
+      {{ cuenta_form.nombre.label_tag }}
+      {{ cuenta_form.nombre }}
+
+      <div class="form-check mt-2">
+        {{ cuenta_form.activa }}
+        {{ cuenta_form.activa.label_tag }}
+      </div>
+
+      <button class="btn btn-primary btn-sm mt-3" name="guardar_cuenta">
+        Guardar cuenta
+      </button>
+    </form>
+
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Activa</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in cuentas %}
+        <tr>
+          <td>{{ c.nombre }}</td>
+          <td>{{ c.activa|yesno:"Sí,No" }}</td>
+          <td class="text-end">
+            <a href="?cuenta={{ c.id }}" class="btn btn-outline-primary btn-sm">
+              Editar
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+
+  <!-- ================= TIPOS DE PAGO ================= -->
+  <div class="tab-pane fade" id="tipos">
+
+    <form method="post" class="card card-body mb-4">
+      {% csrf_token %}
+
+      {% for field in tipo_form %}
+        <div class="mb-2">
+          {{ field.label_tag }}
+          {{ field }}
+        </div>
+      {% endfor %}
+
+      <button class="btn btn-primary btn-sm" name="guardar_tipo">
+        Guardar tipo
+      </button>
+    </form>
+
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Activo</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in tipos %}
+        <tr>
+          <td>{{ t.codigo }}</td>
+          <td>{{ t.nombre }}</td>
+          <td>{{ t.activo|yesno:"Sí,No" }}</td>
+          <td class="text-end">
+            <a href="?tipo={{ t.id }}#tipos" class="btn btn-outline-primary btn-sm">
+              Editar
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

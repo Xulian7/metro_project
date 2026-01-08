@@ -133,42 +133,23 @@
     <div id="empty-pago" class="d-none">
       <div class="row align-items-center border rounded-3 px-3 py-2 mb-2 pago-row bg-light">
 
-        <!-- Tipo de pago -->
-        <div class="col-md-3">
-          <select class="form-select form-select-sm pago-tipo">
-            <option value="">Tipo de pago…</option>
-            {% for tipo in tipos_pago %}
-              <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
-            {% endfor %}
+        <div class="col-md-4">
+          <select class="form-select form-select-sm pago-medio">
+            <option value="">Seleccione…</option>
+            <option value="efectivo">Efectivo</option>
+            <option value="tarjeta">Tarjeta</option>
+            <option value="nequi">Nequi</option>
+            <option value="otro">Otro</option>
           </select>
         </div>
 
-        <!-- Cuenta -->
-        <div class="col-md-3">
-          <select class="form-select form-select-sm pago-cuenta">
-            <option value="">Cuenta…</option>
-            {% for cuenta in cuentas %}
-              <option value="{{ cuenta.id }}">{{ cuenta.nombre }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <!-- Valor -->
-        <div class="col-md-2">
+        <div class="col-md-4">
           <input type="number" step="0.01"
                 class="form-control form-control-sm pago-valor text-end"
                 placeholder="0.00">
         </div>
 
-        <!-- Referencia -->
-        <div class="col-md-2">
-          <input type="text"
-                class="form-control form-control-sm pago-referencia"
-                placeholder="Referencia">
-        </div>
-
-        <!-- Acción -->
-        <div class="col-md-2 text-center">
+        <div class="col-md-4 text-center">
           <button type="button" class="btn btn-outline-danger btn-sm remove-pago">
             ✖
           </button>
@@ -176,7 +157,6 @@
 
       </div>
     </div>
-
 
     <div id="pagos-container" class="col-12"></div>
 

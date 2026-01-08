@@ -1,8 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Factura
 from .forms import FacturaForm, ItemFacturaFormSet
 from almacen.models import Producto
 from taller.models import Servicio
+from .models import Cuenta, TipoPago
+from .forms import CuentaForm, TipoPagoForm
 
 
 def nueva_transaccion(request):
@@ -45,4 +47,42 @@ def crear_factura(request):
     }
 
     return render(request, "terminal_pagos/crear_factura.html", context)
+
+
+
+# catalogo de pagos/views.py
+def catalogos_pago(request):
+    cuenta_id = request.GET.get("cuenta")
+    tipo_id = request.GET.get("tipo")
+
+    cuenta_instance = Cuenta.objects.filter(id=cuenta_id).first()
+    tipo_instance = TipoPago.objects.filter(id=tipo_id).first()
+
+    cuenta_form = CuentaForm(
+        request.POST or None,
+        instance=cuenta_instance,
+        prefix="cuenta"
+    )
+
+    tipo_form = TipoPagoForm(
+        request.POST or None,
+        instance=tipo_instance,
+        prefix="tipo"
+    )
+
+    if request.method == "POST":
+        if "guardar_cuenta" in request.POST and cuenta_form.is_valid():
+            cuenta_form.save()
+            return redirect("catalogos_pago")
+
+        if "guardar_tipo" in request.POST and tipo_form.is_valid():
+            tipo_form.save()
+            return redirect("catalogos_pago")
+
+    return render(request, "pagos/catalogos_pago.html", {
+        "cuentas": Cuenta.objects.all(),
+        "tipos": TipoPago.objects.all(),
+        "cuenta_form": cuenta_form,
+        "tipo_form": tipo_form,
+    })
 

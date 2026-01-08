@@ -2,6 +2,7 @@ from django import forms
 from django.forms import inlineformset_factory
 from .models import Factura, ItemFactura
 from arrendamientos.models import Contrato
+from .models import Cuenta, TipoPago
 
 class ContratoSelect(forms.Select):
     def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
@@ -57,3 +58,29 @@ ItemFacturaFormSet = inlineformset_factory(
 )
 
 
+# pagos/forms.py
+class CuentaForm(forms.ModelForm):
+    class Meta:
+        model = Cuenta
+        fields = ["nombre", "activa"]
+        widgets = {
+            "nombre": forms.TextInput(attrs={"class": "form-control"}),
+            "activa": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }
+
+
+class TipoPagoForm(forms.ModelForm):
+    class Meta:
+        model = TipoPago
+        fields = [
+            "codigo",
+            "nombre",
+            "requiere_origen",
+            "requiere_referencia",
+            "es_egreso",
+            "activo",
+        ]
+        widgets = {
+            "codigo": forms.TextInput(attrs={"class": "form-control"}),
+            "nombre": forms.TextInput(attrs={"class": "form-control"}),
+        }

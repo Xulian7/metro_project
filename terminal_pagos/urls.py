@@ -6,4 +6,5 @@ app_name = "terminal_pagos"
 urlpatterns = [
     path("", views.nueva_transaccion, name="nueva_transaccion"),
     path("facturar/", views.crear_factura, name="crear_factura"),
+    path("catalogos-pago/", views.catalogos_pago, name="catalogos_pago"),
 ]
