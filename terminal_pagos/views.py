@@ -9,12 +9,6 @@ from django.utils.timezone import now
 from terminal_pagos.models import TipoPago, Cuenta
 
 
-from django.utils.timezone import now
-from .models import TipoPago, Cuenta
-from almacen.models import Producto
-from taller.models import Servicio
-
-
 def nueva_transaccion(request):
     # =========================
     # CATÁLOGOS (JSON)
@@ -60,12 +54,8 @@ def nueva_transaccion(request):
         {
             "factura_form": factura_form,
             "item_formset": item_formset,
-
-            # 🔹 ya existente
             "productos_json": list(productos),
             "servicios_json": list(servicios),
-
-            # 🔹 nuevo (pagos)
             "tipos_pago_json": list(tipos_pago),
             "cuentas_json": list(cuentas),
             "today": now().date().isoformat(),

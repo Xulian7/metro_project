@@ -138,13 +138,6 @@
         <div class="col-md-2">
           <select class="form-select form-select-sm pago-tipo" name="tipo_pago[]">
             <option value="">—</option>
-            {% for tipo in tipos_pago %}
-              <option value="{{ tipo.id }}"
-                      data-referencia="{{ tipo.requiere_referencia|yesno:'1,0' }}"
-                      data-origen="{{ tipo.requiere_origen|yesno:'1,0' }}">
-                {{ tipo.nombre }}
-              </option>
-            {% endfor %}
           </select>
         </div>
 
@@ -152,9 +145,6 @@
         <div class="col-md-2">
           <select class="form-select form-select-sm pago-cuenta" name="cuenta_pago[]">
             <option value="">—</option>
-            {% for cuenta in cuentas %}
-              <option value="{{ cuenta.id }}">{{ cuenta.nombre }}</option>
-            {% endfor %}
           </select>
         </div>
 
@@ -232,223 +222,248 @@
 
 {{ productos_json|json_script:"productos-almacen" }}
 {{ servicios_json|json_script:"servicios-taller" }}
+{{ tipos_pago_json|json_script:"tipos-pago" }}
+{{ cuentas_json|json_script:"cuentas" }}
 
 <script>
-const productosAlmacen = JSON.parse(document.getElementById('productos-almacen').textContent);
-const serviciosTaller = JSON.parse(document.getElementById('servicios-taller').textContent);
-
-$(document).ready(() => {
-  $('.select-buscable').select2({ width:'100%', placeholder:'Buscar…', allowClear:true });
-  $('select[name="contrato"]').on('change', recalcularTodos);
-});
-
-document.getElementById('add-item').addEventListener('click', () => {
-  const totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');
-  const index = parseInt(totalForms.value);
-
-  const html = document.getElementById('empty-form').innerHTML
-    .replace(/__prefix__/g, index);
-
-  const container = document.getElementById('items-container');
-  container.insertAdjacentHTML('beforeend', html);
-  totalForms.value = index + 1;
-
-  inicializarItem(container.lastElementChild);
-});
-
-const datosDescripcion = {
-  tarifa: [{id:'tarifa', text:'Pago de tarifa', valor:0}],
-  almacen: productosAlmacen.map(p => ({id:p.id, text:p.nombre, valor:p.precio_venta})),
-  taller: serviciosTaller.map(s => ({id:s.id, text:s.nombre_servicio, valor:s.valor}))
-};
-
-function getTarifaContrato() {
-  const sel = document.querySelector('select[name="contrato"]');
-  return sel?.selectedOptions[0]?.dataset.tarifa || 0;
-}
-
-function cargarDescripcion(row) {
-  const tipo = row.querySelector('.tipo-item');
-  const desc = row.querySelector('.descripcion-item');
-  const opciones = datosDescripcion[tipo.value] || [];
-
-  desc.innerHTML = '';
-  opciones.forEach(o => {
-    const opt = document.createElement('option');
-    opt.value = o.id;
-    opt.textContent = o.text;
-    opt.dataset.valor = o.valor;
-    desc.appendChild(opt);
-  });
-
-  $(desc).select2({ width:'100%', placeholder:'Buscar…', allowClear:true });
-}
-
-function recalcularFila(row) {
-  const tipo = row.querySelector('.tipo-item').value;
-  const cant = parseFloat(row.querySelector('.cantidad-item').value || 0);
-  let subtotal = 0;
-
-  if (tipo === 'tarifa') {
-    subtotal = getTarifaContrato() * cant;
-  } else {
-    const opt = row.querySelector('.descripcion-item').selectedOptions[0];
-    subtotal = (opt?.dataset.valor || 0) * cant;
-  }
-
-  row.dataset.subtotal = subtotal;
-  row.querySelector('.valor-unitario-item').value = subtotal ? subtotal.toFixed(2) : '';
-  recalcularTotales();
-}
-
-function recalcularTotales() {
-  let total = 0;
-  document.querySelectorAll('.item-row').forEach(r => {
-    total += parseFloat(r.dataset.subtotal || 0);
-  });
-  document.getElementById('total').innerText = total.toLocaleString('es-CO');
-}
-
-$('#items-container')
-  .on('change', '.tipo-item', function () {
-    const row = this.closest('.item-row');
-    cargarDescripcion(row);
-    recalcularFila(row);
-  })
-  .on('input', '.cantidad-item', function () {
-    recalcularFila(this.closest('.item-row'));
-  })
-  .on('select2:select select2:clear', '.descripcion-item', function () {
-    recalcularFila(this.closest('.item-row'));
-  })
-  .on('click', '.remove-item', function () {
-    this.closest('.item-row').remove();
-    recalcularTotales();
-  });
-
-function inicializarItem(row) {
-  cargarDescripcion(row);
-}
-
-function recalcularTodos() {
-  document.querySelectorAll('.item-row').forEach(recalcularFila);
-}
+  const TIPOS_PAGO = {{ tipos_pago_json|safe }};
+  const CUENTAS = {{ cuentas_json|safe }};
+  const FECHA_HOY = "{{ today }}";
 </script>
 
 <script>
-  /* =========================
-    PAGOS
-  ========================= */
+  const productosAlmacen = JSON.parse(document.getElementById('productos-almacen').textContent);
+  const serviciosTaller = JSON.parse(document.getElementById('servicios-taller').textContent);
 
-  const pagosContainer = document.getElementById('pagos-container');
-  const addPagoBtn = document.getElementById('add-pago');
-
-  /* =========================
-    AGREGAR PAGO
-  ========================= */
-  addPagoBtn.addEventListener('click', () => {
-    const template = document.getElementById('empty-pago').innerHTML;
-    pagosContainer.insertAdjacentHTML('beforeend', template);
-    recalcularPagos();
+  $(document).ready(() => {
+    $('.select-buscable').select2({ width:'100%', placeholder:'Buscar…', allowClear:true });
+    $('select[name="contrato"]').on('change', recalcularTodos);
   });
+
+  document.getElementById('add-item').addEventListener('click', () => {
+    const totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');
+    const index = parseInt(totalForms.value);
+
+    const html = document.getElementById('empty-form').innerHTML
+      .replace(/__prefix__/g, index);
+
+    const container = document.getElementById('items-container');
+    container.insertAdjacentHTML('beforeend', html);
+    totalForms.value = index + 1;
+
+    inicializarItem(container.lastElementChild);
+  });
+
+  const datosDescripcion = {
+    tarifa: [{id:'tarifa', text:'Pago de tarifa', valor:0}],
+    almacen: productosAlmacen.map(p => ({id:p.id, text:p.nombre, valor:p.precio_venta})),
+    taller: serviciosTaller.map(s => ({id:s.id, text:s.nombre_servicio, valor:s.valor}))
+  };
+
+  function getTarifaContrato() {
+    const sel = document.querySelector('select[name="contrato"]');
+    return sel?.selectedOptions[0]?.dataset.tarifa || 0;
+  }
+
+  function cargarDescripcion(row) {
+    const tipo = row.querySelector('.tipo-item');
+    const desc = row.querySelector('.descripcion-item');
+    const opciones = datosDescripcion[tipo.value] || [];
+
+    desc.innerHTML = '';
+    opciones.forEach(o => {
+      const opt = document.createElement('option');
+      opt.value = o.id;
+      opt.textContent = o.text;
+      opt.dataset.valor = o.valor;
+      desc.appendChild(opt);
+    });
+
+    $(desc).select2({ width:'100%', placeholder:'Buscar…', allowClear:true });
+  }
+
+  function recalcularFila(row) {
+    const tipo = row.querySelector('.tipo-item').value;
+    const cant = parseFloat(row.querySelector('.cantidad-item').value || 0);
+    let subtotal = 0;
+
+    if (tipo === 'tarifa') {
+      subtotal = getTarifaContrato() * cant;
+    } else {
+      const opt = row.querySelector('.descripcion-item').selectedOptions[0];
+      subtotal = (opt?.dataset.valor || 0) * cant;
+    }
+
+    row.dataset.subtotal = subtotal;
+    row.querySelector('.valor-unitario-item').value = subtotal ? subtotal.toFixed(2) : '';
+    recalcularTotales();
+  }
+
+  function recalcularTotales() {
+    let total = 0;
+    document.querySelectorAll('.item-row').forEach(r => {
+      total += parseFloat(r.dataset.subtotal || 0);
+    });
+    document.getElementById('total').innerText = total.toLocaleString('es-CO');
+  }
+
+  $('#items-container')
+    .on('change', '.tipo-item', function () {
+      const row = this.closest('.item-row');
+      cargarDescripcion(row);
+      recalcularFila(row);
+    })
+    .on('input', '.cantidad-item', function () {
+      recalcularFila(this.closest('.item-row'));
+    })
+    .on('select2:select select2:clear', '.descripcion-item', function () {
+      recalcularFila(this.closest('.item-row'));
+    })
+    .on('click', '.remove-item', function () {
+      this.closest('.item-row').remove();
+      recalcularTotales();
+    });
+
+  function inicializarItem(row) {
+    cargarDescripcion(row);
+  }
+
+  function recalcularTodos() {
+    document.querySelectorAll('.item-row').forEach(recalcularFila);
+  }
+</script>
+
+
+<script>
+  /* =========================
+    PAGOS – JSON DRIVEN
+  ========================= */
+
+  const pagosContainer = document.getElementById("pagos-container");
+  const addPagoBtn = document.getElementById("add-pago");
+
+  /* =========================
+    HELPERS
+  ========================= */
+  function cargarTiposPago(select) {
+    TIPOS_PAGO.forEach(tp => {
+      const opt = document.createElement("option");
+      opt.value = tp.id;
+      opt.textContent = tp.nombre;
+      opt.dataset.origen = tp.requiere_origen ? "1" : "0";
+      opt.dataset.referencia = tp.requiere_referencia ? "1" : "0";
+      select.appendChild(opt);
+    });
+  }
+
+  function cargarCuentas(select) {
+    CUENTAS.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = c.nombre;
+      select.appendChild(opt);
+    });
+  }
+
+  /* =========================
+    AGREGAR FILA DE PAGO
+  ========================= */
+  function agregarPago() {
+    const template = document.getElementById("empty-pago").innerHTML;
+    pagosContainer.insertAdjacentHTML("beforeend", template);
+
+    const row = pagosContainer.lastElementChild;
+
+    const tipoSelect = row.querySelector(".pago-tipo");
+    const cuentaSelect = row.querySelector(".pago-cuenta");
+    const fechaInput = row.querySelector(".pago-fecha");
+
+    cargarTiposPago(tipoSelect);
+    cargarCuentas(cuentaSelect);
+
+    fechaInput.value = FECHA_HOY;
+  }
 
   /* =========================
     TOTAL FACTURA
   ========================= */
   function obtenerTotalFactura() {
-    const totalEl = document.getElementById('total');
-    if (!totalEl) return 0;
+    const el = document.getElementById("total");
+    if (!el) return 0;
 
-    const texto = totalEl.innerText
-      .replace(/\./g, '')
-      .replace(',', '.')
-      .replace('$', '');
-
-    return parseFloat(texto) || 0;
+    return parseFloat(
+      el.innerText.replace(/\./g, "").replace(",", ".").replace("$", "")
+    ) || 0;
   }
 
   /* =========================
     RECÁLCULO
   ========================= */
   function recalcularPagos() {
-    let pagado = 0;
+    let totalPagado = 0;
 
-    document.querySelectorAll('.pago-valor').forEach(input => {
-      pagado += parseFloat(input.value || 0);
+    document.querySelectorAll(".pago-valor").forEach(input => {
+      totalPagado += parseFloat(input.value || 0);
     });
 
     const totalFactura = obtenerTotalFactura();
-    const saldo = Math.max(totalFactura - pagado, 0);
+    const saldo = Math.max(totalFactura - totalPagado, 0);
 
-    document.getElementById('total-pagado').innerText =
-      pagado.toLocaleString('es-CO', { minimumFractionDigits: 2 });
+    document.getElementById("total-pagado").innerText =
+      totalPagado.toLocaleString("es-CO", { minimumFractionDigits: 2 });
 
-    document.getElementById('saldo-pendiente').innerText =
-      saldo.toLocaleString('es-CO', { minimumFractionDigits: 2 });
+    document.getElementById("saldo-pendiente").innerText =
+      saldo.toLocaleString("es-CO", { minimumFractionDigits: 2 });
 
-    // 🔒 No permitir pagar de más
-    document.querySelectorAll('.pago-valor').forEach(input => {
+    document.querySelectorAll(".pago-valor").forEach(input => {
       const actual = parseFloat(input.value || 0);
-      const max = totalFactura - (pagado - actual);
+      const max = totalFactura - (totalPagado - actual);
       input.max = max > 0 ? max.toFixed(2) : 0;
     });
   }
 
   /* =========================
-    EVENTOS DINÁMICOS
+    LÓGICA POR TIPO
   ========================= */
-  pagosContainer.addEventListener('input', e => {
-    if (e.target.classList.contains('pago-valor')) {
+  function manejarTipoPago(select) {
+    const row = select.closest(".pago-row");
+    const origen = row.querySelector(".pago-origen");
+    const referencia = row.querySelector(".pago-referencia");
+
+    const opt = select.selectedOptions[0];
+    if (!opt) return;
+
+    origen.readOnly = opt.dataset.origen !== "1";
+    referencia.readOnly = opt.dataset.referencia !== "1";
+
+    if (origen.readOnly) origen.value = "";
+    if (referencia.readOnly) referencia.value = "";
+  }
+
+  /* =========================
+    EVENTOS
+  ========================= */
+  addPagoBtn.addEventListener("click", agregarPago);
+
+  pagosContainer.addEventListener("input", e => {
+    if (e.target.classList.contains("pago-valor")) {
       recalcularPagos();
     }
   });
 
-  pagosContainer.addEventListener('change', e => {
-    if (e.target.classList.contains('pago-tipo')) {
+  pagosContainer.addEventListener("change", e => {
+    if (e.target.classList.contains("pago-tipo")) {
       manejarTipoPago(e.target);
     }
   });
 
-  pagosContainer.addEventListener('click', e => {
-    if (e.target.classList.contains('remove-pago')) {
-      e.target.closest('.pago-row').remove();
+  pagosContainer.addEventListener("click", e => {
+    if (e.target.classList.contains("remove-pago")) {
+      e.target.closest(".pago-row").remove();
       recalcularPagos();
     }
   });
-
-  /* =========================
-    LÓGICA POR TIPO DE PAGO
-  ========================= */
-  function manejarTipoPago(select) {
-    const row = select.closest('.pago-row');
-
-    const origenInput = row.querySelector('.pago-origen');
-    const referenciaInput = row.querySelector('.pago-referencia');
-
-    const option = select.selectedOptions[0];
-
-    const requiereOrigen = option?.dataset.origen === "1";
-    const requiereReferencia = option?.dataset.referencia === "1";
-
-    // ORIGEN
-    if (requiereOrigen) {
-      origenInput.readOnly = false;
-    } else {
-      origenInput.value = "";
-      origenInput.readOnly = true;
-    }
-
-    // REFERENCIA
-    if (requiereReferencia) {
-      referenciaInput.readOnly = false;
-    } else {
-      referenciaInput.value = "";
-      referenciaInput.readOnly = true;
-    }
-  }
-  </script>
-
-
+</script>
 
 
 
