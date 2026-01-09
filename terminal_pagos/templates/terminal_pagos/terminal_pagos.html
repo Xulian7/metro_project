@@ -17,18 +17,20 @@
   
   .remove-item,
   .remove-pago {
-    min-width: 32px;
+    width: 32px;
     height: 32px;
+    padding: 0;
     line-height: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-  }
+}
 
-  .item-row,
-  .pago-row {
-    gap: 0.25rem;
-  }
+.item-row,
+.pago-row {
+  align-items: center;
+}
+
 </style>
 
 <div class="card p-4 shadow-sm">
@@ -201,12 +203,13 @@
         </div>
 
         <!-- ACCIÓN -->
-        <div class="col-md-1 d-flex justify-content-center">
+        <div class="col-md-1 text-center">
           <button type="button"
                   class="btn btn-outline-danger btn-sm remove-pago">
             ✖
           </button>
         </div>
+
 
       </div>
     </div>
