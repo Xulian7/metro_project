@@ -9,20 +9,69 @@ from django.utils.timezone import now
 from terminal_pagos.models import TipoPago, Cuenta
 
 
-def nueva_transaccion(request):
-    productos = Producto.objects.values("id", "nombre", "precio_venta")
-    servicios = Servicio.objects.values("id", "nombre_servicio", "valor")
-    
+from django.utils.timezone import now
+from .models import TipoPago, Cuenta
+from almacen.models import Producto
+from taller.models import Servicio
 
+
+def nueva_transaccion(request):
+    # =========================
+    # CATÁLOGOS (JSON)
+    # =========================
+    productos = Producto.objects.values(
+        "id",
+        "nombre",
+        "precio_venta"
+    )
+
+    servicios = Servicio.objects.values(
+        "id",
+        "nombre_servicio",
+        "valor"
+    )
+
+    tipos_pago = TipoPago.objects.filter(
+        activo=True
+    ).values(
+        "id",
+        "nombre",
+        "requiere_origen",
+        "requiere_referencia",
+        "es_egreso",
+    )
+
+    cuentas = Cuenta.objects.filter(
+        activa=True
+    ).values(
+        "id",
+        "nombre"
+    )
+
+    # =========================
+    # FORMS EXISTENTES
+    # =========================
     factura_form = FacturaForm()
     item_formset = ItemFacturaFormSet()
 
-    return render(request, "terminal_pagos/terminal_pagos.html", {
-        "factura_form": factura_form,
-        "item_formset": item_formset,
-        "productos_json": list(productos),
-        "servicios_json": list(servicios),
-    })
+    return render(
+        request,
+        "terminal_pagos/terminal_pagos.html",
+        {
+            "factura_form": factura_form,
+            "item_formset": item_formset,
+
+            # 🔹 ya existente
+            "productos_json": list(productos),
+            "servicios_json": list(servicios),
+
+            # 🔹 nuevo (pagos)
+            "tipos_pago_json": list(tipos_pago),
+            "cuentas_json": list(cuentas),
+            "today": now().date().isoformat(),
+        }
+    )
+
 
 
 def crear_factura(request):
@@ -36,7 +85,6 @@ def crear_factura(request):
             item_formset.instance = factura
             item_formset.save()
 
-            # 🔥 aquí luego procesas los pagos manuales
             return redirect("terminal_pagos:crear_factura")
 
     else:
@@ -46,14 +94,14 @@ def crear_factura(request):
     context = {
         "factura_form": factura_form,
         "item_formset": item_formset,
-
-        # 🔑 ESTO ES LO QUE FALTABA
-        "tipos_pago": TipoPago.objects.filter(activo=True).order_by("nombre"),
-        "cuentas": Cuenta.objects.filter(activa=True).order_by("nombre"),
-        "today": now(),
     }
 
-    return render(request, "terminal_pagos/crear_factura.html", context)
+    return render(
+        request,
+        "terminal_pagos/crear_factura.html",
+        context
+    )
+
 
 
 

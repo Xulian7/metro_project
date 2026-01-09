@@ -336,117 +336,213 @@ function recalcularTodos() {
 </script>
 
 <script>
-/* =========================
-   PAGOS
-========================= */
+  const TIPOS_PAGO = {{ tipos_pago_json|safe }};
+  const CUENTAS = {{ cuentas_json|safe }};
+  const FECHA_HOY = "{{ today }}";
+</script>
 
-const pagosContainer = document.getElementById('pagos-container');
-const addPagoBtn = document.getElementById('add-pago');
 
-/* =========================
-   AGREGAR PAGO
-========================= */
-addPagoBtn.addEventListener('click', () => {
-  const template = document.getElementById('empty-pago').innerHTML;
-  pagosContainer.insertAdjacentHTML('beforeend', template);
-  recalcularPagos();
-});
+<script>
+/* =====================================================
+   PAGOS – FULL JS (JSON DRIVEN)
+===================================================== */
 
-/* =========================
-   TOTAL FACTURA
-========================= */
-function obtenerTotalFactura() {
-  const totalEl = document.getElementById('total');
-  if (!totalEl) return 0;
+const pagosContainer = document.getElementById("pagos-container");
+const addPagoBtn = document.getElementById("add-pago");
 
-  const texto = totalEl.innerText
-    .replace(/\./g, '')
-    .replace(',', '.')
-    .replace('$', '');
+/* =====================================================
+   BUILDERS
+===================================================== */
+function crearSelectTipoPago() {
+  const select = document.createElement("select");
+  select.className = "form-select form-select-sm pago-tipo";
+  select.name = "tipo_pago[]";
 
-  return parseFloat(texto) || 0;
+  const empty = document.createElement("option");
+  empty.value = "";
+  empty.textContent = "—";
+  select.appendChild(empty);
+
+  TIPOS_PAGO.forEach(tp => {
+    const opt = document.createElement("option");
+    opt.value = tp.id;
+    opt.textContent = tp.nombre;
+    opt.dataset.origen = tp.requiere_origen ? "1" : "0";
+    opt.dataset.referencia = tp.requiere_referencia ? "1" : "0";
+    select.appendChild(opt);
+  });
+
+  return select;
 }
 
-/* =========================
-   RECÁLCULO
-========================= */
+function crearSelectCuenta() {
+  const select = document.createElement("select");
+  select.className = "form-select form-select-sm pago-cuenta";
+  select.name = "cuenta_pago[]";
+
+  const empty = document.createElement("option");
+  empty.value = "";
+  empty.textContent = "—";
+  select.appendChild(empty);
+
+  CUENTAS.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.id;
+    opt.textContent = c.nombre;
+    select.appendChild(opt);
+  });
+
+  return select;
+}
+
+/* =====================================================
+   FILA DE PAGO
+===================================================== */
+function crearFilaPago() {
+  const row = document.createElement("div");
+  row.className =
+    "row align-items-center border rounded-3 px-2 py-2 mb-2 pago-row bg-light";
+
+  row.innerHTML = `
+    <div class="col-md-2"></div>
+    <div class="col-md-2"></div>
+
+    <div class="col-md-2">
+      <input type="date"
+             class="form-control form-control-sm pago-fecha"
+             name="fecha_pago[]"
+             value="${FECHA_HOY}">
+    </div>
+
+    <div class="col-md-2">
+      <input type="text"
+             class="form-control form-control-sm pago-origen"
+             name="origen_pago[]"
+             placeholder="Origen"
+             readonly>
+    </div>
+
+    <div class="col-md-2">
+      <input type="text"
+             class="form-control form-control-sm pago-referencia"
+             name="referencia_pago[]"
+             placeholder="Referencia"
+             readonly>
+    </div>
+
+    <div class="col-md-1">
+      <input type="number"
+             step="0.01"
+             min="0"
+             class="form-control form-control-sm pago-valor text-end"
+             name="valor_pago[]"
+             placeholder="0.00">
+    </div>
+
+    <div class="col-md-1 text-center">
+      <button type="button"
+              class="btn btn-outline-danger btn-sm remove-pago">
+        ✖
+      </button>
+    </div>
+  `;
+
+  row.children[0].appendChild(crearSelectTipoPago());
+  row.children[1].appendChild(crearSelectCuenta());
+
+  return row;
+}
+
+/* =====================================================
+   CÁLCULOS
+===================================================== */
+function obtenerTotalFactura() {
+  const el = document.getElementById("total");
+  if (!el) return 0;
+
+  return (
+    parseFloat(
+      el.innerText
+        .replace(/\./g, "")
+        .replace(",", ".")
+        .replace("$", "")
+    ) || 0
+  );
+}
+
 function recalcularPagos() {
   let pagado = 0;
 
-  document.querySelectorAll('.pago-valor').forEach(input => {
+  document.querySelectorAll(".pago-valor").forEach(input => {
     pagado += parseFloat(input.value || 0);
   });
 
-  const totalFactura = obtenerTotalFactura();
-  const saldo = Math.max(totalFactura - pagado, 0);
+  const total = obtenerTotalFactura();
+  const saldo = Math.max(total - pagado, 0);
 
-  document.getElementById('total-pagado').innerText =
-    pagado.toLocaleString('es-CO', { minimumFractionDigits: 2 });
+  document.getElementById("total-pagado").innerText =
+    pagado.toLocaleString("es-CO", { minimumFractionDigits: 2 });
 
-  document.getElementById('saldo-pendiente').innerText =
-    saldo.toLocaleString('es-CO', { minimumFractionDigits: 2 });
+  document.getElementById("saldo-pendiente").innerText =
+    saldo.toLocaleString("es-CO", { minimumFractionDigits: 2 });
 
-  // 🔒 No permitir pagar de más
-  document.querySelectorAll('.pago-valor').forEach(input => {
+  document.querySelectorAll(".pago-valor").forEach(input => {
     const actual = parseFloat(input.value || 0);
-    const max = totalFactura - (pagado - actual);
+    const max = total - (pagado - actual);
     input.max = max > 0 ? max.toFixed(2) : 0;
   });
 }
 
-/* =========================
-   EVENTOS DINÁMICOS
-========================= */
-pagosContainer.addEventListener('input', e => {
-  if (e.target.classList.contains('pago-valor')) {
+/* =====================================================
+   LÓGICA POR TIPO DE PAGO
+===================================================== */
+function manejarTipoPago(select) {
+  const row = select.closest(".pago-row");
+  if (!row) return;
+
+  const origen = row.querySelector(".pago-origen");
+  const referencia = row.querySelector(".pago-referencia");
+
+  const opt = select.selectedOptions[0];
+  if (!opt) return;
+
+  const requiereOrigen = opt.dataset.origen === "1";
+  const requiereReferencia = opt.dataset.referencia === "1";
+
+  origen.readOnly = !requiereOrigen;
+  referencia.readOnly = !requiereReferencia;
+
+  if (!requiereOrigen) origen.value = "";
+  if (!requiereReferencia) referencia.value = "";
+}
+
+/* =====================================================
+   EVENTOS
+===================================================== */
+addPagoBtn.addEventListener("click", () => {
+  pagosContainer.appendChild(crearFilaPago());
+});
+
+pagosContainer.addEventListener("input", e => {
+  if (e.target.classList.contains("pago-valor")) {
     recalcularPagos();
   }
 });
 
-pagosContainer.addEventListener('change', e => {
-  if (e.target.classList.contains('pago-tipo')) {
+pagosContainer.addEventListener("change", e => {
+  if (e.target.classList.contains("pago-tipo")) {
     manejarTipoPago(e.target);
   }
 });
 
-pagosContainer.addEventListener('click', e => {
-  if (e.target.classList.contains('remove-pago')) {
-    e.target.closest('.pago-row').remove();
+pagosContainer.addEventListener("click", e => {
+  if (e.target.classList.contains("remove-pago")) {
+    e.target.closest(".pago-row").remove();
     recalcularPagos();
   }
 });
-
-/* =========================
-   LÓGICA POR TIPO DE PAGO
-========================= */
-function manejarTipoPago(select) {
-  const row = select.closest('.pago-row');
-
-  const origenInput = row.querySelector('.pago-origen');
-  const referenciaInput = row.querySelector('.pago-referencia');
-
-  const option = select.selectedOptions[0];
-
-  const requiereOrigen = option?.dataset.origen === "1";
-  const requiereReferencia = option?.dataset.referencia === "1";
-
-  // ORIGEN
-  if (requiereOrigen) {
-    origenInput.readOnly = false;
-  } else {
-    origenInput.value = "";
-    origenInput.readOnly = true;
-  }
-
-  // REFERENCIA
-  if (requiereReferencia) {
-    referenciaInput.readOnly = false;
-  } else {
-    referenciaInput.value = "";
-    referenciaInput.readOnly = true;
-  }
-}
 </script>
+
 
 
 
