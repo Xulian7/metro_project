@@ -14,6 +14,21 @@
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  
+  .remove-item,
+  .remove-pago {
+    min-width: 32px;
+    height: 32px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .item-row,
+  .pago-row {
+    gap: 0.25rem;
+  }
 </style>
 
 <div class="card p-4 shadow-sm">
@@ -78,8 +93,11 @@
           {{ item_formset.empty_form.valor_unitario|add_class:"form-control form-control-sm valor-unitario-item text-end" }}
         </div>
 
-        <div class="col-md-2 text-center">
-          <button type="button" class="btn btn-outline-danger btn-sm remove-item">✖</button>
+        <div class="col-md-2 d-flex justify-content-center">
+          <button type="button"
+                  class="btn btn-outline-danger btn-sm remove-item">
+            ✖
+          </button>
         </div>
 
       </div>
@@ -183,8 +201,9 @@
         </div>
 
         <!-- ACCIÓN -->
-        <div class="col-md-1 text-center">
-          <button type="button" class="btn btn-outline-danger btn-sm remove-pago">
+        <div class="col-md-1 d-flex justify-content-center">
+          <button type="button"
+                  class="btn btn-outline-danger btn-sm remove-pago">
             ✖
           </button>
         </div>
