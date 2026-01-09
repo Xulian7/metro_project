@@ -225,15 +225,6 @@
 {{ tipos_pago_json|json_script:"tipos-pago" }}
 {{ cuentas_json|json_script:"cuentas" }}
 
-<script>
-  console.log("TIPOS_PAGO:", {{ tipos_pago_json|safe }});
-  console.log("CUENTAS:", {{ cuentas_json|safe }});
-
-  const TIPOS_PAGO = {{ tipos_pago_json|safe }};
-  const CUENTAS = {{ cuentas_json|safe }};
-  const FECHA_HOY = "{{ today }}";
-</script>
-
 
 <script>
   const productosAlmacen = JSON.parse(document.getElementById('productos-almacen').textContent);
@@ -339,25 +330,43 @@
 
 
 <script>
+/* =====================================================
+   PAGOS – ESTILO ÍTEMS (ROBUSTO)
+===================================================== */
+
 document.addEventListener("DOMContentLoaded", () => {
 
-  if (typeof TIPOS_PAGO === "undefined" || typeof CUENTAS === "undefined") {
-    console.error("JSON de pagos no disponible");
-    return;
-  }
+  /* =========================
+     DATOS DESDE EL DOM
+  ========================= */
+  let TIPOS_PAGO = [];
+  let CUENTAS = [];
 
-  const pagosContainer = document.getElementById("pagos-container");
-  const addPagoBtn = document.getElementById("add-pago");
+  try {
+    const tiposEl = document.getElementById("tipos-pago");
+    const cuentasEl = document.getElementById("cuentas");
 
-  if (!pagosContainer || !addPagoBtn) {
-    console.warn("Sección de pagos no presente");
-    return;
+    if (tiposEl) TIPOS_PAGO = JSON.parse(tiposEl.textContent);
+    if (cuentasEl) CUENTAS = JSON.parse(cuentasEl.textContent);
+  } catch (e) {
+    console.error("Error leyendo JSON de pagos", e);
   }
 
   /* =========================
-     HELPERS SELECT
+     ELEMENTOS BASE
+  ========================= */
+  const pagosContainer = document.getElementById("pagos-container");
+  const addPagoBtn = document.getElementById("add-pago");
+  const emptyPagoTpl = document.getElementById("empty-pago");
+
+  /* =========================
+     HELPERS
   ========================= */
   function cargarTiposPago(select) {
+    if (!select) return;
+
+    select.innerHTML = '<option value="">—</option>';
+
     TIPOS_PAGO.forEach(tp => {
       const opt = document.createElement("option");
       opt.value = tp.id;
@@ -369,6 +378,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function cargarCuentas(select) {
+    if (!select) return;
+
+    select.innerHTML = '<option value="">—</option>';
+
     CUENTAS.forEach(c => {
       const opt = document.createElement("option");
       opt.value = c.id;
@@ -385,10 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!el) return 0;
 
     return parseFloat(
-      el.innerText
-        .replace(/\./g, "")
-        .replace(",", ".")
-        .replace("$", "")
+      el.innerText.replace(/\./g, "").replace(",", ".").replace("$", "")
     ) || 0;
   }
 
@@ -405,11 +415,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalFactura = obtenerTotalFactura();
     const saldo = Math.max(totalFactura - totalPagado, 0);
 
-    document.getElementById("total-pagado").innerText =
-      totalPagado.toLocaleString("es-CO", { minimumFractionDigits: 2 });
+    const totalPagadoEl = document.getElementById("total-pagado");
+    const saldoEl = document.getElementById("saldo-pendiente");
 
-    document.getElementById("saldo-pendiente").innerText =
-      saldo.toLocaleString("es-CO", { minimumFractionDigits: 2 });
+    if (totalPagadoEl) {
+      totalPagadoEl.innerText =
+        totalPagado.toLocaleString("es-CO", { minimumFractionDigits: 2 });
+    }
+
+    if (saldoEl) {
+      saldoEl.innerText =
+        saldo.toLocaleString("es-CO", { minimumFractionDigits: 2 });
+    }
 
     // 🔒 No permitir pagar de más
     document.querySelectorAll(".pago-valor").forEach(input => {
@@ -420,7 +437,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     LÓGICA POR TIPO DE PAGO
+     LÓGICA POR TIPO
   ========================= */
   function manejarTipoPago(select) {
     const row = select.closest(".pago-row");
@@ -428,65 +445,74 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const origen = row.querySelector(".pago-origen");
     const referencia = row.querySelector(".pago-referencia");
-
     const opt = select.selectedOptions[0];
+
     if (!opt) return;
 
     const requiereOrigen = opt.dataset.origen === "1";
     const requiereReferencia = opt.dataset.referencia === "1";
 
-    origen.readOnly = !requiereOrigen;
-    referencia.readOnly = !requiereReferencia;
+    if (origen) {
+      origen.readOnly = !requiereOrigen;
+      if (!requiereOrigen) origen.value = "";
+    }
 
-    if (!requiereOrigen) origen.value = "";
-    if (!requiereReferencia) referencia.value = "";
+    if (referencia) {
+      referencia.readOnly = !requiereReferencia;
+      if (!requiereReferencia) referencia.value = "";
+    }
   }
 
   /* =========================
-     AGREGAR FILA DE PAGO
+     AGREGAR PAGO
   ========================= */
   function agregarPago() {
-    const tpl = document.getElementById("empty-pago");
-    if (!tpl) return;
+    if (!pagosContainer || !emptyPagoTpl) return;
 
-    pagosContainer.insertAdjacentHTML("beforeend", tpl.innerHTML);
+    pagosContainer.insertAdjacentHTML("beforeend", emptyPagoTpl.innerHTML);
     const row = pagosContainer.lastElementChild;
+    if (!row) return;
 
-    const tipoSelect = row.querySelector(".pago-tipo");
-    const cuentaSelect = row.querySelector(".pago-cuenta");
+    cargarTiposPago(row.querySelector(".pago-tipo"));
+    cargarCuentas(row.querySelector(".pago-cuenta"));
+
     const fechaInput = row.querySelector(".pago-fecha");
-
-    if (tipoSelect) cargarTiposPago(tipoSelect);
-    if (cuentaSelect) cargarCuentas(cuentaSelect);
-    if (fechaInput) fechaInput.value = FECHA_HOY;
+    if (fechaInput && typeof FECHA_HOY !== "undefined") {
+      fechaInput.value = FECHA_HOY;
+    }
   }
 
   /* =========================
-     EVENTOS
+     EVENTOS (RESILIENTES)
   ========================= */
-  addPagoBtn.addEventListener("click", agregarPago);
+  if (addPagoBtn) {
+    addPagoBtn.addEventListener("click", agregarPago);
+  }
 
-  pagosContainer.addEventListener("input", e => {
-    if (e.target.classList.contains("pago-valor")) {
-      recalcularPagos();
-    }
-  });
+  if (pagosContainer) {
+    pagosContainer.addEventListener("input", e => {
+      if (e.target.classList.contains("pago-valor")) {
+        recalcularPagos();
+      }
+    });
 
-  pagosContainer.addEventListener("change", e => {
-    if (e.target.classList.contains("pago-tipo")) {
-      manejarTipoPago(e.target);
-    }
-  });
+    pagosContainer.addEventListener("change", e => {
+      if (e.target.classList.contains("pago-tipo")) {
+        manejarTipoPago(e.target);
+      }
+    });
 
-  pagosContainer.addEventListener("click", e => {
-    if (e.target.classList.contains("remove-pago")) {
-      e.target.closest(".pago-row")?.remove();
-      recalcularPagos();
-    }
-  });
+    pagosContainer.addEventListener("click", e => {
+      if (e.target.classList.contains("remove-pago")) {
+        e.target.closest(".pago-row")?.remove();
+        recalcularPagos();
+      }
+    });
+  }
 
 });
 </script>
+
 
 
 
