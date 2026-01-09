@@ -339,15 +339,23 @@
 
 
 <script>
-  /* =========================
-    PAGOS – JSON DRIVEN
-  ========================= */
+document.addEventListener("DOMContentLoaded", () => {
+
+  if (typeof TIPOS_PAGO === "undefined" || typeof CUENTAS === "undefined") {
+    console.error("JSON de pagos no disponible");
+    return;
+  }
 
   const pagosContainer = document.getElementById("pagos-container");
   const addPagoBtn = document.getElementById("add-pago");
 
+  if (!pagosContainer || !addPagoBtn) {
+    console.warn("Sección de pagos no presente");
+    return;
+  }
+
   /* =========================
-    HELPERS
+     HELPERS SELECT
   ========================= */
   function cargarTiposPago(select) {
     TIPOS_PAGO.forEach(tp => {
@@ -370,38 +378,22 @@
   }
 
   /* =========================
-    AGREGAR FILA DE PAGO
-  ========================= */
-  function agregarPago() {
-    const template = document.getElementById("empty-pago").innerHTML;
-    pagosContainer.insertAdjacentHTML("beforeend", template);
-
-    const row = pagosContainer.lastElementChild;
-
-    const tipoSelect = row.querySelector(".pago-tipo");
-    const cuentaSelect = row.querySelector(".pago-cuenta");
-    const fechaInput = row.querySelector(".pago-fecha");
-
-    cargarTiposPago(tipoSelect);
-    cargarCuentas(cuentaSelect);
-
-    fechaInput.value = FECHA_HOY;
-  }
-
-  /* =========================
-    TOTAL FACTURA
+     TOTAL FACTURA
   ========================= */
   function obtenerTotalFactura() {
     const el = document.getElementById("total");
     if (!el) return 0;
 
     return parseFloat(
-      el.innerText.replace(/\./g, "").replace(",", ".").replace("$", "")
+      el.innerText
+        .replace(/\./g, "")
+        .replace(",", ".")
+        .replace("$", "")
     ) || 0;
   }
 
   /* =========================
-    RECÁLCULO
+     RECÁLCULO PAGOS
   ========================= */
   function recalcularPagos() {
     let totalPagado = 0;
@@ -419,6 +411,7 @@
     document.getElementById("saldo-pendiente").innerText =
       saldo.toLocaleString("es-CO", { minimumFractionDigits: 2 });
 
+    // 🔒 No permitir pagar de más
     document.querySelectorAll(".pago-valor").forEach(input => {
       const actual = parseFloat(input.value || 0);
       const max = totalFactura - (totalPagado - actual);
@@ -427,25 +420,49 @@
   }
 
   /* =========================
-    LÓGICA POR TIPO
+     LÓGICA POR TIPO DE PAGO
   ========================= */
   function manejarTipoPago(select) {
     const row = select.closest(".pago-row");
+    if (!row) return;
+
     const origen = row.querySelector(".pago-origen");
     const referencia = row.querySelector(".pago-referencia");
 
     const opt = select.selectedOptions[0];
     if (!opt) return;
 
-    origen.readOnly = opt.dataset.origen !== "1";
-    referencia.readOnly = opt.dataset.referencia !== "1";
+    const requiereOrigen = opt.dataset.origen === "1";
+    const requiereReferencia = opt.dataset.referencia === "1";
 
-    if (origen.readOnly) origen.value = "";
-    if (referencia.readOnly) referencia.value = "";
+    origen.readOnly = !requiereOrigen;
+    referencia.readOnly = !requiereReferencia;
+
+    if (!requiereOrigen) origen.value = "";
+    if (!requiereReferencia) referencia.value = "";
   }
 
   /* =========================
-    EVENTOS
+     AGREGAR FILA DE PAGO
+  ========================= */
+  function agregarPago() {
+    const tpl = document.getElementById("empty-pago");
+    if (!tpl) return;
+
+    pagosContainer.insertAdjacentHTML("beforeend", tpl.innerHTML);
+    const row = pagosContainer.lastElementChild;
+
+    const tipoSelect = row.querySelector(".pago-tipo");
+    const cuentaSelect = row.querySelector(".pago-cuenta");
+    const fechaInput = row.querySelector(".pago-fecha");
+
+    if (tipoSelect) cargarTiposPago(tipoSelect);
+    if (cuentaSelect) cargarCuentas(cuentaSelect);
+    if (fechaInput) fechaInput.value = FECHA_HOY;
+  }
+
+  /* =========================
+     EVENTOS
   ========================= */
   addPagoBtn.addEventListener("click", agregarPago);
 
@@ -463,11 +480,14 @@
 
   pagosContainer.addEventListener("click", e => {
     if (e.target.classList.contains("remove-pago")) {
-      e.target.closest(".pago-row").remove();
+      e.target.closest(".pago-row")?.remove();
       recalcularPagos();
     }
   });
+
+});
 </script>
+
 
 
 
