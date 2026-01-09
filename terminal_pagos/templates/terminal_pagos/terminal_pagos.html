@@ -226,10 +226,14 @@
 {{ cuentas_json|json_script:"cuentas" }}
 
 <script>
+  console.log("TIPOS_PAGO:", {{ tipos_pago_json|safe }});
+  console.log("CUENTAS:", {{ cuentas_json|safe }});
+
   const TIPOS_PAGO = {{ tipos_pago_json|safe }};
   const CUENTAS = {{ cuentas_json|safe }};
   const FECHA_HOY = "{{ today }}";
 </script>
+
 
 <script>
   const productosAlmacen = JSON.parse(document.getElementById('productos-almacen').textContent);
