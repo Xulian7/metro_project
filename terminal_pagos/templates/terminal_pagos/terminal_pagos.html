@@ -459,28 +459,57 @@ document.addEventListener("DOMContentLoaded", () => {
      LÓGICA POR TIPO
   ========================= */
   function manejarTipoPago(select) {
-    const row = select.closest(".pago-row");
-    if (!row) return;
+  const row = select.closest(".pago-row");
+  if (!row) return;
 
-    const origen = row.querySelector(".pago-origen");
-    const referencia = row.querySelector(".pago-referencia");
-    const opt = select.selectedOptions[0];
+  const cuentaSelect = row.querySelector(".pago-cuenta");
+  const origenInput = row.querySelector(".pago-origen");
+  const referenciaInput = row.querySelector(".pago-referencia");
 
-    if (!opt) return;
+  const opt = select.selectedOptions[0];
+  if (!opt) return;
 
-    const requiereOrigen = opt.dataset.origen === "1";
-    const requiereReferencia = opt.dataset.referencia === "1";
+  const nombreTipo = opt.textContent.trim().toLowerCase();
 
-    if (origen) {
-      origen.readOnly = !requiereOrigen;
-      if (!requiereOrigen) origen.value = "";
-    }
+  const requiereOrigen = opt.dataset.origen === "1";
+  const requiereReferencia = opt.dataset.referencia === "1";
 
-    if (referencia) {
-      referencia.readOnly = !requiereReferencia;
-      if (!requiereReferencia) referencia.value = "";
+  /* =========================
+     ORIGEN
+  ========================= */
+  origenInput.readOnly = !requiereOrigen;
+  if (!requiereOrigen) origenInput.value = "";
+
+  /* =========================
+     REFERENCIA
+  ========================= */
+  if (nombreTipo === "efectivo") {
+    referenciaInput.readOnly = true;
+    referenciaInput.value = "";
+  } else {
+    referenciaInput.readOnly = !requiereReferencia;
+    if (!requiereReferencia) referenciaInput.value = "";
+  }
+
+  /* =========================
+     CUENTA (EFECTIVO → CAJA USER)
+  ========================= */
+  if (nombreTipo === "efectivo") {
+    const cajaNombre = document
+      .getElementById("pagos-container")
+      ?.dataset.cajaUser;
+
+    if (cajaNombre && cuentaSelect) {
+      const opcionCaja = Array.from(cuentaSelect.options)
+        .find(o => o.textContent.trim() === cajaNombre);
+
+      if (opcionCaja) {
+        cuentaSelect.value = opcionCaja.value;
+      }
     }
   }
+}
+
 
   /* =========================
      AGREGAR PAGO
