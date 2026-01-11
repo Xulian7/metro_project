@@ -43,6 +43,7 @@ def nueva_transaccion(request):
         "valor"
     )
 
+    # ⚠️ JSON CLAVE PARA UX GUIADO
     configuraciones = ConfiguracionPago.objects.select_related(
         "medio",
         "canal",
@@ -53,10 +54,19 @@ def nueva_transaccion(request):
         canal__activo=True,
         cuenta_destino__activa=True
     ).values(
+        # Identidad de la configuración (esto es lo que se guarda)
         "id",
+
+        # Medio
+        "medio_id",
         "medio__nombre",
+
+        # Canal
+        "canal_id",
         "canal__nombre",
         "canal__requiere_referencia",
+
+        # Cuenta destino (informativa)
         "cuenta_destino__nombre",
     )
 
@@ -72,9 +82,12 @@ def nueva_transaccion(request):
         {
             "factura_form": factura_form,
             "item_formset": item_formset,
+
+            # JSONs para frontend
             "productos_json": list(productos),
             "servicios_json": list(servicios),
             "configuraciones_json": list(configuraciones),
+
             "today": now().date().isoformat(),
         }
     )
@@ -111,7 +124,7 @@ def crear_factura(request):
 
 
 # =========================
-# CATÁLOGOS DE MEDIOS DE PAGO
+# CATÁLOGOS DE MEDIOS DE PAGO (ADMIN)
 # =========================
 def catalogos_pago(request):
     medio_id = request.GET.get("medio")

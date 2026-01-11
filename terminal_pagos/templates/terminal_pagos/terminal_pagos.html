@@ -148,22 +148,32 @@
 
   
 
-    <!-- ================= TEMPLATE PAGO ================= -->
+    <!-- ================= TEMPLATE PAGO (UX GUIADO) ================= -->
     <div id="empty-pago" class="d-none">
       <div class="row align-items-center g-2 border rounded-3 px-2 py-2 mb-2 pago-row bg-light">
 
-        <!-- TIPO DE PAGO -->
+        <!-- MEDIO DE PAGO -->
         <div class="col-md-2">
-          <select class="form-select form-select-sm pago-tipo" name="tipo_pago[]">
-            <option value="">—</option>
+          <select class="form-select form-select-sm pago-medio" name="medio_pago[]">
+            <option value="">Medio</option>
           </select>
         </div>
 
-        <!-- CUENTA -->
+        <!-- CANAL -->
         <div class="col-md-2">
-          <select class="form-select form-select-sm pago-cuenta" name="cuenta_pago[]">
-            <option value="">—</option>
+          <select class="form-select form-select-sm pago-canal"
+                  name="canal_pago[]"
+                  disabled>
+            <option value="">Canal</option>
           </select>
+        </div>
+
+        <!-- CUENTA DESTINO (INFORMATIVO) -->
+        <div class="col-md-2">
+          <input type="text"
+                class="form-control form-control-sm pago-cuenta"
+                placeholder="Cuenta destino"
+                readonly>
         </div>
 
         <!-- FECHA -->
@@ -174,22 +184,13 @@
                 value="{{ today|date:'Y-m-d' }}">
         </div>
 
-        <!-- ORIGEN -->
-        <div class="col-md-2">
-          <input type="text"
-                class="form-control form-control-sm pago-origen"
-                name="origen_pago[]"
-                placeholder="Origen"
-                readonly>
-        </div>
-
-        <!-- REFERENCIA -->
+        <!-- REFERENCIA (CONDICIONAL) -->
         <div class="col-md-2">
           <input type="text"
                 class="form-control form-control-sm pago-referencia"
                 name="referencia_pago[]"
                 placeholder="Referencia"
-                readonly>
+                disabled>
         </div>
 
         <!-- VALOR -->
@@ -210,7 +211,8 @@
           </button>
         </div>
 
-
+        <!-- CONFIG OCULTA (RESUELTA POR SISTEMA) -->
+        <input type="hidden" name="origen_canal_id[]" class="pago-config-id">
 
       </div>
     </div>
@@ -233,8 +235,6 @@
       </div>
     </div>
 
-  </form>
-</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -349,26 +349,18 @@
 
 
 <script>
-/* =====================================================
-   PAGOS – ESTILO ÍTEMS (ROBUSTO)
-===================================================== */
-
 document.addEventListener("DOMContentLoaded", () => {
 
   /* =========================
-     DATOS DESDE EL DOM
+     DATA DESDE BACKEND
   ========================= */
-  let TIPOS_PAGO = [];
-  let CUENTAS = [];
+  let CONFIGS = [];
 
   try {
-    const tiposEl = document.getElementById("tipos-pago");
-    const cuentasEl = document.getElementById("cuentas");
-
-    if (tiposEl) TIPOS_PAGO = JSON.parse(tiposEl.textContent);
-    if (cuentasEl) CUENTAS = JSON.parse(cuentasEl.textContent);
+    const el = document.getElementById("origenes-canales-json");
+    if (el) CONFIGS = JSON.parse(el.textContent);
   } catch (e) {
-    console.error("Error leyendo JSON de pagos", e);
+    console.error("Error leyendo configuraciones de pago", e);
   }
 
   /* =========================
@@ -376,161 +368,112 @@ document.addEventListener("DOMContentLoaded", () => {
   ========================= */
   const pagosContainer = document.getElementById("pagos-container");
   const addPagoBtn = document.getElementById("add-pago");
-  const emptyPagoTpl = document.getElementById("empty-pago");
+  const tpl = document.getElementById("empty-pago");
 
   /* =========================
      HELPERS
   ========================= */
-  function cargarTiposPago(select) {
-    if (!select) return;
+  function uniqueBy(arr, key) {
+    return [...new Map(arr.map(i => [i[key], i])).values()];
+  }
 
-    select.innerHTML = '<option value="">—</option>';
-
-    TIPOS_PAGO.forEach(tp => {
+  function cargarMedios(select) {
+    select.innerHTML = '<option value="">Medio</option>';
+    uniqueBy(CONFIGS, "medio_id").forEach(m => {
       const opt = document.createElement("option");
-      opt.value = tp.id;
-      opt.textContent = tp.nombre;
-      opt.dataset.origen = tp.requiere_origen ? "1" : "0";
-      opt.dataset.referencia = tp.requiere_referencia ? "1" : "0";
+      opt.value = m.medio_id;
+      opt.textContent = m.medio_nombre;
       select.appendChild(opt);
     });
   }
 
-  function cargarCuentas(select) {
-    if (!select) return;
+  function cargarCanales(select, medioId) {
+    select.innerHTML = '<option value="">Canal</option>';
+    CONFIGS
+      .filter(c => c.medio_id == medioId)
+      .forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.id; // 👈 configuración real
+        opt.textContent = c.canal_nombre;
+        opt.dataset.referencia = c.requiere_referencia ? "1" : "0";
+        opt.dataset.cuenta = c.cuenta_nombre;
+        select.appendChild(opt);
+      });
 
-    select.innerHTML = '<option value="">—</option>';
-
-    CUENTAS.forEach(c => {
-      const opt = document.createElement("option");
-      opt.value = c.id;
-      opt.textContent = c.nombre;
-      select.appendChild(opt);
-    });
-  }
-
-  /* =========================
-     TOTAL FACTURA
-  ========================= */
-  function obtenerTotalFactura() {
-    const el = document.getElementById("total");
-    if (!el) return 0;
-
-    return parseFloat(
-      el.innerText.replace(/\./g, "").replace(",", ".").replace("$", "")
-    ) || 0;
-  }
-
-  /* =========================
-     RECÁLCULO PAGOS
-  ========================= */
-  function recalcularPagos() {
-    let totalPagado = 0;
-
-    document.querySelectorAll(".pago-valor").forEach(input => {
-      totalPagado += parseFloat(input.value || 0);
-    });
-
-    const totalFactura = obtenerTotalFactura();
-    const saldo = Math.max(totalFactura - totalPagado, 0);
-
-    const totalPagadoEl = document.getElementById("total-pagado");
-    const saldoEl = document.getElementById("saldo-pendiente");
-
-    if (totalPagadoEl) {
-      totalPagadoEl.innerText =
-        totalPagado.toLocaleString("es-CO", { minimumFractionDigits: 2 });
-    }
-
-    if (saldoEl) {
-      saldoEl.innerText =
-        saldo.toLocaleString("es-CO", { minimumFractionDigits: 2 });
-    }
-
-    // 🔒 No permitir pagar de más
-    document.querySelectorAll(".pago-valor").forEach(input => {
-      const actual = parseFloat(input.value || 0);
-      const max = totalFactura - (totalPagado - actual);
-      input.max = max > 0 ? max.toFixed(2) : 0;
-    });
-  }
-
-  /* =========================
-     LÓGICA POR TIPO
-  ========================= */
-  function manejarTipoPago(select) {
-    const row = select.closest(".pago-row");
-    if (!row) return;
-
-    const origen = row.querySelector(".pago-origen");
-    const referencia = row.querySelector(".pago-referencia");
-    const opt = select.selectedOptions[0];
-
-    if (!opt) return;
-
-    const requiereOrigen = opt.dataset.origen === "1";
-    const requiereReferencia = opt.dataset.referencia === "1";
-
-    if (origen) {
-      origen.readOnly = !requiereOrigen;
-      if (!requiereOrigen) origen.value = "";
-    }
-
-    if (referencia) {
-      referencia.readOnly = !requiereReferencia;
-      if (!requiereReferencia) referencia.value = "";
-    }
+    select.disabled = false;
   }
 
   /* =========================
      AGREGAR PAGO
   ========================= */
   function agregarPago() {
-    if (!pagosContainer || !emptyPagoTpl) return;
-
-    pagosContainer.insertAdjacentHTML("beforeend", emptyPagoTpl.innerHTML);
+    pagosContainer.insertAdjacentHTML("beforeend", tpl.innerHTML);
     const row = pagosContainer.lastElementChild;
-    if (!row) return;
 
-    cargarTiposPago(row.querySelector(".pago-tipo"));
-    cargarCuentas(row.querySelector(".pago-cuenta"));
+    const medioSel = row.querySelector(".pago-medio");
+    const canalSel = row.querySelector(".pago-canal");
 
-    const fechaInput = row.querySelector(".pago-fecha");
-    if (fechaInput && typeof FECHA_HOY !== "undefined") {
-      fechaInput.value = FECHA_HOY;
-    }
+    cargarMedios(medioSel);
+
+    medioSel.addEventListener("change", () => {
+      canalSel.disabled = true;
+      canalSel.innerHTML = '<option value="">Canal</option>';
+      row.querySelector(".pago-cuenta").value = "";
+      row.querySelector(".pago-referencia").value = "";
+      row.querySelector(".pago-referencia").disabled = true;
+
+      if (medioSel.value) {
+        cargarCanales(canalSel, medioSel.value);
+      }
+    });
+
+    canalSel.addEventListener("change", () => {
+      const opt = canalSel.selectedOptions[0];
+      if (!opt) return;
+
+      row.querySelector(".pago-cuenta").value = opt.dataset.cuenta || "";
+
+      const ref = row.querySelector(".pago-referencia");
+      ref.disabled = opt.dataset.referencia !== "1";
+
+      row.querySelector(".pago-config-id").value = canalSel.value;
+    });
   }
 
   /* =========================
-     EVENTOS (RESILIENTES)
+     TOTALES
   ========================= */
-  if (addPagoBtn) {
-    addPagoBtn.addEventListener("click", agregarPago);
+  function recalcularPagos() {
+    let total = 0;
+    document.querySelectorAll(".pago-valor").forEach(i => {
+      total += parseFloat(i.value || 0);
+    });
+
+    document.getElementById("total-pagado").innerText =
+      total.toLocaleString("es-CO", { minimumFractionDigits: 2 });
   }
 
-  if (pagosContainer) {
-    pagosContainer.addEventListener("input", e => {
-      if (e.target.classList.contains("pago-valor")) {
-        recalcularPagos();
-      }
-    });
+  /* =========================
+     EVENTOS
+  ========================= */
+  addPagoBtn?.addEventListener("click", agregarPago);
 
-    pagosContainer.addEventListener("change", e => {
-      if (e.target.classList.contains("pago-tipo")) {
-        manejarTipoPago(e.target);
-      }
-    });
+  pagosContainer?.addEventListener("input", e => {
+    if (e.target.classList.contains("pago-valor")) {
+      recalcularPagos();
+    }
+  });
 
-    pagosContainer.addEventListener("click", e => {
-      if (e.target.classList.contains("remove-pago")) {
-        e.target.closest(".pago-row")?.remove();
-        recalcularPagos();
-      }
-    });
-  }
+  pagosContainer?.addEventListener("click", e => {
+    if (e.target.classList.contains("remove-pago")) {
+      e.target.closest(".pago-row")?.remove();
+      recalcularPagos();
+    }
+  });
 
 });
 </script>
+
 
 
 
