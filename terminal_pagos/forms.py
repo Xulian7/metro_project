@@ -1,9 +1,22 @@
 from django import forms
 from django.forms import inlineformset_factory
-from .models import Factura, ItemFactura
-from arrendamientos.models import Contrato
-from .models import Cuenta, TipoPago
 
+from .models import (
+    Factura,
+    ItemFactura,
+    Cuenta,
+    OrigenFondo,
+    CanalPago,
+    OrigenCanal,
+    PagoFactura,
+)
+
+from arrendamientos.models import Contrato
+
+
+# =========================
+# SELECT PERSONALIZADO CONTRATO
+# =========================
 class ContratoSelect(forms.Select):
     def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
         option = super().create_option(
@@ -20,7 +33,9 @@ class ContratoSelect(forms.Select):
         return option
 
 
-
+# =========================
+# FACTURA
+# =========================
 class FacturaForm(forms.ModelForm):
     class Meta:
         model = Factura
@@ -41,9 +56,12 @@ class FacturaForm(forms.ModelForm):
         )
 
 
+# =========================
+# ITEMS DE FACTURA
+# =========================
 class ItemFacturaForm(forms.ModelForm):
     descripcion = forms.ChoiceField(choices=[], required=True)
-    
+
     class Meta:
         model = ItemFactura
         exclude = ("factura", "subtotal")
@@ -58,7 +76,9 @@ ItemFacturaFormSet = inlineformset_factory(
 )
 
 
-# pagos/forms.py
+# =========================
+# CUENTAS
+# =========================
 class CuentaForm(forms.ModelForm):
     class Meta:
         model = Cuenta
@@ -69,18 +89,53 @@ class CuentaForm(forms.ModelForm):
         }
 
 
-class TipoPagoForm(forms.ModelForm):
+# =========================
+# ORIGEN DE FONDOS
+# =========================
+class OrigenFondoForm(forms.ModelForm):
     class Meta:
-        model = TipoPago
+        model = OrigenFondo
+        fields = ["nombre", "tipo", "cuenta_principal", "activo"]
+
+
+# =========================
+# CANAL DE PAGO
+# =========================
+class CanalPagoForm(forms.ModelForm):
+    class Meta:
+        model = CanalPago
         fields = [
             "codigo",
             "nombre",
-            "requiere_origen",
             "requiere_referencia",
             "es_egreso",
             "activo",
         ]
-        widgets = {
-            "codigo": forms.TextInput(attrs={"class": "form-control"}),
-            "nombre": forms.TextInput(attrs={"class": "form-control"}),
-        }
+
+
+# =========================
+# CONFIGURACIÓN ORIGEN + CANAL
+# =========================
+class OrigenCanalForm(forms.ModelForm):
+    class Meta:
+        model = OrigenCanal
+        fields = [
+            "origen",
+            "canal",
+            "cuenta_debito",
+            "cuenta_credito",
+            "activo",
+        ]
+
+
+# =========================
+# PAGO DE FACTURA
+# =========================
+class PagoFacturaForm(forms.ModelForm):
+    class Meta:
+        model = PagoFactura
+        fields = [
+            "origen_canal",
+            "valor",
+            "referencia",
+        ]

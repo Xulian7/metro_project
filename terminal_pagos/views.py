@@ -1,18 +1,36 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Factura
-from .forms import FacturaForm, ItemFacturaFormSet
+from django.utils.timezone import now
+
+from .models import (
+    Factura,
+    Cuenta,
+    OrigenFondo,
+    CanalPago,
+    OrigenCanal,
+    PagoFactura,
+)
+
+from .forms import (
+    FacturaForm,
+    ItemFacturaFormSet,
+    CuentaForm,
+    OrigenFondoForm,
+    CanalPagoForm,
+    OrigenCanalForm,
+    PagoFacturaForm,
+)
+
 from almacen.models import Producto
 from taller.models import Servicio
-from .models import Cuenta, TipoPago
-from .forms import CuentaForm, TipoPagoForm
-from django.utils.timezone import now
-from terminal_pagos.models import TipoPago, Cuenta
 
 
+# =========================
+# TERMINAL DE PAGOS
+# =========================
 def nueva_transaccion(request):
-    # =========================
-    # CATÁLOGOS (JSON)
-    # =========================
+    # -------------------------
+    # CATÁLOGOS PARA JS (JSON)
+    # -------------------------
     productos = Producto.objects.values(
         "id",
         "nombre",
@@ -25,14 +43,19 @@ def nueva_transaccion(request):
         "valor"
     )
 
-    tipos_pago = TipoPago.objects.filter(
-        activo=True
+    origenes_canales = OrigenCanal.objects.select_related(
+        "origen",
+        "canal"
+    ).filter(
+        activo=True,
+        origen__activo=True,
+        canal__activo=True
     ).values(
         "id",
-        "nombre",
-        "requiere_origen",
-        "requiere_referencia",
-        "es_egreso",
+        "origen__nombre",
+        "canal__nombre",
+        "canal__requiere_referencia",
+        "canal__es_egreso",
     )
 
     cuentas = Cuenta.objects.filter(
@@ -42,9 +65,9 @@ def nueva_transaccion(request):
         "nombre"
     )
 
-    # =========================
-    # FORMS EXISTENTES
-    # =========================
+    # -------------------------
+    # FORMS
+    # -------------------------
     factura_form = FacturaForm()
     item_formset = ItemFacturaFormSet()
 
@@ -56,14 +79,16 @@ def nueva_transaccion(request):
             "item_formset": item_formset,
             "productos_json": list(productos),
             "servicios_json": list(servicios),
-            "tipos_pago_json": list(tipos_pago),
+            "origenes_canales_json": list(origenes_canales),
             "cuentas_json": list(cuentas),
             "today": now().date().isoformat(),
         }
     )
 
 
-
+# =========================
+# CREAR FACTURA
+# =========================
 def crear_factura(request):
     if request.method == "POST":
         factura_form = FacturaForm(request.POST)
@@ -75,33 +100,47 @@ def crear_factura(request):
             item_formset.instance = factura
             item_formset.save()
 
-            return redirect("terminal_pagos:crear_factura")
+            return redirect("terminal_pagos:nueva_transaccion")
 
     else:
         factura_form = FacturaForm()
         item_formset = ItemFacturaFormSet()
 
-    context = {
-        "factura_form": factura_form,
-        "item_formset": item_formset,
-    }
-
     return render(
         request,
         "terminal_pagos/crear_factura.html",
-        context
+        {
+            "factura_form": factura_form,
+            "item_formset": item_formset,
+        }
     )
 
 
-
-
-# catalogo de pagos/views.py
+# =========================
+# CATÁLOGOS DE CONFIGURACIÓN DE PAGOS
+# =========================
 def catalogos_pago(request):
+    origen_id = request.GET.get("origen")
+    canal_id = request.GET.get("canal")
     cuenta_id = request.GET.get("cuenta")
-    tipo_id = request.GET.get("tipo")
+    config_id = request.GET.get("config")
 
+    origen_instance = OrigenFondo.objects.filter(id=origen_id).first()
+    canal_instance = CanalPago.objects.filter(id=canal_id).first()
     cuenta_instance = Cuenta.objects.filter(id=cuenta_id).first()
-    tipo_instance = TipoPago.objects.filter(id=tipo_id).first()
+    config_instance = OrigenCanal.objects.filter(id=config_id).first()
+
+    origen_form = OrigenFondoForm(
+        request.POST or None,
+        instance=origen_instance,
+        prefix="origen"
+    )
+
+    canal_form = CanalPagoForm(
+        request.POST or None,
+        instance=canal_instance,
+        prefix="canal"
+    )
 
     cuenta_form = CuentaForm(
         request.POST or None,
@@ -109,25 +148,42 @@ def catalogos_pago(request):
         prefix="cuenta"
     )
 
-    tipo_form = TipoPagoForm(
+    config_form = OrigenCanalForm(
         request.POST or None,
-        instance=tipo_instance,
-        prefix="tipo"
+        instance=config_instance,
+        prefix="config"
     )
 
     if request.method == "POST":
+        if "guardar_origen" in request.POST and origen_form.is_valid():
+            origen_form.save()
+            return redirect("terminal_pagos:catalogos_pago")
+
+        if "guardar_canal" in request.POST and canal_form.is_valid():
+            canal_form.save()
+            return redirect("terminal_pagos:catalogos_pago")
+
         if "guardar_cuenta" in request.POST and cuenta_form.is_valid():
             cuenta_form.save()
             return redirect("terminal_pagos:catalogos_pago")
 
-        if "guardar_tipo" in request.POST and tipo_form.is_valid():
-            tipo_form.save()
+        if "guardar_config" in request.POST and config_form.is_valid():
+            config_form.save()
             return redirect("terminal_pagos:catalogos_pago")
 
-    return render(request, "terminal_pagos/catalogos_pago.html", {
-        "cuentas": Cuenta.objects.all(),
-        "tipos": TipoPago.objects.all(),
-        "cuenta_form": cuenta_form,
-        "tipo_form": tipo_form,
-    })
-
+    return render(
+        request,
+        "terminal_pagos/catalogos_pago.html",
+        {
+            "origenes": OrigenFondo.objects.all(),
+            "canales": CanalPago.objects.all(),
+            "cuentas": Cuenta.objects.all(),
+            "configuraciones": OrigenCanal.objects.select_related(
+                "origen", "canal"
+            ),
+            "origen_form": origen_form,
+            "canal_form": canal_form,
+            "cuenta_form": cuenta_form,
+            "config_form": config_form,
+        }
+    )
