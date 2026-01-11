@@ -1,45 +1,32 @@
 {% extends "accounts/home.html" %}
 {% load widget_tweaks %}
-{% load static %}
 
 {% block content %}
 
 <h5 class="mb-3">Administración de medios de pago</h5>
 
-<ul class="nav nav-tabs mb-3" id="catalogosTabs" role="tablist">
+<ul class="nav nav-tabs mb-3">
 
-  <li class="nav-item" role="presentation">
-    <button class="nav-link active"
-            data-bs-toggle="tab"
-            data-bs-target="#cuentas"
-            type="button">
-      Cuentas
+  <li class="nav-item">
+    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#medios">
+      Medios de pago
     </button>
   </li>
 
-  <li class="nav-item" role="presentation">
-    <button class="nav-link"
-            data-bs-toggle="tab"
-            data-bs-target="#origenes"
-            type="button">
-      Orígenes
-    </button>
-  </li>
-
-  <li class="nav-item" role="presentation">
-    <button class="nav-link"
-            data-bs-toggle="tab"
-            data-bs-target="#canales"
-            type="button">
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#canales">
       Canales
     </button>
   </li>
 
-  <li class="nav-item" role="presentation">
-    <button class="nav-link"
-            data-bs-toggle="tab"
-            data-bs-target="#configuracion"
-            type="button">
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#cuentas">
+      Cuentas destino
+    </button>
+  </li>
+
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#configuracion">
       Configuración
     </button>
   </li>
@@ -48,43 +35,43 @@
 
 <div class="tab-content">
 
-  <!-- ================= CUENTAS ================= -->
-  <div class="tab-pane fade show active" id="cuentas">
+  <!-- ================= MEDIOS DE PAGO ================= -->
+  <div class="tab-pane fade show active" id="medios">
 
     <form method="post" class="card card-body mb-4">
       {% csrf_token %}
-      {{ cuenta_form.non_field_errors }}
+      {{ medio_form.non_field_errors }}
 
       <div class="mb-3">
-        <label class="form-label">Nombre</label>
-        {{ cuenta_form.nombre|add_class:"form-control" }}
+        <label class="form-label">Nombre del medio</label>
+        {{ medio_form.nombre|add_class:"form-control" }}
       </div>
 
       <div class="form-check mb-3">
-        {{ cuenta_form.activa|add_class:"form-check-input" }}
-        <label class="form-check-label">Activa</label>
+        {{ medio_form.activo|add_class:"form-check-input" }}
+        <label class="form-check-label">Activo</label>
       </div>
 
-      <button class="btn btn-primary btn-sm" name="guardar_cuenta">
-        Guardar cuenta
+      <button class="btn btn-primary btn-sm" name="guardar_medio">
+        Guardar medio
       </button>
     </form>
 
     <table class="table table-sm table-hover">
       <thead class="table-light">
         <tr>
-          <th>Nombre</th>
-          <th>Activa</th>
+          <th>Medio</th>
+          <th>Activo</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        {% for c in cuentas %}
+        {% for m in medios %}
         <tr>
-          <td>{{ c.nombre }}</td>
-          <td>{{ c.activa|yesno:"Sí,No" }}</td>
+          <td>{{ m.nombre }}</td>
+          <td>{{ m.activo|yesno:"Sí,No" }}</td>
           <td class="text-end">
-            <a href="?cuenta={{ c.id }}" class="btn btn-outline-primary btn-sm">
+            <a href="?medio={{ m.id }}" class="btn btn-outline-primary btn-sm">
               Editar
             </a>
           </td>
@@ -92,60 +79,7 @@
         {% empty %}
         <tr>
           <td colspan="3" class="text-muted text-center">
-            No hay cuentas registradas
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-  </div>
-
-  <!-- ================= ORÍGENES ================= -->
-  <div class="tab-pane fade" id="origenes">
-
-    <form method="post" class="card card-body mb-4">
-      {% csrf_token %}
-      {{ origen_form.non_field_errors }}
-
-      {% for field in origen_form %}
-        <div class="mb-3">
-          <label class="form-label">{{ field.label }}</label>
-          {{ field|add_class:"form-control" }}
-        </div>
-      {% endfor %}
-
-      <button class="btn btn-primary btn-sm" name="guardar_origen">
-        Guardar origen
-      </button>
-    </form>
-
-    <table class="table table-sm table-hover">
-      <thead class="table-light">
-        <tr>
-          <th>Nombre</th>
-          <th>Tipo</th>
-          <th>Activo</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for o in origenes %}
-        <tr>
-          <td>{{ o.nombre }}</td>
-          <td>{{ o.get_tipo_display }}</td>
-          <td>{{ o.activo|yesno:"Sí,No" }}</td>
-          <td class="text-end">
-            <a href="?origen={{ o.id }}#origenes"
-               class="btn btn-outline-primary btn-sm">
-              Editar
-            </a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="4" class="text-muted text-center">
-            No hay orígenes registrados
+            No hay medios registrados
           </td>
         </tr>
         {% endfor %}
@@ -161,19 +95,25 @@
       {% csrf_token %}
       {{ canal_form.non_field_errors }}
 
-      {% for field in canal_form %}
-        <div class="mb-3">
-          <label class="form-label">{{ field.label }}</label>
+      <div class="mb-3">
+        <label class="form-label">Medio de pago</label>
+        {{ canal_form.medio|add_class:"form-control" }}
+      </div>
 
-          {% if field.field.widget.input_type == "checkbox" %}
-            <div class="form-check">
-              {{ field|add_class:"form-check-input" }}
-            </div>
-          {% else %}
-            {{ field|add_class:"form-control" }}
-          {% endif %}
-        </div>
-      {% endfor %}
+      <div class="mb-3">
+        <label class="form-label">Nombre del canal</label>
+        {{ canal_form.nombre|add_class:"form-control" }}
+      </div>
+
+      <div class="form-check mb-3">
+        {{ canal_form.requiere_referencia|add_class:"form-check-input" }}
+        <label class="form-check-label">Requiere referencia</label>
+      </div>
+
+      <div class="form-check mb-3">
+        {{ canal_form.activo|add_class:"form-check-input" }}
+        <label class="form-check-label">Activo</label>
+      </div>
 
       <button class="btn btn-primary btn-sm" name="guardar_canal">
         Guardar canal
@@ -183,8 +123,8 @@
     <table class="table table-sm table-hover">
       <thead class="table-light">
         <tr>
-          <th>Código</th>
-          <th>Nombre</th>
+          <th>Medio</th>
+          <th>Canal</th>
           <th>Activo</th>
           <th></th>
         </tr>
@@ -192,12 +132,11 @@
       <tbody>
         {% for c in canales %}
         <tr>
-          <td>{{ c.codigo }}</td>
+          <td>{{ c.medio.nombre }}</td>
           <td>{{ c.nombre }}</td>
           <td>{{ c.activo|yesno:"Sí,No" }}</td>
           <td class="text-end">
-            <a href="?canal={{ c.id }}#canales"
-               class="btn btn-outline-primary btn-sm">
+            <a href="?canal={{ c.id }}#canales" class="btn btn-outline-primary btn-sm">
               Editar
             </a>
           </td>
@@ -214,6 +153,59 @@
 
   </div>
 
+  <!-- ================= CUENTAS DESTINO ================= -->
+  <div class="tab-pane fade" id="cuentas">
+
+    <form method="post" class="card card-body mb-4">
+      {% csrf_token %}
+      {{ cuenta_form.non_field_errors }}
+
+      <div class="mb-3">
+        <label class="form-label">Nombre de la cuenta</label>
+        {{ cuenta_form.nombre|add_class:"form-control" }}
+      </div>
+
+      <div class="form-check mb-3">
+        {{ cuenta_form.activa|add_class:"form-check-input" }}
+        <label class="form-check-label">Activa</label>
+      </div>
+
+      <button class="btn btn-primary btn-sm" name="guardar_cuenta">
+        Guardar cuenta
+      </button>
+    </form>
+
+    <table class="table table-sm table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>Cuenta</th>
+          <th>Activa</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in cuentas %}
+        <tr>
+          <td>{{ c.nombre }}</td>
+          <td>{{ c.activa|yesno:"Sí,No" }}</td>
+          <td class="text-end">
+            <a href="?cuenta={{ c.id }}#cuentas" class="btn btn-outline-primary btn-sm">
+              Editar
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="3" class="text-muted text-center">
+            No hay cuentas registradas
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+
   <!-- ================= CONFIGURACIÓN ================= -->
   <div class="tab-pane fade" id="configuracion">
 
@@ -221,12 +213,25 @@
       {% csrf_token %}
       {{ config_form.non_field_errors }}
 
-      {% for field in config_form %}
-        <div class="mb-3">
-          <label class="form-label">{{ field.label }}</label>
-          {{ field|add_class:"form-control" }}
-        </div>
-      {% endfor %}
+      <div class="mb-3">
+        <label class="form-label">Medio</label>
+        {{ config_form.medio|add_class:"form-control" }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Canal</label>
+        {{ config_form.canal|add_class:"form-control" }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Cuenta destino</label>
+        {{ config_form.cuenta_destino|add_class:"form-control" }}
+      </div>
+
+      <div class="form-check mb-3">
+        {{ config_form.activo|add_class:"form-check-input" }}
+        <label class="form-check-label">Activo</label>
+      </div>
 
       <button class="btn btn-primary btn-sm" name="guardar_config">
         Guardar configuración
@@ -236,33 +241,24 @@
     <table class="table table-sm table-hover">
       <thead class="table-light">
         <tr>
-          <th>Origen</th>
+          <th>Medio</th>
           <th>Canal</th>
-          <th>Débito</th>
-          <th>Crédito</th>
+          <th>Cuenta destino</th>
           <th>Activo</th>
-          <th></th>
         </tr>
       </thead>
       <tbody>
         {% for c in configuraciones %}
         <tr>
-          <td>{{ c.origen.nombre }}</td>
+          <td>{{ c.medio.nombre }}</td>
           <td>{{ c.canal.nombre }}</td>
-          <td>{{ c.cuenta_debito }}</td>
-          <td>{{ c.cuenta_credito }}</td>
+          <td>{{ c.cuenta_destino.nombre }}</td>
           <td>{{ c.activo|yesno:"Sí,No" }}</td>
-          <td class="text-end">
-            <a href="?config={{ c.id }}#configuracion"
-               class="btn btn-outline-primary btn-sm">
-              Editar
-            </a>
-          </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="6" class="text-muted text-center">
-            No hay configuraciones registradas
+          <td colspan="4" class="text-muted text-center">
+            No hay configuraciones creadas
           </td>
         </tr>
         {% endfor %}

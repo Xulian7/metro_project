@@ -5,9 +5,9 @@ from .models import (
     Factura,
     ItemFactura,
     Cuenta,
-    OrigenFondo,
+    MedioPago,
     CanalPago,
-    OrigenCanal,
+    ConfiguracionPago,
     PagoFactura,
 )
 
@@ -18,7 +18,9 @@ from arrendamientos.models import Contrato
 # SELECT PERSONALIZADO CONTRATO
 # =========================
 class ContratoSelect(forms.Select):
-    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+    def create_option(
+        self, name, value, label, selected, index, subindex=None, attrs=None
+    ):
         option = super().create_option(
             name, value, label, selected, index, subindex=subindex, attrs=attrs
         )
@@ -77,7 +79,7 @@ ItemFacturaFormSet = inlineformset_factory(
 
 
 # =========================
-# CUENTAS
+# CUENTAS DESTINO
 # =========================
 class CuentaForm(forms.ModelForm):
     class Meta:
@@ -90,42 +92,57 @@ class CuentaForm(forms.ModelForm):
 
 
 # =========================
-# ORIGEN DE FONDOS
+# MEDIOS DE PAGO
 # =========================
-class OrigenFondoForm(forms.ModelForm):
+class MedioPagoForm(forms.ModelForm):
     class Meta:
-        model = OrigenFondo
-        fields = ["nombre", "tipo", "cuenta_principal", "activo"]
+        model = MedioPago
+        fields = ["nombre", "activo"]
+        widgets = {
+            "nombre": forms.TextInput(attrs={"class": "form-control"}),
+            "activo": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }
 
 
 # =========================
-# CANAL DE PAGO
+# CANALES DE PAGO
 # =========================
 class CanalPagoForm(forms.ModelForm):
     class Meta:
         model = CanalPago
         fields = [
-            "codigo",
+            "medio",
             "nombre",
             "requiere_referencia",
-            "es_egreso",
             "activo",
         ]
+        widgets = {
+            "medio": forms.Select(attrs={"class": "form-control"}),
+            "nombre": forms.TextInput(attrs={"class": "form-control"}),
+            "requiere_referencia": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "activo": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }
 
 
 # =========================
-# CONFIGURACIÓN ORIGEN + CANAL
+# CONFIGURACIÓN DE PAGO
+# MEDIO + CANAL → CUENTA
 # =========================
-class OrigenCanalForm(forms.ModelForm):
+class ConfiguracionPagoForm(forms.ModelForm):
     class Meta:
-        model = OrigenCanal
+        model = ConfiguracionPago
         fields = [
-            "origen",
+            "medio",
             "canal",
-            "cuenta_debito",
-            "cuenta_credito",
+            "cuenta_destino",
             "activo",
         ]
+        widgets = {
+            "medio": forms.Select(attrs={"class": "form-control"}),
+            "canal": forms.Select(attrs={"class": "form-control"}),
+            "cuenta_destino": forms.Select(attrs={"class": "form-control"}),
+            "activo": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }
 
 
 # =========================
@@ -135,7 +152,12 @@ class PagoFacturaForm(forms.ModelForm):
     class Meta:
         model = PagoFactura
         fields = [
-            "origen_canal",
+            "configuracion",
             "valor",
             "referencia",
         ]
+        widgets = {
+            "configuracion": forms.Select(attrs={"class": "form-control"}),
+            "valor": forms.NumberInput(attrs={"class": "form-control"}),
+            "referencia": forms.TextInput(attrs={"class": "form-control"}),
+        }

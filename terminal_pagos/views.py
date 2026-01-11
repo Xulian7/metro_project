@@ -1,12 +1,12 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.utils.timezone import now
 
 from .models import (
     Factura,
     Cuenta,
-    OrigenFondo,
+    MedioPago,
     CanalPago,
-    OrigenCanal,
+    ConfiguracionPago,
     PagoFactura,
 )
 
@@ -14,9 +14,9 @@ from .forms import (
     FacturaForm,
     ItemFacturaFormSet,
     CuentaForm,
-    OrigenFondoForm,
+    MedioPagoForm,
     CanalPagoForm,
-    OrigenCanalForm,
+    ConfiguracionPagoForm,
     PagoFacturaForm,
 )
 
@@ -43,26 +43,21 @@ def nueva_transaccion(request):
         "valor"
     )
 
-    origenes_canales = OrigenCanal.objects.select_related(
-        "origen",
-        "canal"
+    configuraciones = ConfiguracionPago.objects.select_related(
+        "medio",
+        "canal",
+        "cuenta_destino"
     ).filter(
         activo=True,
-        origen__activo=True,
-        canal__activo=True
+        medio__activo=True,
+        canal__activo=True,
+        cuenta_destino__activa=True
     ).values(
         "id",
-        "origen__nombre",
+        "medio__nombre",
         "canal__nombre",
         "canal__requiere_referencia",
-        "canal__es_egreso",
-    )
-
-    cuentas = Cuenta.objects.filter(
-        activa=True
-    ).values(
-        "id",
-        "nombre"
+        "cuenta_destino__nombre",
     )
 
     # -------------------------
@@ -79,8 +74,7 @@ def nueva_transaccion(request):
             "item_formset": item_formset,
             "productos_json": list(productos),
             "servicios_json": list(servicios),
-            "origenes_canales_json": list(origenes_canales),
-            "cuentas_json": list(cuentas),
+            "configuraciones_json": list(configuraciones),
             "today": now().date().isoformat(),
         }
     )
@@ -117,23 +111,23 @@ def crear_factura(request):
 
 
 # =========================
-# CATÁLOGOS DE CONFIGURACIÓN DE PAGOS
+# CATÁLOGOS DE MEDIOS DE PAGO
 # =========================
 def catalogos_pago(request):
-    origen_id = request.GET.get("origen")
+    medio_id = request.GET.get("medio")
     canal_id = request.GET.get("canal")
     cuenta_id = request.GET.get("cuenta")
     config_id = request.GET.get("config")
 
-    origen_instance = OrigenFondo.objects.filter(id=origen_id).first()
+    medio_instance = MedioPago.objects.filter(id=medio_id).first()
     canal_instance = CanalPago.objects.filter(id=canal_id).first()
     cuenta_instance = Cuenta.objects.filter(id=cuenta_id).first()
-    config_instance = OrigenCanal.objects.filter(id=config_id).first()
+    config_instance = ConfiguracionPago.objects.filter(id=config_id).first()
 
-    origen_form = OrigenFondoForm(
+    medio_form = MedioPagoForm(
         request.POST or None,
-        instance=origen_instance,
-        prefix="origen"
+        instance=medio_instance,
+        prefix="medio"
     )
 
     canal_form = CanalPagoForm(
@@ -148,15 +142,16 @@ def catalogos_pago(request):
         prefix="cuenta"
     )
 
-    config_form = OrigenCanalForm(
+    config_form = ConfiguracionPagoForm(
         request.POST or None,
         instance=config_instance,
         prefix="config"
     )
 
     if request.method == "POST":
-        if "guardar_origen" in request.POST and origen_form.is_valid():
-            origen_form.save()
+
+        if "guardar_medio" in request.POST and medio_form.is_valid():
+            medio_form.save()
             return redirect("terminal_pagos:catalogos_pago")
 
         if "guardar_canal" in request.POST and canal_form.is_valid():
@@ -175,13 +170,15 @@ def catalogos_pago(request):
         request,
         "terminal_pagos/catalogos_pago.html",
         {
-            "origenes": OrigenFondo.objects.all(),
-            "canales": CanalPago.objects.all(),
+            "medios": MedioPago.objects.all(),
+            "canales": CanalPago.objects.select_related("medio"),
             "cuentas": Cuenta.objects.all(),
-            "configuraciones": OrigenCanal.objects.select_related(
-                "origen", "canal"
+            "configuraciones": ConfiguracionPago.objects.select_related(
+                "medio",
+                "canal",
+                "cuenta_destino"
             ),
-            "origen_form": origen_form,
+            "medio_form": medio_form,
             "canal_form": canal_form,
             "cuenta_form": cuenta_form,
             "config_form": config_form,

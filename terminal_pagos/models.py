@@ -81,9 +81,7 @@ class ItemFactura(models.Model):
         blank=True
     )
 
-    cantidad = models.PositiveIntegerField(
-        default=1
-    )
+    cantidad = models.PositiveIntegerField(default=1)
 
     valor_unitario = models.DecimalField(
         max_digits=12,
@@ -114,7 +112,8 @@ class ItemFactura(models.Model):
 
 
 # =========================
-# CATÁLOGO DE CUENTAS
+# CUENTAS DESTINO
+# (a dónde llega la plata)
 # =========================
 class Cuenta(models.Model):
     nombre = models.CharField(
@@ -122,117 +121,84 @@ class Cuenta(models.Model):
         unique=True
     )
 
-    activa = models.BooleanField(
-        default=True
-    )
+    activa = models.BooleanField(default=True)
 
     def __str__(self):
         return self.nombre
 
 
 # =========================
-# ORIGEN DE FONDOS
+# MEDIOS DE PAGO
+# (lo que el cliente elige)
 # =========================
-class OrigenFondo(models.Model):
-    TIPO_CHOICES = (
-        ("caja", "Caja"),
-        ("banco", "Banco"),
-        ("billetera", "Billetera"),
-    )
-
+class MedioPago(models.Model):
     nombre = models.CharField(
         max_length=50,
         unique=True
     )
 
-    tipo = models.CharField(
-        max_length=20,
-        choices=TIPO_CHOICES
-    )
-
-    cuenta_principal = models.ForeignKey(
-        Cuenta,
-        on_delete=models.PROTECT,
-        related_name="origenes"
-    )
-
-    activo = models.BooleanField(
-        default=True
-    )
+    activo = models.BooleanField(default=True)
 
     def __str__(self):
         return self.nombre
 
 
 # =========================
-# CANAL / FORMA DE PAGO
+# CANALES DE PAGO
+# (cómo se ejecuta un medio)
 # =========================
 class CanalPago(models.Model):
-    codigo = models.CharField(
-        max_length=30,
-        unique=True
-    )
-
-    nombre = models.CharField(
-        max_length=50
-    )
-
-    requiere_referencia = models.BooleanField(
-        default=False
-    )
-
-    es_egreso = models.BooleanField(
-        default=False
-    )
-
-    activo = models.BooleanField(
-        default=True
-    )
-
-    def __str__(self):
-        return self.nombre
-
-
-# =========================
-# CONFIGURACIÓN CONTABLE
-# ORIGEN + CANAL
-# =========================
-class OrigenCanal(models.Model):
-    origen = models.ForeignKey(
-        OrigenFondo,
+    medio = models.ForeignKey(
+        MedioPago,
         on_delete=models.CASCADE,
         related_name="canales"
+    )
+
+    nombre = models.CharField(max_length=50)
+
+    requiere_referencia = models.BooleanField(default=False)
+
+    activo = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ("medio", "nombre")
+
+    def __str__(self):
+        return f"{self.medio} - {self.nombre}"
+
+
+# =========================
+# CONFIGURACIÓN DE PAGO
+# MEDIO + CANAL → CUENTA
+# =========================
+class ConfiguracionPago(models.Model):
+    medio = models.ForeignKey(
+        MedioPago,
+        on_delete=models.CASCADE,
+        related_name="configuraciones"
     )
 
     canal = models.ForeignKey(
         CanalPago,
         on_delete=models.CASCADE,
-        related_name="origenes"
+        related_name="configuraciones"
     )
 
-    cuenta_debito = models.ForeignKey(
+    cuenta_destino = models.ForeignKey(
         Cuenta,
         on_delete=models.PROTECT,
-        related_name="debitos"
+        related_name="configuraciones"
     )
 
-    cuenta_credito = models.ForeignKey(
-        Cuenta,
-        on_delete=models.PROTECT,
-        related_name="creditos"
-    )
-
-    activo = models.BooleanField(
-        default=True
-    )
+    activo = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ("origen", "canal")
-        verbose_name = "Configuración Origen–Canal"
-        verbose_name_plural = "Configuraciones Origen–Canal"
+        unique_together = ("medio", "canal", "cuenta_destino")
+        verbose_name = "Configuración de pago"
+        verbose_name_plural = "Configuraciones de pago"
 
     def __str__(self):
-        return f"{self.origen} → {self.canal}"
+        return f"{self.medio} | {self.canal.nombre} → {self.cuenta_destino}"
 
 
 # =========================
@@ -245,8 +211,8 @@ class PagoFactura(models.Model):
         on_delete=models.CASCADE
     )
 
-    origen_canal = models.ForeignKey(
-        OrigenCanal,
+    configuracion = models.ForeignKey(
+        ConfiguracionPago,
         on_delete=models.PROTECT,
         related_name="pagos"
     )
@@ -261,9 +227,7 @@ class PagoFactura(models.Model):
         blank=True
     )
 
-    fecha = models.DateTimeField(
-        auto_now_add=True
-    )
+    fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.factura_id} | {self.origen_canal} | {self.valor}"
+        return f"Factura {self.factura_id} | {self.configuracion} | {self.valor}"
