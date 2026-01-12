@@ -361,6 +361,7 @@ document.addEventListener("DOMContentLoaded", () => {
   try {
     const c1 = document.getElementById("configuraciones-json");
     const c2 = document.getElementById("canales-json");
+
     if (c1) CONFIGS = JSON.parse(c1.textContent);
     if (c2) CANALES = JSON.parse(c2.textContent);
   } catch (e) {
@@ -425,13 +426,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* =========================
      CONFIGURACIÓN POR MEDIO
+     (MEDIO → CUENTA → config_id)
   ========================= */
   function resolverConfiguracion(medioId) {
     return CONFIGS.find(c => c.medio_id == medioId);
   }
 
   /* =========================
-     AGREGAR FILA
+     AGREGAR FILA DE PAGO
   ========================= */
   function agregarPago() {
     pagosContainer.insertAdjacentHTML("beforeend", tpl.innerHTML);
@@ -449,6 +451,7 @@ document.addEventListener("DOMContentLoaded", () => {
     canalSel.disabled = true;
     referenciaInput.disabled = true;
 
+    /* ---- CAMBIO DE MEDIO ---- */
     medioSel.addEventListener("change", () => {
       canalSel.innerHTML = '<option value="">Canal</option>';
       canalSel.disabled = true;
@@ -458,28 +461,33 @@ document.addEventListener("DOMContentLoaded", () => {
       referenciaInput.disabled = true;
       configIdInput.value = "";
 
-      const config = resolverConfiguracion(medioId);
+      const medioId = medioSel.value;
+      if (!medioId) return;
 
+      const config = resolverConfiguracion(medioId);
       if (!config) return;
 
-      cuentaInput.value = config["cuenta_destino__nombre"];
+      cuentaInput.value = config["cuenta_destino__nombre"] || "";
       configIdInput.value = config.id;
 
-      cargarCanales(canalSel, medioSel.value);
+      cargarCanales(canalSel, medioId);
     });
 
+    /* ---- CAMBIO DE CANAL ---- */
     canalSel.addEventListener("change", () => {
       const opt = canalSel.selectedOptions[0];
       if (!opt) return;
+
       referenciaInput.disabled = opt.dataset.referencia !== "1";
     });
   }
 
   /* =========================
-     TOTALES (sin cambios)
+     TOTALES (SIN CAMBIOS)
   ========================= */
   function recalcularPagos() {
     let total = 0;
+
     document.querySelectorAll(".pago-valor").forEach(i => {
       total += parseFloat(i.value || 0);
     });
