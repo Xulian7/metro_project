@@ -134,13 +134,16 @@ class ConfiguracionPagoForm(forms.ModelForm):
     class Meta:
         model = ConfiguracionPago
         fields = [
+            "medio",           # 🔑 ESTE CAMPO FALTABA
             "cuenta_destino",
             "activo",
         ]
         widgets = {
+            "medio": forms.Select(attrs={"class": "form-control"}),
             "cuenta_destino": forms.Select(attrs={"class": "form-control"}),
             "activo": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
+
 
 
 
