@@ -189,7 +189,7 @@ def catalogos_pago(request):
             "configuraciones": ConfiguracionPago.objects.select_related(
                 "medio",
                 "canal",
-                "cuenta_destino"
+                "cuenta_destin"
             ),
             "medio_form": medio_form,
             "canal_form": canal_form,
