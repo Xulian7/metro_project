@@ -6,36 +6,31 @@
 <h5 class="mb-3">Administración de medios de pago</h5>
 
 <ul class="nav nav-tabs mb-3">
-
   <li class="nav-item">
     <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#medios">
       Medios de pago
     </button>
   </li>
-
   <li class="nav-item">
     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#canales">
       Canales
     </button>
   </li>
-
   <li class="nav-item">
     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#cuentas">
       Cuentas destino
     </button>
   </li>
-
   <li class="nav-item">
     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#configuracion">
       Configuración (Medio → Cuenta)
     </button>
   </li>
-
 </ul>
 
 <div class="tab-content">
 
-  <!-- ================= MEDIOS DE PAGO ================= -->
+  <!-- ================= MEDIOS ================= -->
   <div class="tab-pane fade show active" id="medios">
 
     <form method="post" class="card card-body mb-4">
@@ -90,7 +85,7 @@
       {{ canal_form.non_field_errors }}
 
       <div class="mb-3">
-        <label class="form-label">Medio de pago</label>
+        <label class="form-label">Medio</label>
         {{ canal_form.medio|add_class:"form-control" }}
       </div>
 
@@ -141,7 +136,7 @@
 
   </div>
 
-  <!-- ================= CUENTAS DESTINO ================= -->
+  <!-- ================= CUENTAS ================= -->
   <div class="tab-pane fade" id="cuentas">
 
     <form method="post" class="card card-body mb-4">
@@ -197,7 +192,7 @@
 
       <div class="mb-3">
         <label class="form-label">Medio de pago</label>
-        {{ config_form.canal.medio|add_class:"form-control" }}
+        {{ config_form.medio|add_class:"form-control" }}
       </div>
 
       <div class="mb-3">
@@ -226,7 +221,7 @@
       <tbody>
         {% for c in configuraciones %}
         <tr>
-          <td>{{ c.canal.medio.nombre }}</td>
+          <td>{{ c.medio.nombre }}</td>
           <td>{{ c.cuenta_destino.nombre }}</td>
           <td>{{ c.activo|yesno:"Sí,No" }}</td>
         </tr>
