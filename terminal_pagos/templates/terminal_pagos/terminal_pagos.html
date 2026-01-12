@@ -212,7 +212,7 @@
         </div>
 
         <!-- CONFIG OCULTA (RESUELTA POR SISTEMA) -->
-        <input type="hidden" name="origen_canal_id[]" class="pago-config-id">
+        <input type="hidden" name="configuracion_pago_id[]" class="pago-config-id">
 
       </div>
     </div>
@@ -458,7 +458,8 @@ document.addEventListener("DOMContentLoaded", () => {
       referenciaInput.disabled = true;
       configIdInput.value = "";
 
-      const config = resolverConfiguracion(medioSel.value);
+      const config = resolverConfiguracion(medioId);
+
       if (!config) return;
 
       cuentaInput.value = config["cuenta_destino__nombre"];
