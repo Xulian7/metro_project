@@ -168,12 +168,14 @@
 
         <!-- CUENTA DESTINO -->
         <div class="col-md-2">
-          <input type="text"
-                class="form-control form-control-sm pago-cuenta"
-                placeholder="Cuenta destino"
-                readonly>
+          <select class="form-select form-select-sm pago-cuenta"
+                  name="cuenta_pago[]"
+                  disabled>
+            <option value="">Cuenta destino</option>
+          </select>
         </div>
 
+        
         <!-- FECHA -->
         <div class="col-md-2">
           <input type="date"
@@ -390,7 +392,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     MEDIOS (desde CONFIGS)
+     MEDIOS
   ========================= */
   function cargarMedios(select) {
     select.innerHTML = '<option value="">Medio</option>';
@@ -406,7 +408,27 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     CANALES (desde CANALES)
+     CUENTAS POR MEDIO
+  ========================= */
+  function cargarCuentas(select, medioId) {
+    select.innerHTML = '<option value="">Cuenta destino</option>';
+
+    const cuentas = CONFIGS.filter(
+      c => String(c.medio_id) === String(medioId)
+    );
+
+    cuentas.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.id; // 👈 ESTE es el config_id
+      opt.textContent = c["cuenta_destino__nombre"];
+      select.appendChild(opt);
+    });
+
+    select.disabled = cuentas.length === 0;
+  }
+
+  /* =========================
+     CANALES
   ========================= */
   function cargarCanales(select, medioId) {
     select.innerHTML = '<option value="">Origen</option>';
@@ -427,15 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     CONFIGURACIÓN POR MEDIO
-     (MEDIO → CUENTA → config_id)
-  ========================= */
-  function resolverConfiguracion(medioId) {
-    return CONFIGS.find(c => String(c.medio_id) === String(medioId));
-  }
-
-  /* =========================
-     AGREGAR FILA DE PAGO
+     AGREGAR FILA
   ========================= */
   function agregarPago() {
     pagosContainer.insertAdjacentHTML("beforeend", tpl.innerHTML);
@@ -444,13 +458,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const medioSel = row.querySelector(".pago-medio");
     const canalSel = row.querySelector(".pago-canal");
-    const cuentaInput = row.querySelector(".pago-cuenta");
+    const cuentaSel = row.querySelector(".pago-cuenta");
     const referenciaInput = row.querySelector(".pago-referencia");
     const configIdInput = row.querySelector(".pago-config-id");
 
     cargarMedios(medioSel);
 
     canalSel.disabled = true;
+    cuentaSel.disabled = true;
     referenciaInput.disabled = true;
 
     /* ---- CAMBIO DE MEDIO ---- */
@@ -458,22 +473,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const medioId = medioSel.value;
 
       canalSel.innerHTML = '<option value="">Origen</option>';
-      canalSel.disabled = true;
+      cuentaSel.innerHTML = '<option value="">Cuenta destino</option>';
 
-      cuentaInput.value = "";
-      referenciaInput.value = "";
+      canalSel.disabled = true;
+      cuentaSel.disabled = true;
       referenciaInput.disabled = true;
+
+      referenciaInput.value = "";
       configIdInput.value = "";
 
       if (!medioId) return;
 
-      const config = resolverConfiguracion(medioId);
-      if (!config) return;
-
-      cuentaInput.value = config["cuenta_destino__nombre"] || "";
-      configIdInput.value = config.id;
-
       cargarCanales(canalSel, medioId);
+      cargarCuentas(cuentaSel, medioId);
+    });
+
+    /* ---- CAMBIO DE CUENTA ---- */
+    cuentaSel.addEventListener("change", () => {
+      configIdInput.value = cuentaSel.value || "";
     });
 
     /* ---- CAMBIO DE CANAL ---- */
@@ -482,14 +499,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!opt) return;
 
       referenciaInput.disabled = opt.dataset.referencia !== "1";
-      if (referenciaInput.disabled) {
-        referenciaInput.value = "";
-      }
+      if (referenciaInput.disabled) referenciaInput.value = "";
     });
   }
 
   /* =========================
-     TOTALES (SIN CAMBIOS)
+     TOTALES
   ========================= */
   function recalcularPagos() {
     let total = 0;
