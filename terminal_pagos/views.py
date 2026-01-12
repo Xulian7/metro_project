@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect
 from django.utils.timezone import now
+from almacen.models import Producto
+from taller.models import Servicio
+
 
 from .models import (
     Factura,
@@ -17,9 +20,6 @@ from .forms import (
     CanalPagoForm,
     ConfiguracionPagoForm,
 )
-
-from almacen.models import Producto
-from taller.models import Servicio
 
 
 # =========================
@@ -39,11 +39,6 @@ def nueva_transaccion(request):
         "valor"
     )
 
-    # 🔑 JSON PARA UX GUIADO
-    # Configuración define:
-    #   - qué MEDIOS están habilitados
-    #   - a qué CUENTAS pueden ir
-    # Los CANALES se cargan luego por MEDIO
     configuraciones = ConfiguracionPago.objects.select_related(
         "medio",
         "cuenta_destino"
@@ -62,6 +57,17 @@ def nueva_transaccion(request):
         "cuenta_destino__nombre",
     )
 
+    canales = CanalPago.objects.filter(
+        activo=True,
+        medio__activo=True
+    ).values(
+        "id",
+        "medio_id",
+        "nombre",
+        "requiere_referencia",
+        "activo",
+    )
+
     factura_form = FacturaForm()
     item_formset = ItemFacturaFormSet()
 
@@ -75,10 +81,12 @@ def nueva_transaccion(request):
             "productos_json": list(productos),
             "servicios_json": list(servicios),
             "configuraciones_json": list(configuraciones),
-
+            "canales_json": list(canales),
             "today": now().date().isoformat(),
         }
     )
+    
+    
 
 
 # =========================
