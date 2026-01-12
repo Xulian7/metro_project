@@ -169,15 +169,10 @@ class CanalPago(models.Model):
 
 # =========================
 # CONFIGURACIÓN DE PAGO
-# MEDIO + CANAL → CUENTA
+# CANAL → CUENTA
+# (el medio se hereda del canal)
 # =========================
 class ConfiguracionPago(models.Model):
-    medio = models.ForeignKey(
-        MedioPago,
-        on_delete=models.CASCADE,
-        related_name="configuraciones"
-    )
-
     canal = models.ForeignKey(
         CanalPago,
         on_delete=models.CASCADE,
@@ -193,12 +188,12 @@ class ConfiguracionPago(models.Model):
     activo = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ("medio", "canal", "cuenta_destino")
+        unique_together = ("canal", "cuenta_destino")
         verbose_name = "Configuración de pago"
         verbose_name_plural = "Configuraciones de pago"
 
     def __str__(self):
-        return f"{self.medio} | {self.canal.nombre} → {self.cuenta_destino}"
+        return f"{self.canal.medio} | {self.canal.nombre} → {self.cuenta_destino}"
 
 
 # =========================

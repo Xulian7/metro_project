@@ -119,26 +119,26 @@ class CanalPagoForm(forms.ModelForm):
         widgets = {
             "medio": forms.Select(attrs={"class": "form-control"}),
             "nombre": forms.TextInput(attrs={"class": "form-control"}),
-            "requiere_referencia": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "requiere_referencia": forms.CheckboxInput(
+                attrs={"class": "form-check-input"}
+            ),
             "activo": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
 
 
 # =========================
 # CONFIGURACIÓN DE PAGO
-# MEDIO + CANAL → CUENTA
+# CANAL → CUENTA
 # =========================
 class ConfiguracionPagoForm(forms.ModelForm):
     class Meta:
         model = ConfiguracionPago
         fields = [
-            "medio",
             "canal",
             "cuenta_destino",
             "activo",
         ]
         widgets = {
-            "medio": forms.Select(attrs={"class": "form-control"}),
             "canal": forms.Select(attrs={"class": "form-control"}),
             "cuenta_destino": forms.Select(attrs={"class": "form-control"}),
             "activo": forms.CheckboxInput(attrs={"class": "form-check-input"}),

@@ -374,36 +374,62 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =========================
      HELPERS
   ========================= */
-  function uniqueBy(arr, key) {
-    return [...new Map(arr.map(i => [i[key], i])).values()];
+  function uniqueBy(arr, keyFn) {
+    const map = new Map();
+    arr.forEach(item => {
+      const key = keyFn(item);
+      if (!map.has(key)) map.set(key, item);
+    });
+    return Array.from(map.values());
   }
 
+  /* =========================
+     CARGA DE MEDIOS
+  ========================= */
   function cargarMedios(select) {
     select.innerHTML = '<option value="">Medio</option>';
 
-    uniqueBy(CONFIGS, "medio_id").forEach(m => {
+    const mediosUnicos = uniqueBy(CONFIGS, c => c["canal__medio_id"]);
+
+    mediosUnicos.forEach(m => {
       const opt = document.createElement("option");
-      opt.value = m.medio_id;
-      opt.textContent = m["medio__nombre"];
+      opt.value = m["canal__medio_id"];
+      opt.textContent = m["canal__medio__nombre"];
       select.appendChild(opt);
     });
   }
 
+  /* =========================
+     CARGA DE CANALES (ÚNICOS)
+  ========================= */
   function cargarCanales(select, medioId) {
     select.innerHTML = '<option value="">Canal</option>';
 
-    CONFIGS
-      .filter(c => c.medio_id == medioId)
-      .forEach(c => {
-        const opt = document.createElement("option");
-        opt.value = c.id; // 👈 ID real de ConfiguracionPago
-        opt.textContent = c["canal__nombre"];
-        opt.dataset.referencia = c["canal__requiere_referencia"] ? "1" : "0";
-        opt.dataset.cuenta = c["cuenta_destino__nombre"];
-        select.appendChild(opt);
-      });
+    const canalesUnicos = uniqueBy(
+      CONFIGS.filter(c => c["canal__medio_id"] == medioId),
+      c => c["canal_id"]
+    );
+
+    canalesUnicos.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c["canal_id"];
+      opt.textContent = c["canal__nombre"];
+      opt.dataset.referencia = c["canal__requiere_referencia"] ? "1" : "0";
+      select.appendChild(opt);
+    });
 
     select.disabled = false;
+  }
+
+  /* =========================
+     RESOLVER CONFIGURACIÓN
+     (canal → cuenta → config_id)
+  ========================= */
+  function resolverConfiguracion(medioId, canalId) {
+    return CONFIGS.find(c =>
+      c["canal__medio_id"] == medioId &&
+      c["canal_id"] == canalId
+    );
   }
 
   /* =========================
@@ -440,12 +466,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     canalSel.addEventListener("change", () => {
-      const opt = canalSel.selectedOptions[0];
-      if (!opt) return;
+      const medioId = medioSel.value;
+      const canalId = canalSel.value;
+      if (!medioId || !canalId) return;
 
-      cuentaInput.value = opt.dataset.cuenta || "";
-      referenciaInput.disabled = opt.dataset.referencia !== "1";
-      configIdInput.value = canalSel.value;
+      const config = resolverConfiguracion(medioId, canalId);
+      if (!config) return;
+
+      cuentaInput.value = config["cuenta_destino__nombre"] || "";
+      referenciaInput.disabled = config["canal__requiere_referencia"] !== true;
+      configIdInput.value = config.id;
     });
   }
 
@@ -487,6 +517,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 </script>
+
 
 
 {% endblock %}

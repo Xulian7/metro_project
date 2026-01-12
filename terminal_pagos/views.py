@@ -44,22 +44,22 @@ def nueva_transaccion(request):
     )
 
     # ⚠️ JSON CLAVE PARA UX GUIADO
+    # La verdad sale SOLO de ConfiguracionPago
     configuraciones = ConfiguracionPago.objects.select_related(
-        "medio",
-        "canal",
+        "canal__medio",
         "cuenta_destino"
     ).filter(
         activo=True,
-        medio__activo=True,
         canal__activo=True,
+        canal__medio__activo=True,
         cuenta_destino__activa=True
     ).values(
-        # Identidad de la configuración (esto es lo que se guarda)
+        # Identidad real de la configuración (esto es lo que se guarda)
         "id",
 
-        # Medio
-        "medio_id",
-        "medio__nombre",
+        # Medio (heredado del canal)
+        "canal__medio_id",
+        "canal__medio__nombre",
 
         # Canal
         "canal_id",
@@ -187,8 +187,7 @@ def catalogos_pago(request):
             "canales": CanalPago.objects.select_related("medio"),
             "cuentas": Cuenta.objects.all(),
             "configuraciones": ConfiguracionPago.objects.select_related(
-                "medio",
-                "canal",
+                "canal__medio",
                 "cuenta_destino"
             ),
             "medio_form": medio_form,
