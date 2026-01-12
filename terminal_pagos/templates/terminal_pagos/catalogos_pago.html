@@ -27,7 +27,7 @@
 
   <li class="nav-item">
     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#configuracion">
-      Configuración (Canal → Cuenta)
+      Configuración (Medio → Cuenta)
     </button>
   </li>
 
@@ -62,7 +62,6 @@
         <tr>
           <th>Medio</th>
           <th>Activo</th>
-          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -70,15 +69,10 @@
         <tr>
           <td>{{ m.nombre }}</td>
           <td>{{ m.activo|yesno:"Sí,No" }}</td>
-          <td class="text-end">
-            <a href="?medio={{ m.id }}" class="btn btn-outline-primary btn-sm">
-              Editar
-            </a>
-          </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="3" class="text-muted text-center">
+          <td colspan="2" class="text-muted text-center">
             No hay medios registrados
           </td>
         </tr>
@@ -126,7 +120,6 @@
           <th>Medio</th>
           <th>Canal</th>
           <th>Activo</th>
-          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -135,15 +128,10 @@
           <td>{{ c.medio.nombre }}</td>
           <td>{{ c.nombre }}</td>
           <td>{{ c.activo|yesno:"Sí,No" }}</td>
-          <td class="text-end">
-            <a href="?canal={{ c.id }}#canales" class="btn btn-outline-primary btn-sm">
-              Editar
-            </a>
-          </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="4" class="text-muted text-center">
+          <td colspan="3" class="text-muted text-center">
             No hay canales registrados
           </td>
         </tr>
@@ -180,7 +168,6 @@
         <tr>
           <th>Cuenta</th>
           <th>Activa</th>
-          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -188,15 +175,10 @@
         <tr>
           <td>{{ c.nombre }}</td>
           <td>{{ c.activa|yesno:"Sí,No" }}</td>
-          <td class="text-end">
-            <a href="?cuenta={{ c.id }}#cuentas" class="btn btn-outline-primary btn-sm">
-              Editar
-            </a>
-          </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="3" class="text-muted text-center">
+          <td colspan="2" class="text-muted text-center">
             No hay cuentas registradas
           </td>
         </tr>
@@ -214,18 +196,13 @@
       {{ config_form.non_field_errors }}
 
       <div class="mb-3">
-        <label class="form-label">Canal</label>
-        {{ config_form.canal|add_class:"form-control" }}
+        <label class="form-label">Medio de pago</label>
+        {{ config_form.canal.medio|add_class:"form-control" }}
       </div>
 
       <div class="mb-3">
         <label class="form-label">Cuenta destino</label>
         {{ config_form.cuenta_destino|add_class:"form-control" }}
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Medio (heredado del canal)</label>
-        {{ config_form.medio|add_class:"form-control" }}
       </div>
 
       <div class="form-check mb-3">
@@ -234,7 +211,7 @@
       </div>
 
       <button class="btn btn-primary btn-sm" name="guardar_config">
-        Guardar configuración
+        Asociar cuenta al medio
       </button>
     </form>
 
@@ -242,7 +219,6 @@
       <thead class="table-light">
         <tr>
           <th>Medio</th>
-          <th>Canal</th>
           <th>Cuenta destino</th>
           <th>Activo</th>
         </tr>
@@ -250,14 +226,13 @@
       <tbody>
         {% for c in configuraciones %}
         <tr>
-          <td>{{ c.medio.nombre }}</td>
-          <td>{{ c.canal.nombre }}</td>
+          <td>{{ c.canal.medio.nombre }}</td>
           <td>{{ c.cuenta_destino.nombre }}</td>
           <td>{{ c.activo|yesno:"Sí,No" }}</td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="4" class="text-muted text-center">
+          <td colspan="3" class="text-muted text-center">
             No hay configuraciones creadas
           </td>
         </tr>

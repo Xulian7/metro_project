@@ -7,7 +7,6 @@ from .models import (
     MedioPago,
     CanalPago,
     ConfiguracionPago,
-    PagoFactura,
 )
 
 from .forms import (
@@ -17,7 +16,6 @@ from .forms import (
     MedioPagoForm,
     CanalPagoForm,
     ConfiguracionPagoForm,
-    PagoFacturaForm,
 )
 
 from almacen.models import Producto
@@ -28,9 +26,7 @@ from taller.models import Servicio
 # TERMINAL DE PAGOS
 # =========================
 def nueva_transaccion(request):
-    # -------------------------
-    # CATÁLOGOS PARA JS (JSON)
-    # -------------------------
+
     productos = Producto.objects.values(
         "id",
         "nombre",
@@ -43,8 +39,9 @@ def nueva_transaccion(request):
         "valor"
     )
 
-    # ⚠️ JSON CLAVE PARA UX GUIADO
-    # La verdad sale SOLO de ConfiguracionPago
+    # 🔑 JSON PARA UX GUIADO
+    # Configuración define qué cuentas están habilitadas
+    # Canal y Medio vienen por relación (NO duplicados)
     configuraciones = ConfiguracionPago.objects.select_related(
         "canal__medio",
         "cuenta_destino"
@@ -54,10 +51,9 @@ def nueva_transaccion(request):
         canal__medio__activo=True,
         cuenta_destino__activa=True
     ).values(
-        # Identidad real de la configuración (esto es lo que se guarda)
         "id",
 
-        # Medio (heredado del canal)
+        # Medio
         "canal__medio_id",
         "canal__medio__nombre",
 
@@ -70,9 +66,6 @@ def nueva_transaccion(request):
         "cuenta_destino__nombre",
     )
 
-    # -------------------------
-    # FORMS
-    # -------------------------
     factura_form = FacturaForm()
     item_formset = ItemFacturaFormSet()
 
@@ -83,7 +76,6 @@ def nueva_transaccion(request):
             "factura_form": factura_form,
             "item_formset": item_formset,
 
-            # JSONs para frontend
             "productos_json": list(productos),
             "servicios_json": list(servicios),
             "configuraciones_json": list(configuraciones),
@@ -127,37 +119,33 @@ def crear_factura(request):
 # CATÁLOGOS DE MEDIOS DE PAGO (ADMIN)
 # =========================
 def catalogos_pago(request):
+
     medio_id = request.GET.get("medio")
     canal_id = request.GET.get("canal")
     cuenta_id = request.GET.get("cuenta")
     config_id = request.GET.get("config")
 
-    medio_instance = MedioPago.objects.filter(id=medio_id).first()
-    canal_instance = CanalPago.objects.filter(id=canal_id).first()
-    cuenta_instance = Cuenta.objects.filter(id=cuenta_id).first()
-    config_instance = ConfiguracionPago.objects.filter(id=config_id).first()
-
     medio_form = MedioPagoForm(
         request.POST or None,
-        instance=medio_instance,
+        instance=MedioPago.objects.filter(id=medio_id).first(),
         prefix="medio"
     )
 
     canal_form = CanalPagoForm(
         request.POST or None,
-        instance=canal_instance,
+        instance=CanalPago.objects.filter(id=canal_id).first(),
         prefix="canal"
     )
 
     cuenta_form = CuentaForm(
         request.POST or None,
-        instance=cuenta_instance,
+        instance=Cuenta.objects.filter(id=cuenta_id).first(),
         prefix="cuenta"
     )
 
     config_form = ConfiguracionPagoForm(
         request.POST or None,
-        instance=config_instance,
+        instance=ConfiguracionPago.objects.filter(id=config_id).first(),
         prefix="config"
     )
 

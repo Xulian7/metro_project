@@ -113,7 +113,6 @@ class ItemFactura(models.Model):
 
 # =========================
 # CUENTAS DESTINO
-# (a dónde llega la plata)
 # =========================
 class Cuenta(models.Model):
     nombre = models.CharField(
@@ -129,7 +128,6 @@ class Cuenta(models.Model):
 
 # =========================
 # MEDIOS DE PAGO
-# (lo que el cliente elige)
 # =========================
 class MedioPago(models.Model):
     nombre = models.CharField(
@@ -145,7 +143,7 @@ class MedioPago(models.Model):
 
 # =========================
 # CANALES DE PAGO
-# (cómo se ejecuta un medio)
+# (pertenecen al medio)
 # =========================
 class CanalPago(models.Model):
     medio = models.ForeignKey(
@@ -169,12 +167,12 @@ class CanalPago(models.Model):
 
 # =========================
 # CONFIGURACIÓN DE PAGO
-# CANAL → CUENTA
-# (el medio se hereda del canal)
+# MEDIO → CUENTA
+# (los canales se heredan)
 # =========================
 class ConfiguracionPago(models.Model):
-    canal = models.ForeignKey(
-        CanalPago,
+    medio = models.ForeignKey(
+        MedioPago,
         on_delete=models.CASCADE,
         related_name="configuraciones"
     )
@@ -188,12 +186,12 @@ class ConfiguracionPago(models.Model):
     activo = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ("canal", "cuenta_destino")
+        unique_together = ("medio", "cuenta_destino")
         verbose_name = "Configuración de pago"
         verbose_name_plural = "Configuraciones de pago"
 
     def __str__(self):
-        return f"{self.canal.medio} | {self.canal.nombre} → {self.cuenta_destino}"
+        return f"{self.medio} → {self.cuenta_destino}"
 
 
 # =========================
@@ -212,6 +210,12 @@ class PagoFactura(models.Model):
         related_name="pagos"
     )
 
+    canal = models.ForeignKey(
+        CanalPago,
+        on_delete=models.PROTECT,
+        related_name="pagos"
+    )
+
     valor = models.DecimalField(
         max_digits=12,
         decimal_places=2
@@ -225,4 +229,4 @@ class PagoFactura(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Factura {self.factura_id} | {self.configuracion} | {self.valor}"
+        return f"Factura {self.factura_id} | {self.medio} | {self.valor}"
