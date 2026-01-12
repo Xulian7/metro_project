@@ -241,8 +241,7 @@
 
 {{ productos_json|json_script:"productos-almacen" }}
 {{ servicios_json|json_script:"servicios-taller" }}
-{{ tipos_pago_json|json_script:"tipos-pago" }}
-{{ cuentas_json|json_script:"cuentas" }}
+{{ configuraciones_json|json_script:"configuraciones-json" }}
 
 
 <script>
@@ -357,7 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let CONFIGS = [];
 
   try {
-    const el = document.getElementById("origenes-canales-json");
+    const el = document.getElementById("configuraciones-json");
     if (el) CONFIGS = JSON.parse(el.textContent);
   } catch (e) {
     console.error("Error leyendo configuraciones de pago", e);
@@ -370,6 +369,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const addPagoBtn = document.getElementById("add-pago");
   const tpl = document.getElementById("empty-pago");
 
+  if (!pagosContainer || !tpl) return;
+
   /* =========================
      HELPERS
   ========================= */
@@ -379,24 +380,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function cargarMedios(select) {
     select.innerHTML = '<option value="">Medio</option>';
+
     uniqueBy(CONFIGS, "medio_id").forEach(m => {
       const opt = document.createElement("option");
       opt.value = m.medio_id;
-      opt.textContent = m.medio_nombre;
+      opt.textContent = m["medio__nombre"];
       select.appendChild(opt);
     });
   }
 
   function cargarCanales(select, medioId) {
     select.innerHTML = '<option value="">Canal</option>';
+
     CONFIGS
       .filter(c => c.medio_id == medioId)
       .forEach(c => {
         const opt = document.createElement("option");
-        opt.value = c.id; // 👈 configuración real
-        opt.textContent = c.canal_nombre;
-        opt.dataset.referencia = c.requiere_referencia ? "1" : "0";
-        opt.dataset.cuenta = c.cuenta_nombre;
+        opt.value = c.id; // 👈 ID real de ConfiguracionPago
+        opt.textContent = c["canal__nombre"];
+        opt.dataset.referencia = c["canal__requiere_referencia"] ? "1" : "0";
+        opt.dataset.cuenta = c["cuenta_destino__nombre"];
         select.appendChild(opt);
       });
 
@@ -404,23 +407,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     AGREGAR PAGO
+     AGREGAR FILA DE PAGO
   ========================= */
   function agregarPago() {
     pagosContainer.insertAdjacentHTML("beforeend", tpl.innerHTML);
     const row = pagosContainer.lastElementChild;
+    if (!row) return;
 
     const medioSel = row.querySelector(".pago-medio");
     const canalSel = row.querySelector(".pago-canal");
+    const cuentaInput = row.querySelector(".pago-cuenta");
+    const referenciaInput = row.querySelector(".pago-referencia");
+    const configIdInput = row.querySelector(".pago-config-id");
 
     cargarMedios(medioSel);
 
+    canalSel.disabled = true;
+    referenciaInput.disabled = true;
+
     medioSel.addEventListener("change", () => {
-      canalSel.disabled = true;
       canalSel.innerHTML = '<option value="">Canal</option>';
-      row.querySelector(".pago-cuenta").value = "";
-      row.querySelector(".pago-referencia").value = "";
-      row.querySelector(".pago-referencia").disabled = true;
+      canalSel.disabled = true;
+
+      cuentaInput.value = "";
+      referenciaInput.value = "";
+      referenciaInput.disabled = true;
+      configIdInput.value = "";
 
       if (medioSel.value) {
         cargarCanales(canalSel, medioSel.value);
@@ -431,12 +443,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const opt = canalSel.selectedOptions[0];
       if (!opt) return;
 
-      row.querySelector(".pago-cuenta").value = opt.dataset.cuenta || "";
-
-      const ref = row.querySelector(".pago-referencia");
-      ref.disabled = opt.dataset.referencia !== "1";
-
-      row.querySelector(".pago-config-id").value = canalSel.value;
+      cuentaInput.value = opt.dataset.cuenta || "";
+      referenciaInput.disabled = opt.dataset.referencia !== "1";
+      configIdInput.value = canalSel.value;
     });
   }
 
@@ -445,12 +454,17 @@ document.addEventListener("DOMContentLoaded", () => {
   ========================= */
   function recalcularPagos() {
     let total = 0;
+
     document.querySelectorAll(".pago-valor").forEach(i => {
       total += parseFloat(i.value || 0);
     });
 
-    document.getElementById("total-pagado").innerText =
-      total.toLocaleString("es-CO", { minimumFractionDigits: 2 });
+    const totalEl = document.getElementById("total-pagado");
+    if (totalEl) {
+      totalEl.innerText = total.toLocaleString("es-CO", {
+        minimumFractionDigits: 2
+      });
+    }
   }
 
   /* =========================
@@ -458,13 +472,13 @@ document.addEventListener("DOMContentLoaded", () => {
   ========================= */
   addPagoBtn?.addEventListener("click", agregarPago);
 
-  pagosContainer?.addEventListener("input", e => {
+  pagosContainer.addEventListener("input", e => {
     if (e.target.classList.contains("pago-valor")) {
       recalcularPagos();
     }
   });
 
-  pagosContainer?.addEventListener("click", e => {
+  pagosContainer.addEventListener("click", e => {
     if (e.target.classList.contains("remove-pago")) {
       e.target.closest(".pago-row")?.remove();
       recalcularPagos();
@@ -473,10 +487,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 </script>
-
-
-
-
 
 
 {% endblock %}
