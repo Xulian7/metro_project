@@ -40,29 +40,25 @@ def nueva_transaccion(request):
     )
 
     # 🔑 JSON PARA UX GUIADO
-    # Configuración define qué cuentas están habilitadas
-    # Canal y Medio vienen por relación (NO duplicados)
+    # Configuración define:
+    #   - qué MEDIOS están habilitados
+    #   - a qué CUENTAS pueden ir
+    # Los CANALES se cargan luego por MEDIO
     configuraciones = ConfiguracionPago.objects.select_related(
-        "canal__medio",
+        "medio",
         "cuenta_destino"
     ).filter(
         activo=True,
-        canal__activo=True,
-        canal__medio__activo=True,
+        medio__activo=True,
         cuenta_destino__activa=True
     ).values(
         "id",
 
         # Medio
-        "canal__medio_id",
-        "canal__medio__nombre",
+        "medio_id",
+        "medio__nombre",
 
-        # Canal
-        "canal_id",
-        "canal__nombre",
-        "canal__requiere_referencia",
-
-        # Cuenta destino (informativa)
+        # Cuenta destino
         "cuenta_destino__nombre",
     )
 
@@ -175,7 +171,7 @@ def catalogos_pago(request):
             "canales": CanalPago.objects.select_related("medio"),
             "cuentas": Cuenta.objects.all(),
             "configuraciones": ConfiguracionPago.objects.select_related(
-                "canal__medio",
+                "medio",
                 "cuenta_destino"
             ),
             "medio_form": medio_form,
