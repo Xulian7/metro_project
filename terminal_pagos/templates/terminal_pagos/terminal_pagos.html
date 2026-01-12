@@ -133,33 +133,31 @@
       </button>
     </div>
 
-
+    <!-- ENCABEZADOS PAGOS -->
     <div class="col-12">
       <div class="row text-muted fw-semibold small border-bottom pb-2 mb-2">
         <div class="col-md-2">Medio</div>
+        <div class="col-md-2">Origen</div>
         <div class="col-md-2">Cuenta</div>
         <div class="col-md-2">Fecha</div>
-        <div class="col-md-2">Origen</div>
         <div class="col-md-2">Referencia</div>
         <div class="col-md-1 text-end">Valor</div>
         <div class="col-md-1 text-center">Acción</div>
       </div>
     </div>
 
-  
-
     <!-- ================= TEMPLATE PAGO (UX GUIADO) ================= -->
     <div id="empty-pago" class="d-none">
       <div class="row align-items-center g-2 border rounded-3 px-2 py-2 mb-2 pago-row bg-light">
 
-        <!-- MEDIO DE PAGO -->
+        <!-- MEDIO -->
         <div class="col-md-2">
           <select class="form-select form-select-sm pago-medio" name="medio_pago[]">
             <option value="">Medio</option>
           </select>
         </div>
 
-        <!-- CANAL -->
+        <!-- CANAL / ORIGEN -->
         <div class="col-md-2">
           <select class="form-select form-select-sm pago-canal"
                   name="canal_pago[]"
@@ -168,7 +166,7 @@
           </select>
         </div>
 
-        <!-- CUENTA DESTINO (INFORMATIVO) -->
+        <!-- CUENTA DESTINO -->
         <div class="col-md-2">
           <input type="text"
                 class="form-control form-control-sm pago-cuenta"
@@ -184,7 +182,7 @@
                 value="{{ today|date:'Y-m-d' }}">
         </div>
 
-        <!-- REFERENCIA (CONDICIONAL) -->
+        <!-- REFERENCIA -->
         <div class="col-md-2">
           <input type="text"
                 class="form-control form-control-sm pago-referencia"
@@ -211,11 +209,13 @@
           </button>
         </div>
 
-        <!-- CONFIG OCULTA (RESUELTA POR SISTEMA) -->
-        <input type="hidden" name="configuracion_pago_id[]" class="pago-config-id">
-
+        <!-- CONFIG OCULTA -->
+        <input type="hidden"
+              name="configuracion_pago_id[]"
+              class="pago-config-id">
       </div>
     </div>
+
 
     <div id="pagos-container" class="col-12"></div>
 
