@@ -27,7 +27,7 @@
 
   <li class="nav-item">
     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#configuracion">
-      Configuración
+      Configuración (Canal → Cuenta)
     </button>
   </li>
 
@@ -214,11 +214,6 @@
       {{ config_form.non_field_errors }}
 
       <div class="mb-3">
-        <label class="form-label">Medio</label>
-        {{ config_form.medio|add_class:"form-control" }}
-      </div>
-
-      <div class="mb-3">
         <label class="form-label">Canal</label>
         {{ config_form.canal|add_class:"form-control" }}
       </div>
@@ -226,6 +221,11 @@
       <div class="mb-3">
         <label class="form-label">Cuenta destino</label>
         {{ config_form.cuenta_destino|add_class:"form-control" }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Medio (heredado del canal)</label>
+        {{ config_form.medio|add_class:"form-control" }}
       </div>
 
       <div class="form-check mb-3">
