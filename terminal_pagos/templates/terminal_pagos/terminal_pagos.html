@@ -409,19 +409,21 @@ document.addEventListener("DOMContentLoaded", () => {
      CANALES (desde CANALES)
   ========================= */
   function cargarCanales(select, medioId) {
-    select.innerHTML = '<option value="">Canal</option>';
+    select.innerHTML = '<option value="">Origen</option>';
 
-    CANALES
-      .filter(c => c.medio_id == medioId && c.activo)
-      .forEach(c => {
-        const opt = document.createElement("option");
-        opt.value = c.id;
-        opt.textContent = c.nombre;
-        opt.dataset.referencia = c.requiere_referencia ? "1" : "0";
-        select.appendChild(opt);
-      });
+    const canales = CANALES.filter(
+      c => String(c.medio_id) === String(medioId) && c.activo
+    );
 
-    select.disabled = false;
+    canales.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = c.nombre;
+      opt.dataset.referencia = c.requiere_referencia ? "1" : "0";
+      select.appendChild(opt);
+    });
+
+    select.disabled = canales.length === 0;
   }
 
   /* =========================
@@ -429,7 +431,7 @@ document.addEventListener("DOMContentLoaded", () => {
      (MEDIO → CUENTA → config_id)
   ========================= */
   function resolverConfiguracion(medioId) {
-    return CONFIGS.find(c => c.medio_id == medioId);
+    return CONFIGS.find(c => String(c.medio_id) === String(medioId));
   }
 
   /* =========================
@@ -453,7 +455,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* ---- CAMBIO DE MEDIO ---- */
     medioSel.addEventListener("change", () => {
-      canalSel.innerHTML = '<option value="">Canal</option>';
+      const medioId = medioSel.value;
+
+      canalSel.innerHTML = '<option value="">Origen</option>';
       canalSel.disabled = true;
 
       cuentaInput.value = "";
@@ -461,7 +465,6 @@ document.addEventListener("DOMContentLoaded", () => {
       referenciaInput.disabled = true;
       configIdInput.value = "";
 
-      const medioId = medioSel.value;
       if (!medioId) return;
 
       const config = resolverConfiguracion(medioId);
@@ -479,6 +482,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!opt) return;
 
       referenciaInput.disabled = opt.dataset.referencia !== "1";
+      if (referenciaInput.disabled) {
+        referenciaInput.value = "";
+      }
     });
   }
 
@@ -520,7 +526,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 </script>
-
 
 
 
