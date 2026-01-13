@@ -1,41 +1,44 @@
-[2025-12-30 07:44:41] PLACA=PCA25B | MODELO_EXT='SUZUKI GS 125 2009' | RAZON=Modelo (año) no detectado
-[2025-12-30 07:44:42] PLACA=BSA36D | MODELO_EXT='HONDA2015' | RAZON=Marca no reconocida
-[2025-12-30 07:44:42] PLACA=IDE71D | MODELO_EXT='BAJAJ2014' | RAZON=Modelo (año) no detectado
-[2025-12-30 07:44:47] PLACA=FLO74E | MODELO_EXT='HONDA DIO 2017' | RAZON=Marca no reconocida
-[2025-12-30 07:44:48] PLACA=NJJ64E | MODELO_EXT='AKTNKD218' | RAZON=Modelo (año) no detectado
-[2025-12-30 07:44:53] PLACA=UJM88G | MODELO_EXT='BAJAJ BOXER S' | RAZON=Modelo (año) no detectado
-[2025-12-30 07:44:58] PLACA=YLQ61F | MODELO_EXT='TVS NEO NX110 2023' | RAZON=Marca no reconocida
-[2025-12-30 07:45:02] PLACA=DLF31H | MODELO_EXT='Por definir' | RAZON=Marca no reconocida
-[2025-12-30 07:45:02] PLACA=ZYU46G | MODELO_EXT='Por definir' | RAZON=Marca no reconocida
-[2025-12-30 07:45:02] PLACA=DXY95H | MODELO_EXT='Por definir' | RAZON=Marca no reconocida
-[2025-12-30 07:45:02] PLACA=DLF29H | MODELO_EXT='Por definir' | RAZON=Marca no reconocida
-[2025-12-30 07:45:02] PLACA=UJM91G | MODELO_EXT='Por definir' | RAZON=Marca no reconocida
-[2025-12-30 07:45:02] PLACA=JRM92H | MODELO_EXT='Por definir' | RAZON=Marca no reconocida
-[2025-12-30 07:45:02] PLACA=JRT06H | MODELO_EXT='2026' | RAZON=Marca no reconocida
-[2025-12-30 07:45:02] PLACA=JRT07H | MODELO_EXT='Ak125Nkd Eiii' | RAZON=Modelo (año) no detectado
-[2025-12-30 07:45:12] PLACA=UJM45G | MODELO_EXT='Boxer S 2024' | RAZON=Marca no reconocida
-[2025-12-30 07:45:29] PLACA=ORZ19H | MODELO_EXT='Ak125 Nkd' | RAZON=Modelo (año) no detectado
-[2025-12-30 07:45:35] PLACA=OSN30H | MODELO_EXT='Ak125 Njd 2026' | RAZON=Marca no reconocida
-[2025-12-30 07:45:47] PLACA=ESV22G | MODELO_EXT='Tvs Neo Nx110 2023' | RAZON=Marca no reconocida
-[2025-12-30 07:45:55] PLACA=RBH73H | MODELO_EXT='Ak125 Nkd' | RAZON=Modelo (año) no detectado
-[2025-12-30 07:45:58] PLACA=RKA82H | MODELO_EXT='Ak125 Nkd 2926' | RAZON=Modelo (año) no detectado
-[2025-12-30 07:45:58] PLACA=NTA91H | MODELO_EXT='Br 150 Sbr 2026' | RAZON=Marca no reconocida
-[2025-12-30 07:45:58] PLACA=NSO78H | MODELO_EXT='Br 150 Sbr' | RAZON=Marca no reconocida
-[2025-12-30 07:45:58] PLACA=RIX84H | MODELO_EXT='Br 150 Sbr' | RAZON=Marca no reconocida
-[2025-12-30 07:45:58] PLACA=NSV82H | MODELO_EXT='Br 150 Sbr' | RAZON=Marca no reconocida
-[2025-12-30 07:45:58] PLACA=RKO73H | MODELO_EXT='Br 150Cc Sbr' | RAZON=Marca no reconocida
-[2025-12-30 07:45:58] PLACA=RKO75H | MODELO_EXT='Br 150Cc Sbr' | RAZON=Marca no reconocida
-[2025-12-30 07:45:58] PLACA=RKO72H | MODELO_EXT='Br 150Cc Sbr' | RAZON=Marca no reconocida
-[2025-12-30 07:45:58] PLACA=RKP06H | MODELO_EXT='Br 150 Cc Sbr' | RAZON=Marca no reconocida
-[2025-12-30 07:45:58] PLACA=RKO71H | MODELO_EXT='Br 150Cc Sbr' | RAZON=Marca no reconocida
-[2025-12-30 07:45:58] PLACA=RKO74H | MODELO_EXT='Br 150Cc Sbr' | RAZON=Marca no reconocida
-[2025-12-30 07:45:59] PLACA=RKW43H | MODELO_EXT='Sbr 150' | RAZON=Marca no reconocida
-[2025-12-30 07:45:59] PLACA=RKW46H | MODELO_EXT='Sbr 150' | RAZON=Marca no reconocida
-[2025-12-30 07:46:02] PLACA=TID75H | MODELO_EXT='Ak125 Nkd 125' | RAZON=Modelo (año) no detectado
-[2025-12-30 07:46:03] PLACA=TIT70H | MODELO_EXT='Nkd 125' | RAZON=Modelo (año) no detectado
-[2025-12-30 07:46:08] PLACA=DKN94H | MODELO_EXT='Gn 125 Suzuki' | RAZON=Modelo (año) no detectado
-[2025-12-30 07:46:11] PLACA=VRI79H | MODELO_EXT='2025' | RAZON=Marca no reconocida
-[2025-12-30 07:46:23] PLACA=RJH68H | MODELO_EXT='Nkd' | RAZON=Modelo (año) no detectado
-[2025-12-30 07:46:35] PLACA=ZHI86H | MODELO_EXT='2025' | RAZON=Marca no reconocida
-[2025-12-30 07:46:35] PLACA=ZHI85H | MODELO_EXT='2025' | RAZON=Marca no reconocida
-[2025-12-30 07:46:35] PLACA=ZHI82H | MODELO_EXT='2025' | RAZON=Marca no reconocida
+[2026-01-12 20:57:15] PLACA=PCA25B | MODELO_EXT='SUZUKI GS 125 2009' | RAZON=Modelo (año) no detectado
+[2026-01-12 20:57:16] PLACA=BSA36D | MODELO_EXT='HONDA2015' | RAZON=Marca no reconocida
+[2026-01-12 20:57:17] PLACA=IDE71D | MODELO_EXT='BAJAJ2014' | RAZON=Modelo (año) no detectado
+[2026-01-12 20:57:22] PLACA=FLO74E | MODELO_EXT='HONDA DIO 2017' | RAZON=Marca no reconocida
+[2026-01-12 20:57:23] PLACA=NJJ64E | MODELO_EXT='AKTNKD218' | RAZON=Modelo (año) no detectado
+[2026-01-12 20:57:29] PLACA=UJM88G | MODELO_EXT='BAJAJ BOXER S' | RAZON=Modelo (año) no detectado
+[2026-01-12 20:57:33] PLACA=YLQ61F | MODELO_EXT='TVS NEO NX110 2023' | RAZON=Marca no reconocida
+[2026-01-12 20:57:37] PLACA=DLF31H | MODELO_EXT='Por definir' | RAZON=Marca no reconocida
+[2026-01-12 20:57:37] PLACA=ZYU46G | MODELO_EXT='Por definir' | RAZON=Marca no reconocida
+[2026-01-12 20:57:37] PLACA=DXY95H | MODELO_EXT='Por definir' | RAZON=Marca no reconocida
+[2026-01-12 20:57:37] PLACA=DLF29H | MODELO_EXT='Por definir' | RAZON=Marca no reconocida
+[2026-01-12 20:57:37] PLACA=UJM91G | MODELO_EXT='Por definir' | RAZON=Marca no reconocida
+[2026-01-12 20:57:37] PLACA=JRM92H | MODELO_EXT='Por definir' | RAZON=Marca no reconocida
+[2026-01-12 20:57:37] PLACA=JRT06H | MODELO_EXT='2026' | RAZON=Marca no reconocida
+[2026-01-12 20:57:38] PLACA=JRT07H | MODELO_EXT='Ak125Nkd Eiii' | RAZON=Modelo (año) no detectado
+[2026-01-12 20:57:49] PLACA=UJM45G | MODELO_EXT='Boxer S 2024' | RAZON=Marca no reconocida
+[2026-01-12 20:58:06] PLACA=ORZ19H | MODELO_EXT='Ak125 Nkd' | RAZON=Modelo (año) no detectado
+[2026-01-12 20:58:14] PLACA=OSN30H | MODELO_EXT='Ak125 Njd 2026' | RAZON=Marca no reconocida
+[2026-01-12 20:58:27] PLACA=ESV22G | MODELO_EXT='Tvs Neo Nx110 2023' | RAZON=Marca no reconocida
+[2026-01-12 20:58:36] PLACA=RBH73H | MODELO_EXT='Ak125 Nkd' | RAZON=Modelo (año) no detectado
+[2026-01-12 20:58:39] PLACA=RKA82H | MODELO_EXT='Ak125 Nkd 2926' | RAZON=Modelo (año) no detectado
+[2026-01-12 20:58:39] PLACA=NTA91H | MODELO_EXT='Br 150 Sbr 2026' | RAZON=Marca no reconocida
+[2026-01-12 20:58:39] PLACA=NSO78H | MODELO_EXT='Br 150 Sbr' | RAZON=Marca no reconocida
+[2026-01-12 20:58:39] PLACA=RIX84H | MODELO_EXT='Br 150 Sbr' | RAZON=Marca no reconocida
+[2026-01-12 20:58:39] PLACA=NSV82H | MODELO_EXT='Br 150 Sbr' | RAZON=Marca no reconocida
+[2026-01-12 20:58:39] PLACA=RKO73H | MODELO_EXT='Br 150Cc Sbr' | RAZON=Marca no reconocida
+[2026-01-12 20:58:39] PLACA=RKO75H | MODELO_EXT='Br 150Cc Sbr' | RAZON=Marca no reconocida
+[2026-01-12 20:58:39] PLACA=RKO72H | MODELO_EXT='Br 150Cc Sbr' | RAZON=Marca no reconocida
+[2026-01-12 20:58:39] PLACA=RKP06H | MODELO_EXT='Br 150 Cc Sbr' | RAZON=Marca no reconocida
+[2026-01-12 20:58:39] PLACA=RKO71H | MODELO_EXT='Br 150Cc Sbr' | RAZON=Marca no reconocida
+[2026-01-12 20:58:39] PLACA=RKO74H | MODELO_EXT='Br 150Cc Sbr' | RAZON=Marca no reconocida
+[2026-01-12 20:58:41] PLACA=RKW43H | MODELO_EXT='Sbr 150' | RAZON=Marca no reconocida
+[2026-01-12 20:58:41] PLACA=RKW46H | MODELO_EXT='Sbr 150' | RAZON=Marca no reconocida
+[2026-01-12 20:58:44] PLACA=TID75H | MODELO_EXT='Ak125 Nkd 125' | RAZON=Modelo (año) no detectado
+[2026-01-12 20:58:45] PLACA=TIT70H | MODELO_EXT='Nkd 125' | RAZON=Modelo (año) no detectado
+[2026-01-12 20:58:49] PLACA=DKN94H | MODELO_EXT='Gn 125 Suzuki' | RAZON=Modelo (año) no detectado
+[2026-01-12 20:58:53] PLACA=VRI79H | MODELO_EXT='2025' | RAZON=Marca no reconocida
+[2026-01-12 20:59:07] PLACA=RJH68H | MODELO_EXT='Nkd' | RAZON=Modelo (año) no detectado
+[2026-01-12 20:59:21] PLACA=ZHI86H | MODELO_EXT='2025' | RAZON=Marca no reconocida
+[2026-01-12 20:59:21] PLACA=ZHI85H | MODELO_EXT='2025' | RAZON=Marca no reconocida
+[2026-01-12 20:59:21] PLACA=ZHI82H | MODELO_EXT='2025' | RAZON=Marca no reconocida
+[2026-01-12 20:59:24] PLACA=ZPF93H | MODELO_EXT='Akt Nkd 125' | RAZON=Modelo (año) no detectado
+[2026-01-12 20:59:24] PLACA=ZOX89H | MODELO_EXT='Akt Nkd 125' | RAZON=Modelo (año) no detectado
+[2026-01-12 20:59:24] PLACA=ZOX90H | MODELO_EXT='Akt Nkd 125' | RAZON=Modelo (año) no detectado

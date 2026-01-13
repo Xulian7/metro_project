@@ -228,5 +228,11 @@ class PagoFactura(models.Model):
 
     fecha = models.DateTimeField(auto_now_add=True)
 
+    
     def __str__(self):
-        return f"Factura {self.factura_id} | {self.medio} | {self.valor}"
+        return (
+            f"Factura {self.factura_id} | "
+            f"{self.configuracion.medio} - {self.canal.nombre} | "
+            f"{self.valor}"
+        )
+
