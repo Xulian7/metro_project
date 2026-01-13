@@ -102,22 +102,41 @@ from .models import (
 
 
 # =========================
-# CREAR FACTURA (COMPLETO)
+# CREAR FACTURA (COMPLETO + DEBUG)
 # =========================
 def crear_factura(request):
+    print("===> ENTRÓ A crear_factura")
+
     if request.method == "POST":
+        print("===> MÉTODO POST")
+
         factura_form = FacturaForm(request.POST)
+        print("Factura form valid:", factura_form.is_valid())
+        print("Factura form errors:", factura_form.errors)
 
         if factura_form.is_valid():
             factura = factura_form.save(commit=False)
+            print("Factura creada en memoria (no guardada)")
+
             item_formset = ItemFacturaFormSet(request.POST, instance=factura)
+            print("Item formset valid:", item_formset.is_valid())
+            print("Item formset errors:", item_formset.errors)
 
             if item_formset.is_valid():
                 factura.save()
+                print(f"Factura GUARDADA con ID: {factura.id}")
+
                 item_formset.save()
+                print("Items guardados correctamente")
 
                 return redirect("terminal_pagos:nueva_transaccion")
+            else:
+                print("❌ Item formset NO válido")
+        else:
+            print("❌ Factura form NO válido")
+
     else:
+        print("===> MÉTODO GET")
         factura_form = FacturaForm()
         item_formset = ItemFacturaFormSet()
 
@@ -129,6 +148,7 @@ def crear_factura(request):
             "item_formset": item_formset,
         }
     )
+
 
 
 
