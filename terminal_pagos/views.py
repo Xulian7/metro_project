@@ -126,12 +126,35 @@ def crear_factura(request):
                 factura.save()
                 print(f"Factura GUARDADA con ID: {factura.id}")
 
-                item_formset.save()
-                print("Items guardados correctamente")
+                items = item_formset.save(commit=False)
+
+                total_factura = 0
+
+                for item in items:
+                    # 🔑 BACKEND MANDA
+                    item.factura = factura
+                    item.subtotal = item.cantidad * item.valor_unitario
+                    total_factura += item.subtotal
+                    item.save()
+
+                    print(
+                        f"Item guardado | "
+                        f"tipo={item.tipo_item} | "
+                        f"cantidad={item.cantidad} | "
+                        f"unit={item.valor_unitario} | "
+                        f"subtotal={item.subtotal}"
+                    )
+
+                factura.total = total_factura
+                factura.save()
+
+                print(f"TOTAL FACTURA: {factura.total}")
 
                 return redirect("terminal_pagos:nueva_transaccion")
+
             else:
                 print("❌ Item formset NO válido")
+
         else:
             print("❌ Factura form NO válido")
 
@@ -148,6 +171,7 @@ def crear_factura(request):
             "item_formset": item_formset,
         }
     )
+
 
 
 
