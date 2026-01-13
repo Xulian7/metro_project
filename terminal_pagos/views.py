@@ -104,89 +104,32 @@ from .models import (
 # =========================
 # CREAR FACTURA (COMPLETO)
 # =========================
-@transaction.atomic
 def crear_factura(request):
-    if request.method != "POST":
-        return redirect("terminal_pagos:nueva_transaccion")
+    if request.method == "POST":
+        factura_form = FacturaForm(request.POST)
 
-    factura_form = FacturaForm(request.POST)
-    factura = Factura()
-    item_formset = ItemFacturaFormSet(request.POST, instance=factura)
+        if factura_form.is_valid():
+            factura = factura_form.save(commit=False)
+            item_formset = ItemFacturaFormSet(request.POST, instance=factura)
 
-    if not (factura_form.is_valid() and item_formset.is_valid()):
-        # fallback defensivo: vuelve al terminal
-        return redirect("terminal_pagos:nueva_transaccion")
+            if item_formset.is_valid():
+                factura.save()
+                item_formset.save()
 
-    # =========================
-    # 1️⃣ FACTURA
-    # =========================
-    factura = factura_form.save(commit=False)
-    factura.save()
-
-    # =========================
-    # 2️⃣ ÍTEMS
-    # =========================
-    item_formset.instance = factura
-    items = item_formset.save(commit=False)
-
-    total_factura = Decimal("0")
-
-    for item in items:
-        item.subtotal = item.valor_unitario * item.cantidad
-        total_factura += item.subtotal
-        item.save()
-
-    factura.total = total_factura
-
-    # =========================
-    # 3️⃣ PAGOS
-    # =========================
-    config_ids = request.POST.getlist("configuracion_pago_id[]")
-    canal_ids = request.POST.getlist("canal_pago[]")
-    valores = request.POST.getlist("valor_pago[]")
-    referencias = request.POST.getlist("referencia_pago[]")
-    fechas = request.POST.getlist("fecha_pago[]")
-
-    total_pagado = Decimal("0")
-
-    for i in range(len(config_ids)):
-        if not valores[i]:
-            continue
-
-        configuracion = ConfiguracionPago.objects.get(id=config_ids[i])
-        canal = CanalPago.objects.get(id=canal_ids[i])
-
-        valor = Decimal(valores[i])
-        total_pagado += valor
-
-        PagoFactura.objects.create(
-            factura=factura,
-            configuracion=configuracion,
-            canal=canal,
-            valor=valor,
-            referencia=referencias[i] or "",
-            fecha=fechas[i],
-        )
-
-    factura.total_pagado = total_pagado
-
-    # =========================
-    # 4️⃣ ESTADO DE PAGO
-    # =========================
-    if total_pagado == 0:
-        factura.estado_pago = "pendiente"
-    elif total_pagado < total_factura:
-        factura.estado_pago = "parcial"
+                return redirect("terminal_pagos:nueva_transaccion")
     else:
-        factura.estado_pago = "pagada"
+        factura_form = FacturaForm()
+        item_formset = ItemFacturaFormSet()
 
-    factura.estado = "confirmada"
-    factura.save()
+    return render(
+        request,
+        "terminal_pagos/terminal_pagos.html",
+        {
+            "factura_form": factura_form,
+            "item_formset": item_formset,
+        }
+    )
 
-    # =========================
-    # 5️⃣ REDIRECT LIMPIO
-    # =========================
-    return redirect("terminal_pagos:nueva_transaccion")
 
 
 
