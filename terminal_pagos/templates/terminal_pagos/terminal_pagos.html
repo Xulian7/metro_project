@@ -36,7 +36,9 @@
 <div class="card p-4 shadow-sm">
   <h3 class="fw-bold fs-5 mb-4">Nueva Transacción</h3>
 
-  <form method="post" class="row g-3">
+  <form method="post" 
+    action="{% url 'terminal_pagos:crear_factura' %}"
+    class="row g-3">
     {% csrf_token %}
 
     <!-- CONTRATO -->
