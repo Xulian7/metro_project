@@ -98,24 +98,9 @@ def crear_factura(request):
 
         if factura_form.is_valid():
             factura = factura_form.save()
-            print(f"✅ Factura guardada con ID {factura.id}")
-
             return redirect("terminal_pagos:nueva_transaccion")
 
-        else:
-            print("❌ FacturaForm inválido")
-            print(factura_form.errors)
-
-    else:
-        factura_form = FacturaForm()
-
-    return render(
-        request,
-        "terminal_pagos/terminal_pagos.html",
-        {
-            "factura_form": factura_form,
-        }
-    )
+    return redirect("terminal_pagos:nueva_transaccion")
 
 
 # =========================
