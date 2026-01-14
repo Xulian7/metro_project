@@ -105,7 +105,7 @@
 
     <tbody>
       {% for c in contratos %}
-      <tr class="{% if c.tipo_contrato|lower == 'alquiler' %}fila-alquiler{% endif %}">
+      <tr class="fila-alquiler">
         <td>{{ c.cliente }}</td>
         <td>{{ c.cliente.cedula|default:"—" }}</td>
         <td>{{ c.vehiculo }}</td>
