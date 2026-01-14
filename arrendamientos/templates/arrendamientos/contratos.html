@@ -78,10 +78,10 @@
   </div>
 
   <style>
-  .fila-alquiler {
-      background: rgba(0,0,0,0.08);
-      box-shadow: inset 0 0 8px rgba(0,0,0,0.2);
-  }
+    .fila-alquiler {
+        background: rgba(0,0,0,0.08);
+        box-shadow: inset 0 0 8px rgba(0,0,0,0.2);
+    }
   </style>
 
   <!-- 📋 Tabla de contratos -->
@@ -105,7 +105,7 @@
 
     <tbody>
       {% for c in contratos %}
-       <tr class="{% if c.tipo_contrato == 'alquiler' %}fila-alquiler{% endif %}">
+      <tr class="{% if c.tipo_contrato|lower == 'alquiler' %}fila-alquiler{% endif %}">
         <td>{{ c.cliente }}</td>
         <td>{{ c.cliente.cedula|default:"—" }}</td>
         <td>{{ c.vehiculo }}</td>
