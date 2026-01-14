@@ -89,92 +89,34 @@ def nueva_transaccion(request):
     
 
 
-from django.db import transaction
-from decimal import Decimal
-
-from .models import (
-    Factura,
-    ItemFactura,
-    PagoFactura,
-    ConfiguracionPago,
-    CanalPago,
-)
-
-
 # =========================
-# CREAR FACTURA (COMPLETO + DEBUG)
+# CREAR FACTURA
 # =========================
 def crear_factura(request):
-    print("===> ENTRÓ A crear_factura")
-
     if request.method == "POST":
-        print("===> MÉTODO POST")
-
         factura_form = FacturaForm(request.POST)
-        print("Factura form valid:", factura_form.is_valid())
-        print("Factura form errors:", factura_form.errors)
+        factura = Factura()
+        item_formset = ItemFacturaFormSet(request.POST, instance=factura)
 
-        if factura_form.is_valid():
-            factura = factura_form.save(commit=False)
-            print("Factura creada en memoria (no guardada)")
+        if factura_form.is_valid() and item_formset.is_valid():
+            factura = factura_form.save()
+            item_formset.instance = factura
+            item_formset.save()
 
-            item_formset = ItemFacturaFormSet(request.POST, instance=factura)
-            print("Item formset valid:", item_formset.is_valid())
-            print("Item formset errors:", item_formset.errors)
-
-            if item_formset.is_valid():
-                factura.save()
-                print(f"Factura GUARDADA con ID: {factura.id}")
-
-                items = item_formset.save(commit=False)
-
-                total_factura = 0
-
-                for item in items:
-                    # 🔑 BACKEND MANDA
-                    item.factura = factura
-                    item.subtotal = item.cantidad * item.valor_unitario
-                    total_factura += item.subtotal
-                    item.save()
-
-                    print(
-                        f"Item guardado | "
-                        f"tipo={item.tipo_item} | "
-                        f"cantidad={item.cantidad} | "
-                        f"unit={item.valor_unitario} | "
-                        f"subtotal={item.subtotal}"
-                    )
-
-                factura.total = total_factura
-                factura.save()
-
-                print(f"TOTAL FACTURA: {factura.total}")
-
-                return redirect("terminal_pagos:nueva_transaccion")
-
-            else:
-                print("❌ Item formset NO válido")
-
-        else:
-            print("❌ Factura form NO válido")
+            return redirect("terminal_pagos:nueva_transaccion")
 
     else:
-        print("===> MÉTODO GET")
         factura_form = FacturaForm()
         item_formset = ItemFacturaFormSet()
 
     return render(
         request,
-        "terminal_pagos/terminal_pagos.html",
+        "terminal_pagos/crear_factura.html",
         {
             "factura_form": factura_form,
             "item_formset": item_formset,
         }
     )
-
-
-
-
 
 
 # =========================

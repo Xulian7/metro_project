@@ -89,6 +89,7 @@
         <th>Tarifa</th>
         <th>Días</th>
         <th>Visitador</th>
+        <th>Tipo</th>
         <th>Estado</th>
         <th>Motivo</th>
         <th>Acciones</th> <!-- Boton -->
@@ -106,6 +107,7 @@
         <td>{{ c.tarifa }}</td>
         <td>{{ c.dias_contrato }}</td>
         <td>{{ c.visitador }}</td>
+        <td>{{ c.tipo_contrato }}</td>
         <td>{{ c.estado }}</td>
         <td>
           {% if c.estado == "Inactivo" %}
