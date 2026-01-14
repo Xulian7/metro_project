@@ -77,6 +77,13 @@
     <input type="text" id="filtroTabla" class="form-control" placeholder="Filtrar contratos..." />
   </div>
 
+  <style>
+  .fila-alquiler {
+      background: rgba(0,0,0,0.08);
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.2);
+  }
+  </style>
+
   <!-- 📋 Tabla de contratos -->
   <table class="table modern-table mt-3" id="tablaContratos">
     <thead>
@@ -98,7 +105,7 @@
 
     <tbody>
       {% for c in contratos %}
-      <tr>
+       <tr class="{% if c.tipo_contrato == 'alquiler' %}fila-alquiler{% endif %}">
         <td>{{ c.cliente }}</td>
         <td>{{ c.cliente.cedula|default:"—" }}</td>
         <td>{{ c.vehiculo }}</td>
