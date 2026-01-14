@@ -198,6 +198,11 @@
             </div>
 
             <div class="mb-3">
+              <label>Tipo de contrato</label>
+              <input type="text" id="modal-tipo" name="tipo_contrato" class="form-control" disabled>
+            </div>
+
+            <div class="mb-3">
               <label>Estado</label>
               <select id="modal-estado" name="estado" class="form-select">
                 <option value="Activo">Activo</option>
@@ -323,6 +328,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
         document.getElementById('modal-dias').value = btn.dataset.dias;
         document.getElementById('modal-visitador').value = btn.dataset.visitador;
+        document.getElementById('modal-tipo').value = btn.dataset.tipo;
         estadoSelect.value = btn.dataset.estado;
         actualizarMotivos();
         motivoSelect.value = btn.dataset.motivo || "";
