@@ -86,8 +86,6 @@ class ItemFacturaForm(forms.ModelForm):
         for s in servicios:
             choices.append((f"taller:{s.id}", s.nombre_servicio)) # type: ignore
 
-        print(choices)
-        
         self.fields["descripcion"].choices = choices
 
 
