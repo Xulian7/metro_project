@@ -64,6 +64,8 @@ class FacturaForm(forms.ModelForm):
 # ITEMS DE FACTURA
 # =========================
 class ItemFacturaForm(forms.ModelForm):
+    descripcion = forms.ChoiceField(choices=[], required=True)
+
     class Meta:
         model = ItemFactura
         exclude = ("factura", "subtotal")
@@ -73,7 +75,7 @@ ItemFacturaFormSet = inlineformset_factory(
     Factura,
     ItemFactura,
     form=ItemFacturaForm,
-    extra=0,          # 🔑 NO forzar ítems vacíos
+    extra=1,
     can_delete=True,
 )
 
