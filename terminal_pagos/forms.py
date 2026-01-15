@@ -78,13 +78,13 @@ class ItemFacturaForm(forms.ModelForm):
         from almacen.models import Producto
         productos = Producto.objects.all()
         for p in productos:
-            choices.append((f"almacen:{p.id}", p.nombre))
+            choices.append((f"almacen:{p.id}", p.nombre)) # type: ignore
 
         # 3️⃣ SERVICIOS DE TALLER
         from taller.models import Servicio
         servicios = Servicio.objects.all()
         for s in servicios:
-            choices.append((f"taller:{s.id}", s.nombre_servicio))
+            choices.append((f"taller:{s.id}", s.nombre_servicio)) # type: ignore
 
         self.fields["descripcion"].choices = choices
 
@@ -96,37 +96,6 @@ ItemFacturaFormSet = inlineformset_factory(
     extra=1,
     can_delete=True,
 )
-
-class ItemFacturaForm(forms.ModelForm):
-    descripcion = forms.ChoiceField(choices=[], required=True)
-
-    class Meta:
-        model = ItemFactura
-        exclude = ("factura", "subtotal")
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        choices = []
-
-        # 1️⃣ TARIFA (valor fijo)
-        choices.append(("tarifa", "Pago de tarifa"))
-
-        # 2️⃣ PRODUCTOS DE ALMACÉN
-        from almacen.models import Producto
-        productos = Producto.objects.all()
-        for p in productos:
-            choices.append((f"almacen:{p.id}", p.nombre))
-
-        # 3️⃣ SERVICIOS DE TALLER
-        from taller.models import Servicio
-        servicios = Servicio.objects.all()
-        for s in servicios:
-            choices.append((f"taller:{s.id}", s.nombre_servicio))
-
-        self.fields["descripcion"].choices = choices
-
-
 
 
 # =========================
