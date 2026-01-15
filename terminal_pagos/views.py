@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.utils.timezone import now
 from almacen.models import Producto
 from taller.models import Servicio
+from django.db import transaction
 
 
 from .models import (
@@ -87,20 +88,41 @@ def nueva_transaccion(request):
     )
     
     
-
-
 # =========================
-# CREAR FACTURA (SOLO FACTURA)
+# CREAR FACTURA + ÍTEMS
 # =========================
+@transaction.atomic
 def crear_factura(request):
-    if request.method == "POST":
-        factura_form = FacturaForm(request.POST)
+    if request.method != "POST":
+        return redirect("terminal_pagos:nueva_transaccion")
 
-        if factura_form.is_valid():
-            factura = factura_form.save()
-            return redirect("terminal_pagos:nueva_transaccion")
+    factura_form = FacturaForm(request.POST)
 
+    if not factura_form.is_valid():
+        print("❌ Factura inválida:", factura_form.errors)
+        return redirect("terminal_pagos:nueva_transaccion")
+
+    factura = factura_form.save()
+    print(f"✅ Factura creada ID={factura.id}")
+
+    item_formset = ItemFacturaFormSet(request.POST, instance=factura)
+
+    if not item_formset.is_valid():
+        print("❌ Ítems inválidos:", item_formset.errors)
+        # rollback automático por transaction.atomic
+        return redirect("terminal_pagos:nueva_transaccion")
+
+    items = item_formset.save(commit=False)
+
+    for item in items:
+        item.factura = factura
+        item.subtotal = item.cantidad * item.valor_unitario
+        item.save()
+        print(f"🧾 Ítem guardado: {item.tipo_item} - {item.subtotal}")
+
+    print("🎉 Factura + ítems guardados OK")
     return redirect("terminal_pagos:nueva_transaccion")
+
 
 
 # =========================
