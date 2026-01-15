@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import inlineformset_factory
+from arrendamientos.models import Contrato
 
 from .models import (
     Factura,
@@ -10,9 +11,6 @@ from .models import (
     ConfiguracionPago,
     PagoFactura,
 )
-
-from arrendamientos.models import Contrato
-
 
 # =========================
 # SELECT PERSONALIZADO CONTRATO
@@ -49,11 +47,11 @@ class FacturaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields["contrato"].queryset = Contrato.objects.select_related(
+        self.fields["contrato"].queryset = Contrato.objects.select_related( # type: ignore
             "vehiculo", "cliente"
         )
 
-        self.fields["contrato"].label_from_instance = (
+        self.fields["contrato"].label_from_instance = ( # type: ignore
             lambda obj: f"{obj.vehiculo.placa} — {obj.cliente.nombre}"
         )
 
