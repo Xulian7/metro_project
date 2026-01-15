@@ -72,7 +72,7 @@ class ItemFacturaForm(forms.ModelForm):
         choices = []
 
         # 1️⃣ TARIFA (valor fijo)
-        choices.append(("tarifa", "Pago de tarifa"))
+        choices.append(("Tarifa", "Pago de tarifa"))
 
         # 2️⃣ PRODUCTOS DE ALMACÉN
         from almacen.models import Producto

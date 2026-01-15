@@ -291,7 +291,11 @@
     desc.innerHTML = '';
     opciones.forEach(o => {
       const opt = document.createElement('option');
-      opt.value = o.id;
+      if (tipo.value === 'tarifa') {
+        opt.value = 'tarifa';
+      } else {
+        opt.value = `${tipo.value}:${o.id}`;
+      }
       opt.textContent = o.text;
       opt.dataset.valor = o.valor;
       desc.appendChild(opt);
