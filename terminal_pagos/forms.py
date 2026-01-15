@@ -1,7 +1,6 @@
 from django import forms
 from django.forms import inlineformset_factory
 
-
 from .models import (
     Factura,
     ItemFactura,
@@ -63,8 +62,7 @@ class FacturaForm(forms.ModelForm):
 # ITEMS DE FACTURA
 # =========================
 class ItemFacturaForm(forms.ModelForm):
-    descripcion = forms.CharField(required=True)
-    # descripcion = forms.ChoiceField(choices=[], required=True)
+    descripcion = forms.ChoiceField(choices=[], required=True)
 
     class Meta:
         model = ItemFactura
