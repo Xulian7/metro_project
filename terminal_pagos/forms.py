@@ -93,7 +93,7 @@ ItemFacturaFormSet = inlineformset_factory(
     Factura,
     ItemFactura,
     form=ItemFacturaForm,
-    extra=1,
+    extra=0,
     can_delete=True,
 )
 
