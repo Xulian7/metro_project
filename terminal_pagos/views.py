@@ -117,29 +117,30 @@ def crear_factura(request):
     for item in items:
         item.factura = factura
 
-        # ---- TARIFA ----
+        raw = item.descripcion or ""
+
         if item.tipo_item == "tarifa":
             item.descripcion = "Pago de tarifa"
             item.producto_almacen = None
             item.servicio_taller = None
 
-        # ---- ALMACÉN ----
         elif item.tipo_item == "almacen":
-            producto = Producto.objects.get(id=int(item.descripcion))
+            tipo, producto_id = raw.split(":", 1)
+            producto = Producto.objects.get(id=int(producto_id))
             item.producto_almacen = producto
             item.servicio_taller = None
             item.descripcion = producto.nombre
 
-        # ---- TALLER ----
         elif item.tipo_item == "taller":
-            servicio = Servicio.objects.get(id=int(item.descripcion))
+            tipo, servicio_id = raw.split(":", 1)
+            servicio = Servicio.objects.get(id=int(servicio_id))
             item.servicio_taller = servicio
             item.producto_almacen = None
             item.descripcion = servicio.nombre_servicio
 
-        # Subtotal siempre se recalcula en backend (bien)
         item.subtotal = item.cantidad * item.valor_unitario
         item.save()
+
 
         print(
             f"🧾 Ítem guardado | tipo={item.tipo_item} | "
