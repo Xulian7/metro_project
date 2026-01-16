@@ -5,6 +5,7 @@ from taller.models import Servicio
 from django.db import transaction
 
 
+
 from .models import (
     Factura,
     Cuenta,
@@ -89,7 +90,7 @@ def nueva_transaccion(request):
     
     
 # =========================
-# CREAR FACTURA + ÍTEMS
+# CREAR FACTURA + ÍTEMS (PULIDO)
 # =========================
 @transaction.atomic
 def crear_factura(request):
@@ -109,16 +110,41 @@ def crear_factura(request):
 
     if not item_formset.is_valid():
         print("❌ Ítems inválidos:", item_formset.errors)
-        # rollback automático por transaction.atomic
         return redirect("terminal_pagos:nueva_transaccion")
 
     items = item_formset.save(commit=False)
 
     for item in items:
         item.factura = factura
+
+        # ---- TARIFA ----
+        if item.tipo_item == "tarifa":
+            item.descripcion = "Pago de tarifa"
+            item.producto_almacen = None
+            item.servicio_taller = None
+
+        # ---- ALMACÉN ----
+        elif item.tipo_item == "almacen":
+            producto = Producto.objects.get(id=int(item.descripcion))
+            item.producto_almacen = producto
+            item.servicio_taller = None
+            item.descripcion = producto.nombre
+
+        # ---- TALLER ----
+        elif item.tipo_item == "taller":
+            servicio = Servicio.objects.get(id=int(item.descripcion))
+            item.servicio_taller = servicio
+            item.producto_almacen = None
+            item.descripcion = servicio.nombre_servicio
+
+        # Subtotal siempre se recalcula en backend (bien)
         item.subtotal = item.cantidad * item.valor_unitario
         item.save()
-        print(f"🧾 Ítem guardado: {item.tipo_item} - {item.subtotal}")
+
+        print(
+            f"🧾 Ítem guardado | tipo={item.tipo_item} | "
+            f"subtotal={item.subtotal}"
+        )
 
     print("🎉 Factura + ítems guardados OK")
     return redirect("terminal_pagos:nueva_transaccion")
