@@ -3,7 +3,7 @@ from django.utils.timezone import now
 from almacen.models import Producto
 from taller.models import Servicio
 from django.db import transaction
-
+from .models import PagoFactura, ConfiguracionPago, CanalPago
 
 
 from .models import (
@@ -114,9 +114,10 @@ def crear_factura(request):
 
     items = item_formset.save(commit=False)
 
+    total_factura = 0
+
     for item in items:
         item.factura = factura
-
         raw = item.descripcion or ""
 
         if item.tipo_item == "tarifa":
@@ -125,14 +126,14 @@ def crear_factura(request):
             item.servicio_taller = None
 
         elif item.tipo_item == "almacen":
-            tipo, producto_id = raw.split(":", 1)
+            _, producto_id = raw.split(":", 1)
             producto = Producto.objects.get(id=int(producto_id))
             item.producto_almacen = producto
             item.servicio_taller = None
             item.descripcion = producto.nombre
 
         elif item.tipo_item == "taller":
-            tipo, servicio_id = raw.split(":", 1)
+            _, servicio_id = raw.split(":", 1)
             servicio = Servicio.objects.get(id=int(servicio_id))
             item.servicio_taller = servicio
             item.producto_almacen = None
@@ -141,13 +142,73 @@ def crear_factura(request):
         item.subtotal = item.cantidad * item.valor_unitario
         item.save()
 
+        total_factura += item.subtotal
 
         print(
             f"🧾 Ítem guardado | tipo={item.tipo_item} | "
             f"subtotal={item.subtotal}"
         )
 
-    print("🎉 Factura + ítems guardados OK")
+    # =========================
+    # PAGOS DE FACTURA
+    # =========================
+    configuraciones_ids = request.POST.getlist("configuracion_pago_id[]")
+    canales_ids = request.POST.getlist("canal_pago[]")
+    valores = request.POST.getlist("valor_pago[]")
+    referencias = request.POST.getlist("referencia_pago[]")
+
+    total_pagado = 0
+
+    for i in range(len(valores)):
+        if not valores[i]:
+            continue  # fila vacía
+
+        configuracion = ConfiguracionPago.objects.get(
+            id=int(configuraciones_ids[i])
+        )
+        canal = CanalPago.objects.get(
+            id=int(canales_ids[i])
+        )
+
+        valor = float(valores[i])
+        referencia = referencias[i] if i < len(referencias) else ""
+
+        PagoFactura.objects.create(
+            factura=factura,
+            configuracion=configuracion,
+            canal=canal,
+            valor=valor,
+            referencia=referencia,
+        )
+
+        total_pagado += valor
+
+        print(
+            f"💳 Pago guardado | "
+            f"{configuracion.medio} - {canal.nombre} | {valor}"
+        )
+
+    # =========================
+    # TOTALES Y ESTADO
+    # =========================
+    factura.total = total_factura
+    factura.total_pagado = total_pagado
+
+    if total_pagado == 0:
+        factura.estado_pago = "pendiente"
+    elif total_pagado < total_factura:
+        factura.estado_pago = "parcial"
+    else:
+        factura.estado_pago = "pagada"
+
+    factura.save()
+
+    print(
+        f"🎉 FACTURA COMPLETA | "
+        f"Total={factura.total} | Pagado={factura.total_pagado} | "
+        f"Estado={factura.estado_pago}"
+    )
+
     return redirect("terminal_pagos:nueva_transaccion")
 
 
