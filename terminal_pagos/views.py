@@ -150,7 +150,7 @@ def crear_factura(request):
         )
 
     # =========================
-    # PAGOS DE FACTURA
+    # PAGOS DE FACTURA (FIXED)
     # =========================
     configuraciones_ids = request.POST.getlist("configuracion_pago_id[]")
     canales_ids = request.POST.getlist("canal_pago[]")
@@ -159,26 +159,29 @@ def crear_factura(request):
 
     total_pagado = 0
 
-    for i in range(len(valores)):
-        if not valores[i]:
+    for config_id, canal_id, valor, referencia in zip(
+        configuraciones_ids,
+        canales_ids,
+        valores,
+        referencias,
+    ):
+        if not valor:
             continue  # fila vacía
 
-        configuracion = ConfiguracionPago.objects.get(
-            id=int(configuraciones_ids[i])
-        )
-        canal = CanalPago.objects.get(
-            id=int(canales_ids[i])
-        )
+        try:
+            configuracion = ConfiguracionPago.objects.get(id=int(config_id))
+            canal = CanalPago.objects.get(id=int(canal_id))
+        except (ValueError, ConfiguracionPago.DoesNotExist, CanalPago.DoesNotExist):
+            continue  # seguridad extra
 
-        valor = float(valores[i])
-        referencia = referencias[i] if i < len(referencias) else ""
+        valor = float(valor)
 
         PagoFactura.objects.create(
             factura=factura,
             configuracion=configuracion,
             canal=canal,
             valor=valor,
-            referencia=referencia,
+            referencia=referencia or "",
         )
 
         total_pagado += valor
@@ -187,6 +190,7 @@ def crear_factura(request):
             f"💳 Pago guardado | "
             f"{configuracion.medio} - {canal.nombre} | {valor}"
         )
+
 
     # =========================
     # TOTALES Y ESTADO
