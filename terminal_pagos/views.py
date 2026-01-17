@@ -204,6 +204,10 @@ def crear_factura(request):
         )
 
         if not valor or not config_id or not canal_id:
+            print(valor)
+            print(config_id)
+            print(canal_id)
+            
             print("   ⚠️ Fila incompleta, se ignora")
             continue
 
