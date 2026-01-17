@@ -515,6 +515,8 @@ document.addEventListener("DOMContentLoaded", () => {
       cargarCanales(canalSel, medioId);
       cargarCuentas(cuentaSel, medioId, configIdInput);
 
+      cuentaSel.dispatchEvent(new Event("change"));
+
     });
 
     /* ---- CAMBIO DE CUENTA ---- */
