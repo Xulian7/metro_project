@@ -415,22 +415,29 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =========================
      CUENTAS POR MEDIO
   ========================= */
-  function cargarCuentas(select, medioId) {
-    select.innerHTML = '<option value="">Cuenta destino</option>';
+  function cargarCuentas(select, medioId, configIdInput) {
+  select.innerHTML = '<option value="">Cuenta destino</option>';
 
-    const cuentas = CONFIGS.filter(
-      c => String(c.medio_id) === String(medioId)
-    );
+  const cuentas = CONFIGS.filter(
+    c => String(c.medio_id) === String(medioId)
+  );
 
-    cuentas.forEach(c => {
-      const opt = document.createElement("option");
-      opt.value = c.id; // 👈 ESTE es el config_id
-      opt.textContent = c["cuenta_destino__nombre"];
-      select.appendChild(opt);
-    });
+  cuentas.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.id; // config_id
+    opt.textContent = c["cuenta_destino__nombre"];
+    select.appendChild(opt);
+  });
 
-    select.disabled = cuentas.length === 0;
+  select.disabled = cuentas.length === 0;
+
+  // ⭐ AUTOFIX CLAVE
+  if (cuentas.length === 1) {
+    select.value = cuentas[0].id;
+    configIdInput.value = cuentas[0].id;
   }
+}
+
 
   /* =========================
      CANALES
@@ -490,7 +497,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!medioId) return;
 
       cargarCanales(canalSel, medioId);
-      cargarCuentas(cuentaSel, medioId);
+      cargarCuentas(cuentaSel, medioId, configIdInput);
+
     });
 
     /* ---- CAMBIO DE CUENTA ---- */
