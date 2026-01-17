@@ -213,7 +213,7 @@
         </div>
 
         <!-- CONFIG OCULTA -->
-        <input type="hidden"
+        <input type="text"
               name="configuracion_pago_id[]"
               class="pago-config-id">
       </div>
@@ -472,7 +472,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const cuentaSel = row.querySelector(".pago-cuenta");
     const referenciaInput = row.querySelector(".pago-referencia");
     const configIdInput = row.querySelector(".pago-config-id");
-
     const valorInput = row.querySelector(".pago-valor");
     // 🔒 Arranca bloqueado
     valorInput.disabled = true;
