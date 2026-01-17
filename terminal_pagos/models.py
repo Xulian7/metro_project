@@ -1,6 +1,7 @@
+from time import timezone
 from django.db import models
 from arrendamientos.models import Contrato
-
+from django.utils import timezone
 
 # =========================
 # FACTURA
@@ -41,17 +42,17 @@ class Factura(models.Model):
     total = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        default=0
+        default=0 # type: ignore
     )
 
     total_pagado = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        default=0
+        default=0 # type: ignore
     )
 
     def __str__(self):
-        return f"Factura #{self.id} - {self.fecha.date()}"
+        return f"Factura #{self.id} - {self.fecha.date()}" # type: ignore
 
 
 # =========================
@@ -108,7 +109,7 @@ class ItemFactura(models.Model):
     )
 
     def __str__(self):
-        return f"{self.get_tipo_item_display()} - {self.subtotal}"
+        return f"{self.get_tipo_item_display()} - {self.subtotal}" # type: ignore
 
 
 # =========================
@@ -226,12 +227,12 @@ class PagoFactura(models.Model):
         blank=True
     )
 
-    fecha = models.DateTimeField(auto_now_add=True)
+    fecha_pago = models.DateField(default=timezone.now)
 
     
     def __str__(self):
         return (
-            f"Factura {self.factura_id} | "
+            f"Factura {self.factura_id} | " # type: ignore
             f"{self.configuracion.medio} - {self.canal.nombre} | "
             f"{self.valor}"
         )

@@ -190,11 +190,18 @@ def crear_factura(request):
 
     print(f"💳 Procesando pagos | filas={len(valores)}")
 
-    for i, (config_id, canal_id, valor, referencia) in enumerate(
-        zip(configuraciones_ids, canales_ids, valores, referencias),
-        start=1
-    ):
-        print(f"➡️ Pago #{i} | valor='{valor}' | config={config_id} | canal={canal_id}")
+    for i in range(len(valores)):
+        valor = valores[i]
+        config_id = configuraciones_ids[i] if i < len(configuraciones_ids) else None
+        canal_id = canales_ids[i] if i < len(canales_ids) else None
+        referencia = referencias[i] if i < len(referencias) else ""
+
+        print(
+            f"➡️ Pago #{i+1} | "
+            f"valor='{valor}' | "
+            f"config={config_id} | "
+            f"canal={canal_id}"
+        )
 
         if not valor or not config_id or not canal_id:
             print("   ⚠️ Fila incompleta, se ignora")
