@@ -478,17 +478,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Helper: habilita valor solo si la fila está completa
     function toggleValor() {
+      console.log("TOGGLE",
+        "medio:", medioSel.value,
+        "canal:", canalSel.value,
+        "cuenta:", cuentaSel.value
+      );
+
       if (
         medioSel.value &&
         canalSel.value &&
         cuentaSel.value
       ) {
         valorInput.disabled = false;
+        console.log("✅ VALOR HABILITADO");
       } else {
         valorInput.disabled = true;
         valorInput.value = "";
+        console.log("⛔ VALOR BLOQUEADO");
       }
     }
+
 
     cargarMedios(medioSel);
 
