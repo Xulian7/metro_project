@@ -555,6 +555,15 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<script>
+document.querySelector("form").addEventListener("submit", () => {
+  document.querySelectorAll(
+    ".pago-canal, .pago-cuenta"
+  ).forEach(el => {
+    el.disabled = false;
+  });
+});
+</script>
 
 
 {% endblock %}
