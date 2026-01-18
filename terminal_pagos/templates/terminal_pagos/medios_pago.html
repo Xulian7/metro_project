@@ -1,0 +1,110 @@
+{% extends "accounts/home.html" %}
+{% block content %}
+
+<div class="card p-4 shadow-sm">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold mb-0">Pagos registrados</h5>
+  </div>
+
+  <!-- ========================= -->
+  <!-- FILTRO DE FECHAS -->
+  <!-- ========================= -->
+  <div class="row g-3 mb-3">
+    <div class="col-md-3">
+      <label class="form-label">Desde</label>
+      <input type="date" id="fecha-desde" class="form-control" value="{{ desde }}">
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Hasta</label>
+      <input type="date" id="fecha-hasta" class="form-control" value="{{ hasta }}">
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end">
+      <button id="filtrar-fechas" class="btn btn-primary w-100">
+        Filtrar
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================= -->
+  <!-- TABLA DE PAGOS -->
+  <!-- ========================= -->
+  <div class="table-responsive">
+    <table class="table table-sm table-striped align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Fecha</th>
+          <th>Contrato</th>
+          <th>Factura</th>
+          <th>Medio</th>
+          <th>Canal</th>
+          <th>Cuenta</th>
+          <th>Referencia</th>
+          <th class="text-end">Valor</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-pagos">
+        {% for pago in pagos %}
+        <tr>
+          <td>{{ pago.created_at|date:"Y-m-d" }}</td>
+
+          <td>
+            {{ pago.factura.contrato.vehiculo.placa }}<br>
+            <small class="text-muted">
+              {{ pago.factura.contrato.cliente.nombre }}
+            </small>
+          </td>
+
+          <td>
+            #{{ pago.factura.id }}<br>
+            <small class="text-muted">
+              {{ pago.factura.estado_pago }}
+            </small>
+          </td>
+
+          <td>{{ pago.configuracion.medio.nombre }}</td>
+          <td>{{ pago.canal.nombre }}</td>
+          <td>{{ pago.configuracion.cuenta_destino.nombre }}</td>
+          <td>{{ pago.referencia|default:"—" }}</td>
+          <td class="text-end fw-semibold">
+            {{ pago.valor }}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" class="text-center text-muted">
+            No hay pagos registrados
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const btn = document.getElementById("filtrar-fechas");
+
+  btn?.addEventListener("click", () => {
+    const desde = document.getElementById("fecha-desde").value;
+    const hasta = document.getElementById("fecha-hasta").value;
+
+    const params = new URLSearchParams();
+
+    if (desde) params.append("desde", desde);
+    if (hasta) params.append("hasta", hasta);
+
+    window.location.search = params.toString();
+  });
+
+});
+</script>
+
+
+{% endblock %}

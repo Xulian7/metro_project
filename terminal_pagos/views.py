@@ -5,6 +5,7 @@ from taller.models import Servicio
 from django.db import transaction
 from .models import PagoFactura, ConfiguracionPago, CanalPago
 from .forms import FacturaForm, ItemFacturaFormSet
+from django.db.models import Q
 
 
 from .models import (
@@ -89,8 +90,6 @@ def nueva_transaccion(request):
         }
     )
     
-    
-
 # =========================
 # CREAR FACTURA + ÍTEMS + PAGOS
 # =========================
@@ -266,7 +265,6 @@ def crear_factura(request):
     print("✅ [crear_factura] FIN OK")
     return redirect("terminal_pagos:nueva_transaccion")
 
-
 # =========================
 # CATÁLOGOS DE MEDIOS DE PAGO (ADMIN)
 # =========================
@@ -335,4 +333,52 @@ def catalogos_pago(request):
             "cuenta_form": cuenta_form,
             "config_form": config_form,
         }
+    )
+
+# =========================
+# LISTADO DE PAGOS REALIZADOS
+# =========================
+def medios_pago(request):
+    """
+    Listado de pagos con factura y contrato
+    Filtro opcional por rango de fechas
+    """
+
+    pagos = (
+        PagoFactura.objects
+        .select_related(
+            "factura",
+            "factura__contrato",
+            "factura__contrato__vehiculo",
+            "factura__contrato__cliente",
+            "configuracion",
+            "configuracion__medio",
+            "configuracion__cuenta_destino",
+            "canal",
+        )
+        .order_by("-created_at")
+    )
+
+    # -------------------------
+    # FILTROS DE FECHA (GET)
+    # -------------------------
+    desde = request.GET.get("desde")
+    hasta = request.GET.get("hasta")
+
+    if desde:
+        pagos = pagos.filter(created_at__date__gte=desde)
+
+    if hasta:
+        pagos = pagos.filter(created_at__date__lte=hasta)
+
+    context = {
+        "pagos": pagos,
+        "desde": desde,
+        "hasta": hasta,
+    }
+
+    return render(
+        request,
+        "terminal_pagos/medios_pago.html",
+        context
     )
