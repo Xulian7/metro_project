@@ -532,6 +532,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ---- CAMBIO DE CUENTA ---- */
     cuentaSel.addEventListener("change", () => {
       configIdInput.value = cuentaSel.value || "";
+      toggleValor();
     });
 
     /* ---- CAMBIO DE CANAL ---- */
@@ -541,6 +542,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       referenciaInput.disabled = opt.dataset.referencia !== "1";
       if (referenciaInput.disabled) referenciaInput.value = "";
+      toggleValor();
     });
   }
 
