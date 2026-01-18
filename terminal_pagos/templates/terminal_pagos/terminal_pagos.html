@@ -162,7 +162,7 @@
         <div class="col-md-2">
           <select class="form-select form-select-sm pago-canal"
                   name="canal_pago[]"
-                  disabled>
+                  >
             <option value="">Canal</option>
           </select>
         </div>
@@ -171,7 +171,7 @@
         <div class="col-md-2">
           <select class="form-select form-select-sm pago-cuenta"
                   name="cuenta_pago[]"
-                  disabled>
+                  >
             <option value="">Cuenta destino</option>
           </select>
         </div>
@@ -191,7 +191,7 @@
                 class="form-control form-control-sm pago-referencia"
                 name="referencia_pago[]"
                 placeholder="Referencia"
-                disabled>
+                >
         </div>
 
         <!-- VALOR -->
@@ -213,7 +213,7 @@
         </div>
 
         <!-- CONFIG OCULTA -->
-        <input type="text"
+        <input type="hidden"
               name="configuracion_pago_id[]"
               class="pago-config-id">
       </div>
@@ -632,5 +632,6 @@
     });
   })();
 </script>
+
 
 {% endblock %}
