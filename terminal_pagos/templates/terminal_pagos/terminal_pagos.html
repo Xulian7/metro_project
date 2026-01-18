@@ -358,287 +358,279 @@
   }
 </script>
 
-
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
 
-  /* =========================
-     DATA DESDE BACKEND
-  ========================= */
-  let CONFIGS = [];
-  let CANALES = [];
+    /* =========================
+      DATA DESDE BACKEND
+    ========================= */
+    let CONFIGS = [];
+    let CANALES = [];
 
-  try {
-    const c1 = document.getElementById("configuraciones-json");
-    const c2 = document.getElementById("canales-json");
+    try {
+      const c1 = document.getElementById("configuraciones-json");
+      const c2 = document.getElementById("canales-json");
 
-    if (c1) CONFIGS = JSON.parse(c1.textContent);
-    if (c2) CANALES = JSON.parse(c2.textContent);
-  } catch (e) {
-    console.error("Error leyendo JSONs de pago", e);
-  }
-
-  /* =========================
-     ELEMENTOS BASE
-  ========================= */
-  const pagosContainer = document.getElementById("pagos-container");
-  const addPagoBtn = document.getElementById("add-pago");
-  const tpl = document.getElementById("empty-pago");
-
-  if (!pagosContainer || !tpl) return;
-
-  /* =========================
-     HELPERS
-  ========================= */
-  function uniqueBy(arr, keyFn) {
-    const map = new Map();
-    arr.forEach(item => {
-      const key = keyFn(item);
-      if (!map.has(key)) map.set(key, item);
-    });
-    return Array.from(map.values());
-  }
-
-  /* =========================
-     MEDIOS
-  ========================= */
-  function cargarMedios(select) {
-    select.innerHTML = '<option value="">Medio</option>';
-
-    const medios = uniqueBy(CONFIGS, c => c.medio_id);
-
-    medios.forEach(m => {
-      const opt = document.createElement("option");
-      opt.value = m.medio_id;
-      opt.textContent = m["medio__nombre"];
-      select.appendChild(opt);
-    });
-  }
-
-  /* =========================
-     CUENTAS POR MEDIO
-  ========================= */
-  function cargarCuentas(select, medioId, configIdInput) {
-    select.innerHTML = '<option value="">Cuenta destino</option>';
-
-    const cuentas = CONFIGS.filter(
-      c => String(c.medio_id) === String(medioId)
-    );
-
-    cuentas.forEach(c => {
-      const opt = document.createElement("option");
-      opt.value = c.id; // config_id
-      opt.textContent = c["cuenta_destino__nombre"];
-      select.appendChild(opt);
-    });
-
-    select.disabled = cuentas.length === 0;
-
-    // ✅ FIX CLAVE
-    if (cuentas.length > 0) {
-      select.value = cuentas[0].id;
-      configIdInput.value = cuentas[0].id;
+      if (c1) CONFIGS = JSON.parse(c1.textContent);
+      if (c2) CANALES = JSON.parse(c2.textContent);
+    } catch (e) {
+      console.error("Error leyendo JSONs de pago", e);
     }
-  }
 
-  /* =========================
-     CANALES
-  ========================= */
-  function cargarCanales(select, medioId) {
-    select.innerHTML = '<option value="">Origen</option>';
+    /* =========================
+      ELEMENTOS BASE
+    ========================= */
+    const pagosContainer = document.getElementById("pagos-container");
+    const addPagoBtn = document.getElementById("add-pago");
+    const tpl = document.getElementById("empty-pago");
 
-    const canales = CANALES.filter(
-      c => String(c.medio_id) === String(medioId) && c.activo
-    );
+    if (!pagosContainer || !tpl) return;
 
-    canales.forEach(c => {
-      const opt = document.createElement("option");
-      opt.value = c.id;
-      opt.textContent = c.nombre;
-      opt.dataset.referencia = c.requiere_referencia ? "1" : "0";
-      select.appendChild(opt);
-    });
+    /* =========================
+      HELPERS
+    ========================= */
+    function uniqueBy(arr, keyFn) {
+      const map = new Map();
+      arr.forEach(item => {
+        const key = keyFn(item);
+        if (!map.has(key)) map.set(key, item);
+      });
+      return Array.from(map.values());
+    }
 
-    select.disabled = canales.length === 0;
-  }
+    /* =========================
+      MEDIOS
+    ========================= */
+    function cargarMedios(select) {
+      select.innerHTML = '<option value="">Medio</option>';
 
-  /* =========================
-     AGREGAR FILA
-  ========================= */
-  function agregarPago() {
-    pagosContainer.insertAdjacentHTML("beforeend", tpl.innerHTML);
-    const row = pagosContainer.lastElementChild;
-    if (!row) return;
+      const medios = uniqueBy(CONFIGS, c => c.medio_id);
 
-    const medioSel = row.querySelector(".pago-medio");
-    const canalSel = row.querySelector(".pago-canal");
-    const cuentaSel = row.querySelector(".pago-cuenta");
-    const referenciaInput = row.querySelector(".pago-referencia");
-    const configIdInput = row.querySelector(".pago-config-id");
-    const valorInput = row.querySelector(".pago-valor");
-    // 🔒 Arranca bloqueado
-    valorInput.disabled = true;
+      medios.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m.medio_id;
+        opt.textContent = m["medio__nombre"];
+        select.appendChild(opt);
+      });
+    }
 
-    // Helper: habilita valor solo si la fila está completa
-    function toggleValor() {
-      console.log("TOGGLE",
-        "medio:", medioSel.value,
-        "canal:", canalSel.value,
-        "cuenta:", cuentaSel.value
+    /* =========================
+      CUENTAS POR MEDIO
+    ========================= */
+    function cargarCuentas(select, medioId, configIdInput) {
+      select.innerHTML = '<option value="">Cuenta destino</option>';
+
+      const cuentas = CONFIGS.filter(
+        c => String(c.medio_id) === String(medioId)
       );
 
-      if (
-        medioSel.value &&
-        canalSel.value &&
-        cuentaSel.value
-      ) {
-        valorInput.disabled = false;
-        console.log("✅ VALOR HABILITADO");
-      } else {
-        valorInput.disabled = true;
-        valorInput.value = "";
-        console.log("⛔ VALOR BLOQUEADO");
+      cuentas.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.id; // config_id
+        opt.textContent = c["cuenta_destino__nombre"];
+        select.appendChild(opt);
+      });
+
+      select.disabled = cuentas.length === 0;
+
+      // ✅ FIX CLAVE
+      if (cuentas.length > 0) {
+        select.value = cuentas[0].id;
+        configIdInput.value = cuentas[0].id;
       }
     }
 
+    /* =========================
+      CANALES
+    ========================= */
+    function cargarCanales(select, medioId) {
+      select.innerHTML = '<option value="">Origen</option>';
 
-    cargarMedios(medioSel);
+      const canales = CANALES.filter(
+        c => String(c.medio_id) === String(medioId) && c.activo
+      );
 
-    canalSel.disabled = true;
-    referenciaInput.disabled = true;
+      canales.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.id;
+        opt.textContent = c.nombre;
+        opt.dataset.referencia = c.requiere_referencia ? "1" : "0";
+        select.appendChild(opt);
+      });
 
-    /* ---- CAMBIO DE MEDIO ---- */
-    medioSel.addEventListener("change", () => {
-      const medioId = medioSel.value;
+      select.disabled = canales.length === 0;
+    }
 
-      canalSel.innerHTML = '<option value="">Origen</option>';
-      cuentaSel.innerHTML = '<option value="">Cuenta destino</option>';
+    /* =========================
+      AGREGAR FILA
+    ========================= */
+    function agregarPago() {
+      pagosContainer.insertAdjacentHTML("beforeend", tpl.innerHTML);
+      const row = pagosContainer.lastElementChild;
+      if (!row) return;
+
+      const medioSel = row.querySelector(".pago-medio");
+      const canalSel = row.querySelector(".pago-canal");
+      const cuentaSel = row.querySelector(".pago-cuenta");
+      const referenciaInput = row.querySelector(".pago-referencia");
+      const configIdInput = row.querySelector(".pago-config-id");
+      const valorInput = row.querySelector(".pago-valor");
+      // 🔒 Arranca bloqueado
+      valorInput.disabled = true;
+
+      // Helper: habilita valor solo si la fila está completa
+      function toggleValor() {
+        console.log("TOGGLE",
+          "medio:", medioSel.value,
+          "canal:", canalSel.value,
+          "cuenta:", cuentaSel.value
+        );
+
+        if (
+          medioSel.value &&
+          canalSel.value &&
+          cuentaSel.value
+        ) {
+          valorInput.disabled = false;
+          console.log("✅ VALOR HABILITADO");
+        } else {
+          valorInput.disabled = true;
+          valorInput.value = "";
+          console.log("⛔ VALOR BLOQUEADO");
+        }
+      }
+
+
+      cargarMedios(medioSel);
 
       canalSel.disabled = true;
       referenciaInput.disabled = true;
 
-      referenciaInput.value = "";
-      configIdInput.value = "";
+      /* ---- CAMBIO DE MEDIO ---- */
+      medioSel.addEventListener("change", () => {
+        const medioId = medioSel.value;
 
-      if (!medioId) return;
+        canalSel.innerHTML = '<option value="">Origen</option>';
+        cuentaSel.innerHTML = '<option value="">Cuenta destino</option>';
 
-      cargarCanales(canalSel, medioId);
-      cargarCuentas(cuentaSel, medioId, configIdInput);
+        canalSel.disabled = true;
+        referenciaInput.disabled = true;
 
-      cuentaSel.dispatchEvent(new Event("change"));
+        referenciaInput.value = "";
+        configIdInput.value = "";
 
-    });
+        if (!medioId) return;
 
-    /* ---- CAMBIO DE CUENTA ---- */
-    cuentaSel.addEventListener("change", () => {
-      configIdInput.value = cuentaSel.value || "";
-      toggleValor();
-    });
+        cargarCanales(canalSel, medioId);
+        cargarCuentas(cuentaSel, medioId, configIdInput);
 
-    /* ---- CAMBIO DE CANAL ---- */
-    canalSel.addEventListener("change", () => {
-      const opt = canalSel.selectedOptions[0];
-      if (!opt) return;
+        cuentaSel.dispatchEvent(new Event("change"));
 
-      referenciaInput.disabled = opt.dataset.referencia !== "1";
-      if (referenciaInput.disabled) referenciaInput.value = "";
-      toggleValor();
-    });
-  }
+      });
 
-  /* =========================
-     TOTALES
-  ========================= */
-  function recalcularPagos() {
-    let total = 0;
+      /* ---- CAMBIO DE CUENTA ---- */
+      cuentaSel.addEventListener("change", () => {
+        configIdInput.value = cuentaSel.value || "";
+        toggleValor();
+      });
 
-    document.querySelectorAll(".pago-valor").forEach(i => {
-      total += parseFloat(i.value || 0);
-    });
+      /* ---- CAMBIO DE CANAL ---- */
+      canalSel.addEventListener("change", () => {
+        const opt = canalSel.selectedOptions[0];
+        if (!opt) return;
 
-    const totalEl = document.getElementById("total-pagado");
-    if (totalEl) {
-      totalEl.innerText = total.toLocaleString("es-CO", {
-        minimumFractionDigits: 2
+        referenciaInput.disabled = opt.dataset.referencia !== "1";
+        if (referenciaInput.disabled) referenciaInput.value = "";
+        toggleValor();
       });
     }
-  }
 
-  /* =========================
-     EVENTOS
-  ========================= */
-  addPagoBtn?.addEventListener("click", agregarPago);
+    /* =========================
+      TOTALES
+    ========================= */
+    function recalcularPagos() {
+      let total = 0;
 
-  pagosContainer.addEventListener("input", e => {
-    if (e.target.classList.contains("pago-valor")) {
-      recalcularPagos();
+      document.querySelectorAll(".pago-valor").forEach(i => {
+        total += parseFloat(i.value || 0);
+      });
+
+      const totalEl = document.getElementById("total-pagado");
+      if (totalEl) {
+        totalEl.innerText = total.toLocaleString("es-CO", {
+          minimumFractionDigits: 2
+        });
+      }
     }
-  });
 
-  pagosContainer.addEventListener("click", e => {
-    if (e.target.classList.contains("remove-pago")) {
-      e.target.closest(".pago-row")?.remove();
-      recalcularPagos();
-    }
-  });
+    /* =========================
+      EVENTOS
+    ========================= */
+    addPagoBtn?.addEventListener("click", agregarPago);
 
-});
+    pagosContainer.addEventListener("input", e => {
+      if (e.target.classList.contains("pago-valor")) {
+        recalcularPagos();
+      }
+    });
+
+    pagosContainer.addEventListener("click", e => {
+      if (e.target.classList.contains("remove-pago")) {
+        e.target.closest(".pago-row")?.remove();
+        recalcularPagos();
+      }
+    });
+
+  });
 </script>
-
 
 <script>
-(() => {
-  const form = document.querySelector("form");
-  if (!form) return;
+  (() => {
+    const form = document.querySelector("form");
+    if (!form) return;
 
-  let confirmado = false;
+    let confirmado = false;
 
-  form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", (e) => {
 
-    // 🛑 Primera vez: interceptamos el submit
-    if (!confirmado) {
-      e.preventDefault();
+      // 🛑 Primera vez: interceptamos el submit
+      if (!confirmado) {
+        e.preventDefault();
 
-      // 🔑 Sincronizar configuraciones de pago
-      document.querySelectorAll(".pago-row").forEach(row => {
-        const cuentaSel = row.querySelector(".pago-cuenta");
-        const configIdInput = row.querySelector(".pago-config-id");
+        // 🔑 Sincronizar configuraciones de pago
+        document.querySelectorAll(".pago-row").forEach(row => {
+          const cuentaSel = row.querySelector(".pago-cuenta");
+          const configIdInput = row.querySelector(".pago-config-id");
 
-        if (cuentaSel && configIdInput) {
-          configIdInput.value = cuentaSel.value || "";
-        }
-      });
-
-      // 🔓 Forzar enabled en TODOS los campos deshabilitados
-      document
-        .querySelectorAll("form [disabled]")
-        .forEach(el => {
-          el.disabled = false;
+          if (cuentaSel && configIdInput) {
+            configIdInput.value = cuentaSel.value || "";
+          }
         });
 
-      // 🧪 Confirmación
-      const ok = confirm(
-        "Se habilitarán todos los campos y se enviará la información.\n" +
-        "¿Deseas continuar?"
-      );
+        // 🔓 Forzar enabled en TODOS los campos deshabilitados
+        document
+          .querySelectorAll("form [disabled]")
+          .forEach(el => {
+            el.disabled = false;
+          });
 
-      if (ok) {
-        confirmado = true;
-        form.requestSubmit(); // 🚀 envío real
+        // 🧪 Confirmación
+        const ok = confirm(
+          "Se habilitarán todos los campos y se enviará la información.\n" +
+          "¿Deseas continuar?"
+        );
+
+        if (ok) {
+          confirmado = true;
+          form.requestSubmit(); // 🚀 envío real
+        }
+
+        return;
       }
 
-      return;
-    }
-
-    // ✔️ Segunda vez: deja pasar el submit normalmente
-  });
-})();
+      // ✔️ Segunda vez: deja pasar el submit normalmente
+    });
+  })();
 </script>
-
-
-
-
-</script>
-
 
 {% endblock %}
