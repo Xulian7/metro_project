@@ -415,7 +415,7 @@
     }
 
     /* =========================
-      CUENTAS POR MEDIO
+      CUENTAS
     ========================= */
     function cargarCuentas(select, medioId, configIdInput) {
       select.innerHTML = '<option value="">Cuenta destino</option>';
@@ -426,14 +426,11 @@
 
       cuentas.forEach(c => {
         const opt = document.createElement("option");
-        opt.value = c.id; // config_id
+        opt.value = c.id;
         opt.textContent = c["cuenta_destino__nombre"];
         select.appendChild(opt);
       });
 
-      select.disabled = cuentas.length === 0;
-
-      // ✅ FIX CLAVE
       if (cuentas.length > 0) {
         select.value = cuentas[0].id;
         configIdInput.value = cuentas[0].id;
@@ -457,8 +454,6 @@
         opt.dataset.referencia = c.requiere_referencia ? "1" : "0";
         select.appendChild(opt);
       });
-
-      select.disabled = canales.length === 0;
     }
 
     /* =========================
@@ -474,37 +469,8 @@
       const cuentaSel = row.querySelector(".pago-cuenta");
       const referenciaInput = row.querySelector(".pago-referencia");
       const configIdInput = row.querySelector(".pago-config-id");
-      const valorInput = row.querySelector(".pago-valor");
-      // 🔒 Arranca bloqueado
-      valorInput.disabled = true;
-
-      // Helper: habilita valor solo si la fila está completa
-      function toggleValor() {
-        console.log("TOGGLE",
-          "medio:", medioSel.value,
-          "canal:", canalSel.value,
-          "cuenta:", cuentaSel.value
-        );
-
-        if (
-          medioSel.value &&
-          canalSel.value &&
-          cuentaSel.value
-        ) {
-          valorInput.disabled = false;
-          console.log("✅ VALOR HABILITADO");
-        } else {
-          valorInput.disabled = true;
-          valorInput.value = "";
-          console.log("⛔ VALOR BLOQUEADO");
-        }
-      }
-
 
       cargarMedios(medioSel);
-
-      canalSel.disabled = true;
-      referenciaInput.disabled = true;
 
       /* ---- CAMBIO DE MEDIO ---- */
       medioSel.addEventListener("change", () => {
@@ -512,10 +478,6 @@
 
         canalSel.innerHTML = '<option value="">Origen</option>';
         cuentaSel.innerHTML = '<option value="">Cuenta destino</option>';
-
-        canalSel.disabled = true;
-        referenciaInput.disabled = true;
-
         referenciaInput.value = "";
         configIdInput.value = "";
 
@@ -523,15 +485,11 @@
 
         cargarCanales(canalSel, medioId);
         cargarCuentas(cuentaSel, medioId, configIdInput);
-
-        cuentaSel.dispatchEvent(new Event("change"));
-
       });
 
       /* ---- CAMBIO DE CUENTA ---- */
       cuentaSel.addEventListener("change", () => {
         configIdInput.value = cuentaSel.value || "";
-        toggleValor();
       });
 
       /* ---- CAMBIO DE CANAL ---- */
@@ -539,9 +497,9 @@
         const opt = canalSel.selectedOptions[0];
         if (!opt) return;
 
-        referenciaInput.disabled = opt.dataset.referencia !== "1";
-        if (referenciaInput.disabled) referenciaInput.value = "";
-        toggleValor();
+        if (opt.dataset.referencia !== "1") {
+          referenciaInput.value = "";
+        }
       });
     }
 
@@ -585,52 +543,25 @@
 </script>
 
 <script>
-  (() => {
+  document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector("form");
     if (!form) return;
 
-    let confirmado = false;
+    form.addEventListener("submit", () => {
 
-    form.addEventListener("submit", (e) => {
+      // 🔑 Sincronizar configuraciones de pago antes de enviar
+      document.querySelectorAll(".pago-row").forEach(row => {
+        const cuentaSel = row.querySelector(".pago-cuenta");
+        const configIdInput = row.querySelector(".pago-config-id");
 
-      // 🛑 Primera vez: interceptamos el submit
-      if (!confirmado) {
-        e.preventDefault();
-
-        // 🔑 Sincronizar configuraciones de pago
-        document.querySelectorAll(".pago-row").forEach(row => {
-          const cuentaSel = row.querySelector(".pago-cuenta");
-          const configIdInput = row.querySelector(".pago-config-id");
-
-          if (cuentaSel && configIdInput) {
-            configIdInput.value = cuentaSel.value || "";
-          }
-        });
-
-        // 🔓 Forzar enabled en TODOS los campos deshabilitados
-        document
-          .querySelectorAll("form [disabled]")
-          .forEach(el => {
-            el.disabled = false;
-          });
-
-        // 🧪 Confirmación
-        const ok = confirm(
-          "Se habilitarán todos los campos y se enviará la información.\n" +
-          "¿Deseas continuar?"
-        );
-
-        if (ok) {
-          confirmado = true;
-          form.requestSubmit(); // 🚀 envío real
+        if (cuentaSel && configIdInput) {
+          configIdInput.value = cuentaSel.value || "";
         }
+      });
 
-        return;
-      }
-
-      // ✔️ Segunda vez: deja pasar el submit normalmente
+      // Nada más: dejamos que el submit fluya normal
     });
-  })();
+  });
 </script>
 
 
