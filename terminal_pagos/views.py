@@ -190,6 +190,9 @@ def crear_factura(request):
 
     print(f"💳 Procesando pagos | filas={len(valores)}")
     print(request.POST.getlist("configuracion_pago_id[]"))
+    print(request.POST.getlist("canal_pago[]"))
+    print(request.POST.getlist("valor_pago[]"))
+    print(request.POST.getlist("referencia_pago[]"))
 
 
     for i in range(len(valores)):
