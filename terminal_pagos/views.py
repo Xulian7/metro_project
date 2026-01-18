@@ -356,7 +356,7 @@ def medios_pago(request):
             "configuracion__cuenta_destino",
             "canal",
         )
-        .order_by("-created_at")
+        .order_by("-fecha_pago")
     )
 
     # -------------------------
@@ -366,10 +366,10 @@ def medios_pago(request):
     hasta = request.GET.get("hasta")
 
     if desde:
-        pagos = pagos.filter(created_at__date__gte=desde)
+        pagos = pagos.filter(fecha_pago__gte=desde)
 
     if hasta:
-        pagos = pagos.filter(created_at__date__lte=hasta)
+        pagos = pagos.filter(fecha_pago__lte=hasta)
 
     context = {
         "pagos": pagos,
@@ -382,3 +382,4 @@ def medios_pago(request):
         "terminal_pagos/medios_pago.html",
         context
     )
+
