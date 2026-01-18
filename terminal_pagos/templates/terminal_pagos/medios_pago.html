@@ -42,13 +42,14 @@
           <th>Canal</th>
           <th>Cuenta</th>
           <th>Referencia</th>
+          <th>Validado</th>
           <th class="text-end">Valor</th>
         </tr>
       </thead>
       <tbody id="tabla-pagos">
         {% for pago in pagos %}
         <tr>
-          <td>{{ pago.created_at|date:"Y-m-d" }}</td>
+          <td>{{ pago.fecha_pago|date:"Y-m-d" }}</td>
 
           <td>
             {{ pago.factura.contrato.vehiculo.placa }}<br>
@@ -70,6 +71,17 @@
           <td>{{ pago.referencia|default:"—" }}</td>
           <td class="text-end fw-semibold">
             {{ pago.valor }}
+          </td>
+          <td class="text-center">
+            {% if pago.configuracion.validado %}
+              <span class="badge bg-success">Validado</span>
+            {% else %}
+              <button
+                class="btn btn-sm btn-outline-primary validar-medio"
+                data-config-id="{{ pago.configuracion.id }}">
+                Validar
+              </button>
+            {% endif %}
           </td>
         </tr>
         {% empty %}
@@ -105,6 +117,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  document.querySelectorAll(".validar-pago").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const pagoId = btn.dataset.pagoId;
+
+      if (!confirm("¿Marcar este pago como VALIDADO?")) return;
+
+      fetch(`/terminal_pagos/validar-pago/${pagoId}/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}"
+        }
+      }).then(() => {
+        window.location.reload();
+      });
+    });
+  });
+
+});
+</script>
+
 
 
 {% endblock %}

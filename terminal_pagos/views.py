@@ -6,7 +6,9 @@ from django.db import transaction
 from .models import PagoFactura, ConfiguracionPago, CanalPago
 from .forms import FacturaForm, ItemFacturaFormSet
 from django.db.models import Q
-
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from django.views.decorators.http import require_POST
 
 from .models import (
     Factura,
@@ -382,4 +384,12 @@ def medios_pago(request):
         "terminal_pagos/medios_pago.html",
         context
     )
+
+
+@require_POST
+def validar_pago(request, pago_id):
+    pago = get_object_or_404(PagoFactura, id=pago_id)
+    pago.validado = True
+    pago.save(update_fields=["validado"])
+    return HttpResponse(status=204)
 

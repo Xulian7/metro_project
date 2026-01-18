@@ -228,6 +228,9 @@ class PagoFactura(models.Model):
     )
 
     fecha_pago = models.DateField(default=timezone.now)
+    
+    validado = models.BooleanField(default=False)
+
 
     
     def __str__(self):
