@@ -587,27 +587,54 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 <script>
-document.querySelector("form")?.addEventListener("submit", () => {
+(() => {
+  const form = document.querySelector("form");
+  if (!form) return;
 
-  // 🔑 Sincronizar configuraciones de pago (source of truth)
-  document.querySelectorAll(".pago-row").forEach(row => {
-    const cuentaSel = row.querySelector(".pago-cuenta");
-    const configIdInput = row.querySelector(".pago-config-id");
+  let confirmado = false;
 
-    if (cuentaSel && configIdInput) {
-      configIdInput.value = cuentaSel.value || "";
+  form.addEventListener("submit", (e) => {
+
+    // 🛑 Primera vez: interceptamos el submit
+    if (!confirmado) {
+      e.preventDefault();
+
+      // 🔑 Sincronizar configuraciones de pago
+      document.querySelectorAll(".pago-row").forEach(row => {
+        const cuentaSel = row.querySelector(".pago-cuenta");
+        const configIdInput = row.querySelector(".pago-config-id");
+
+        if (cuentaSel && configIdInput) {
+          configIdInput.value = cuentaSel.value || "";
+        }
+      });
+
+      // 🔓 Forzar enabled en TODOS los campos deshabilitados
+      document
+        .querySelectorAll("form [disabled]")
+        .forEach(el => {
+          el.disabled = false;
+        });
+
+      // 🧪 Confirmación
+      const ok = confirm(
+        "Se habilitarán todos los campos y se enviará la información.\n" +
+        "¿Deseas continuar?"
+      );
+
+      if (ok) {
+        confirmado = true;
+        form.requestSubmit(); // 🚀 envío real
+      }
+
+      return;
     }
+
+    // ✔️ Segunda vez: deja pasar el submit normalmente
   });
-
-  // 🔓 FORZAR enabled en TODOS los campos deshabilitados del form
-  document
-    .querySelectorAll("form [disabled]")
-    .forEach(el => {
-      el.disabled = false;
-    });
-
-});
+})();
 </script>
+
 
 
 
