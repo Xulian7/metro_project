@@ -588,24 +588,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <script>
 document.querySelector("form")?.addEventListener("submit", () => {
-  // 🔑 SINCRONIZAR CONFIG ANTES DE ENVIAR
+
+  // 🔑 Sincronizar configuraciones de pago (source of truth)
   document.querySelectorAll(".pago-row").forEach(row => {
     const cuentaSel = row.querySelector(".pago-cuenta");
     const configIdInput = row.querySelector(".pago-config-id");
 
-    if (cuentaSel && configIdInput && cuentaSel.value) {
-      configIdInput.value = cuentaSel.value;
+    if (cuentaSel && configIdInput) {
+      configIdInput.value = cuentaSel.value || "";
     }
   });
 
-  // 🔓 HABILITAR CAMPOS DESHABILITADOS
-  document.querySelectorAll(
-    ".pago-canal, .pago-cuenta, .pago-referencia"
-  ).forEach(el => {
-    el.disabled = false;
-  });
+  // 🔓 FORZAR enabled en TODOS los campos deshabilitados del form
+  document
+    .querySelectorAll("form [disabled]")
+    .forEach(el => {
+      el.disabled = false;
+    });
+
 });
 </script>
+
 
 
 </script>
