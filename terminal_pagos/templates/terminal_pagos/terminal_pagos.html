@@ -585,15 +585,28 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+
 <script>
-// HABILITAR CAMPOS DESHABILITADOS ANTES DE ENVIAR
 document.querySelector("form")?.addEventListener("submit", () => {
+  // 🔑 SINCRONIZAR CONFIG ANTES DE ENVIAR
+  document.querySelectorAll(".pago-row").forEach(row => {
+    const cuentaSel = row.querySelector(".pago-cuenta");
+    const configIdInput = row.querySelector(".pago-config-id");
+
+    if (cuentaSel && configIdInput && cuentaSel.value) {
+      configIdInput.value = cuentaSel.value;
+    }
+  });
+
+  // 🔓 HABILITAR CAMPOS DESHABILITADOS
   document.querySelectorAll(
     ".pago-canal, .pago-cuenta, .pago-referencia"
   ).forEach(el => {
     el.disabled = false;
   });
 });
+</script>
+
 
 </script>
 
