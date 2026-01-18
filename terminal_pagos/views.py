@@ -391,5 +391,6 @@ def validar_pago(request, pago_id):
     pago = get_object_or_404(PagoFactura, id=pago_id)
     pago.validado = True
     pago.save(update_fields=["validado"])
+    print("✅ Pago validado")
     return HttpResponse(status=204)
 
