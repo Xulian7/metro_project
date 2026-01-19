@@ -8,6 +8,6 @@ urlpatterns = [
     path("facturar/", views.crear_factura, name="crear_factura"),
     path("catalogos-pago/", views.catalogos_pago, name="catalogos_pago"),
     path("medios-pago/", views.medios_pago, name="medios_pago"),
-    path("validar-medio/<int:config_id>/", views.validar_pago, name="validar_medio"),
+    path("validar-medio/<int:pago_id>/", views.validar_pago, name="validar_medio"),
     
 ]
