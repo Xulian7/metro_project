@@ -8,35 +8,50 @@
   </div>
 
   <!-- ========================= -->
-  <!-- FILTRO DE FECHAS -->
+  <!-- FILTROS Y BUSCADOR -->
   <!-- ========================= -->
-  <div class="row g-3 mb-3">
-    <div class="row mb-3">
-      <div class="col-md-4">
-        <input
-          type="text"
-          id="buscador-pagos"
-          class="form-control"
-          placeholder="Buscar por referencia o contrato (placa / cliente)">
-      </div>
+  <div class="row g-3 align-items-end mb-3">
+
+    <!-- Buscador -->
+    <div class="col-md-4">
+      <input
+        type="text"
+        id="buscador-pagos"
+        class="form-control"
+        placeholder="Buscar por referencia o contrato (placa / cliente)">
     </div>
 
-    <div class="col-md-3">
+    <!-- Desde -->
+    <div class="col-md-2">
       <label class="form-label">Desde</label>
-      <input type="date" id="fecha-desde" class="form-control" value="{{ desde }}">
+      <input
+        type="date"
+        id="fecha-desde"
+        class="form-control"
+        value="{{ desde }}">
     </div>
 
-    <div class="col-md-3">
+    <!-- Hasta -->
+    <div class="col-md-2">
       <label class="form-label">Hasta</label>
-      <input type="date" id="fecha-hasta" class="form-control" value="{{ hasta }}">
+      <input
+        type="date"
+        id="fecha-hasta"
+        class="form-control"
+        value="{{ hasta }}">
     </div>
 
-    <div class="col-md-3 d-flex align-items-end">
-      <button id="filtrar-fechas" class="btn btn-primary w-100">
+    <!-- Botón -->
+    <div class="col-md-2">
+      <button
+        id="filtrar-fechas"
+        class="btn btn-primary w-100">
         Filtrar
       </button>
     </div>
+
   </div>
+
 
 
   <!-- ========================= -->
