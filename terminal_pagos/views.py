@@ -394,3 +394,70 @@ def validar_pago(request, pago_id):
     print("✅ Pago validado")
     return HttpResponse(status=204)
 
+
+
+from datetime import date
+from django.db.models import Sum
+from django.shortcuts import render
+
+from arrendamientos.models import Contrato
+from terminal_pagos.models import ItemFactura
+
+
+def resumen_contratos(request):
+    hoy = date.today()
+    filas = []
+
+    contratos = (
+        Contrato.objects
+        .select_related("cliente", "vehiculo")
+        .all()
+    )
+
+    for contrato in contratos:
+        if not contrato.fecha_inicio or not contrato.tarifa:
+            continue
+
+        # -------------------------
+        # TARIFAS TEÓRICAS
+        # -------------------------
+        dias_transcurridos = (hoy - contrato.fecha_inicio).days
+        tarifas_teoricas = (
+            (dias_transcurridos // contrato.dias_contrato) + 1
+            if dias_transcurridos >= 0
+            else 0
+        )
+
+        # -------------------------
+        # TARIFAS FACTURADAS (REAL)
+        # -------------------------
+        total_facturado = (
+            ItemFactura.objects
+            .filter(
+                tipo_item="tarifa",
+                factura__contrato=contrato
+            )
+            .aggregate(total=Sum("subtotal"))["total"]
+            or 0
+        )
+
+        tarifas_facturadas = int(total_facturado // contrato.tarifa)
+        saldo_tarifas = tarifas_teoricas - tarifas_facturadas
+
+        filas.append({
+            "contrato": contrato,
+            "tarifa": contrato.tarifa,
+            "tarifas_teoricas": tarifas_teoricas,
+            "tarifas_facturadas": tarifas_facturadas,
+            "saldo_tarifas": saldo_tarifas,
+            "total_facturado": total_facturado,
+        })
+
+    return render(
+        request,
+        "terminal_pagos/resumen_contratos.html",
+        {
+            "filas": filas,
+            "hoy": hoy
+        }
+    )
