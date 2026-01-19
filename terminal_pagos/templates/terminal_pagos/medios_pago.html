@@ -24,34 +24,36 @@
     <!-- Desde -->
     <div class="col-md-2">
       <label class="form-label">Desde</label>
-      <input
-        type="date"
-        id="fecha-desde"
-        class="form-control"
-        value="{{ desde }}">
+      <input type="date" id="fecha-desde" class="form-control" value="{{ desde }}">
     </div>
 
     <!-- Hasta -->
     <div class="col-md-2">
       <label class="form-label">Hasta</label>
-      <input
-        type="date"
-        id="fecha-hasta"
-        class="form-control"
-        value="{{ hasta }}">
+      <input type="date" id="fecha-hasta" class="form-control" value="{{ hasta }}">
+    </div>
+
+    <!-- Solo no validados -->
+    <div class="col-md-2">
+      <div class="form-check mt-4">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="solo-no-validados">
+        <label class="form-check-label" for="solo-no-validados">
+          Solo no validados
+        </label>
+      </div>
     </div>
 
     <!-- Botón -->
     <div class="col-md-2">
-      <button
-        id="filtrar-fechas"
-        class="btn btn-primary w-100">
+      <button id="filtrar-fechas" class="btn btn-primary w-100">
         Filtrar
       </button>
     </div>
 
   </div>
-
 
 
   <!-- ========================= -->
@@ -196,7 +198,44 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const buscador = document.getElementById("buscador-pagos");
+  const checkbox = document.getElementById("solo-no-validados");
+  const filas = document.querySelectorAll("#tabla-pagos tr");
+
+  function aplicarFiltros() {
+    const texto = buscador.value.toLowerCase();
+    const soloNoValidados = checkbox.checked;
+
+    filas.forEach(fila => {
+      const contenido = fila.innerText.toLowerCase();
+      const esValidado = fila.querySelector(".badge.bg-success") !== null;
+
+      let visible = true;
+
+      // filtro texto
+      if (texto && !contenido.includes(texto)) {
+        visible = false;
+      }
+
+      // filtro validados
+      if (soloNoValidados && esValidado) {
+        visible = false;
+      }
+
+      fila.style.display = visible ? "" : "none";
+    });
+  }
+
+  buscador?.addEventListener("input", aplicarFiltros);
+  checkbox?.addEventListener("change", aplicarFiltros);
+
+});
+</script>
 
 {% endblock %}
