@@ -11,6 +11,16 @@
   <!-- FILTRO DE FECHAS -->
   <!-- ========================= -->
   <div class="row g-3 mb-3">
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <input
+          type="text"
+          id="buscador-pagos"
+          class="form-control"
+          placeholder="Buscar por referencia o contrato (placa / cliente)">
+      </div>
+    </div>
+
     <div class="col-md-3">
       <label class="form-label">Desde</label>
       <input type="date" id="fecha-desde" class="form-control" value="{{ desde }}">
@@ -25,19 +35,6 @@
       <button id="filtrar-fechas" class="btn btn-primary w-100">
         Filtrar
       </button>
-    </div>
-  </div>
-
-  <!-- ========================= -->
-  <!-- BUSCADOR EN TIEMPO REAL -->
-  <!-- ========================= -->
-  <div class="row mb-3">
-    <div class="col-md-4">
-      <input
-        type="text"
-        id="buscador-pagos"
-        class="form-control"
-        placeholder="Buscar por referencia o contrato (placa / cliente)">
     </div>
   </div>
 
