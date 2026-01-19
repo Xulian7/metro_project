@@ -1,0 +1,101 @@
+{% extends "accounts/home.html" %}
+{% block content %}
+
+<div class="card p-4 shadow-sm">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold mb-0">
+      Resumen de contratos por tarifas
+      <small class="text-muted">(al {{ hoy }})</small>
+    </h5>
+  </div>
+
+  <!-- ========================= -->
+  <!-- BUSCADOR -->
+  <!-- ========================= -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <input
+        type="text"
+        id="buscador-contratos"
+        class="form-control"
+        placeholder="Buscar por placa, cliente o contrato">
+    </div>
+  </div>
+
+  <!-- ========================= -->
+  <!-- TABLA -->
+  <!-- ========================= -->
+  <div class="table-responsive">
+    <table class="table table-sm table-striped align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Contrato</th>
+          <th>Cliente</th>
+          <th>Vehículo</th>
+          <th class="text-end">Tarifa</th>
+          <th class="text-center">Teóricas</th>
+          <th class="text-center">Facturadas</th>
+          <th class="text-center">Saldo</th>
+          <th class="text-end">Total facturado</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-contratos">
+        {% for row in filas %}
+        <tr>
+          <td>#{{ row.contrato.id }}</td>
+          <td>{{ row.contrato.cliente.nombre }}</td>
+          <td>{{ row.contrato.vehiculo.placa }}</td>
+          <td class="text-end">{{ row.tarifa }}</td>
+          <td class="text-center">{{ row.tarifas_teoricas }}</td>
+          <td class="text-center">
+            <span class="badge bg-success">
+              {{ row.tarifas_facturadas }}
+            </span>
+          </td>
+          <td class="text-center">
+            {% if row.saldo_tarifas > 0 %}
+              <span class="badge bg-danger">
+                {{ row.saldo_tarifas }}
+              </span>
+            {% else %}
+              <span class="badge bg-secondary">0</span>
+            {% endif %}
+          </td>
+          <td class="text-end fw-semibold">
+            {{ row.total_facturado }}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" class="text-center text-muted">
+            No hay contratos para mostrar
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- ========================= -->
+<!-- JS BUSCADOR -->
+<!-- ========================= -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const buscador = document.getElementById("buscador-contratos");
+  const filas = document.querySelectorAll("#tabla-contratos tr");
+
+  buscador?.addEventListener("input", () => {
+    const texto = buscador.value.toLowerCase();
+
+    filas.forEach(fila => {
+      const contenido = fila.innerText.toLowerCase();
+      fila.style.display = contenido.includes(texto) ? "" : "none";
+    });
+  });
+});
+</script>
+
+{% endblock %}
