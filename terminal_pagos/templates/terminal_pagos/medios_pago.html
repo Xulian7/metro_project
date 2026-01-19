@@ -73,12 +73,12 @@
             {{ pago.valor }}
           </td>
           <td class="text-center">
-            {% if pago.configuracion.validado %}
+            {% if pago.validado %}
               <span class="badge bg-success">Validado</span>
             {% else %}
               <button
-                class="btn btn-sm btn-outline-primary validar-medio"
-                data-config-id="{{ pago.configuracion.id }}">
+                class="btn btn-sm btn-outline-primary validar-pago"
+                data-pago-id="{{ pago.id }}">
                 Validar
               </button>
             {% endif %}
@@ -131,10 +131,16 @@ document.addEventListener("DOMContentLoaded", () => {
       fetch(`/terminal_pagos/validar-pago/${pagoId}/`, {
         method: "POST",
         headers: {
-          "X-CSRFToken": "{{ csrf_token }}"
+          "X-CSRFToken": document.getElementById("csrf-token").value
         }
-      }).then(() => {
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Error en validación");
         window.location.reload();
+      })
+      .catch(err => {
+        console.error(err);
+        alert("No se pudo validar el pago");
       });
     });
   });
