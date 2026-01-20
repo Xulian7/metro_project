@@ -147,55 +147,77 @@
       </div>
     </div>
 
-    
-
     <!-- ================= TEMPLATE PAGO (UX GUIADO) ================= -->
     <div id="empty-pago" class="d-none">
-      <div class="pago-row border rounded-3 px-2 py-2 mb-2 bg-light">
+      <div class="row align-items-center g-2 border rounded-3 px-2 py-2 mb-2 pago-row bg-light">
 
-        <select class="form-select form-select-sm pago-medio" name="medio_pago[]">
-          <option value="">Medio</option>
-        </select>
+        <!-- MEDIO -->
+        <div class="col-md-2">
+          <select class="form-select form-select-sm pago-medio" name="medio_pago[]">
+            <option value="">Medio</option>
+          </select>
+        </div>
 
-        <select class="form-select form-select-sm pago-canal" name="canal_pago[]">
-          <option value="">Canal</option>
-        </select>
+        <!-- CANAL / ORIGEN -->
+        <div class="col-md-2">
+          <select class="form-select form-select-sm pago-canal"
+                  name="canal_pago[]"
+                  >
+            <option value="">Canal</option>
+          </select>
+        </div>
 
-        <select class="form-select form-select-sm pago-cuenta" name="cuenta_pago[]">
-          <option value="">Cuenta destino</option>
-        </select>
+        <!-- CUENTA DESTINO -->
+        <div class="col-md-2">
+          <select class="form-select form-select-sm pago-cuenta"
+                  name="cuenta_pago[]"
+                  >
+            <option value="">Cuenta destino</option>
+          </select>
+        </div>
 
-        <input type="date"
-              class="form-control form-control-sm pago-fecha"
-              name="fecha_pago[]"
-              value="{{ today|date:'Y-m-d' }}">
+        
+        <!-- FECHA -->
+        <div class="col-md-2">
+          <input type="date"
+                class="form-control form-control-sm pago-fecha"
+                name="fecha_pago[]"
+                value="{{ today|date:'Y-m-d' }}">
+        </div>
 
-        <input type="text"
-              class="form-control form-control-sm pago-referencia"
-              name="referencia_pago[]"
-              placeholder="Referencia">
+        <!-- REFERENCIA -->
+        <div class="col-md-2">
+          <input type="text"
+                class="form-control form-control-sm pago-referencia"
+                name="referencia_pago[]"
+                placeholder="Referencia"
+                >
+        </div>
 
-        <input type="number"
-              step="0.01"
-              min="0"
-              class="form-control form-control-sm pago-valor text-end"
-              name="valor_pago[]"
-              placeholder="0.00">
+        <!-- VALOR -->
+        <div class="col-md-1">
+          <input type="number"
+                step="0.01"
+                min="0"
+                class="form-control form-control-sm pago-valor text-end"
+                name="valor_pago[]"
+                placeholder="0.00">
+        </div>
 
-        <div class="d-flex justify-content-end">       
+        <!-- ACCIÓN -->
+        <div class="col-md-1 d-flex justify-content-end">
           <button type="button"
                   class="btn btn-outline-danger btn-sm remove-pago">
             ✖
           </button>
         </div>
 
+        <!-- CONFIG OCULTA -->
         <input type="hidden"
               name="configuracion_pago_id[]"
               class="pago-config-id">
       </div>
     </div>
-
-
 
 
     <div id="pagos-container" class="col-12"></div>
