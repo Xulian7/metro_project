@@ -147,61 +147,74 @@
       </div>
     </div>
 
+    <style>
+      .pago-row {
+        display: grid;
+        grid-template-columns:
+          minmax(120px, 1.2fr)   /* Medio */
+          minmax(120px, 1.2fr)   /* Origen */
+          minmax(140px, 1.5fr)   /* Cuenta */
+          minmax(130px, 1fr)     /* Fecha */
+          minmax(160px, 1.5fr)   /* Referencia */
+          minmax(100px, 0.8fr)   /* Valor */
+          40px;                  /* Acción */
+        gap: 0.5rem;
+        align-items: end;
+      }
+
+      /* En ventanas angostas: refluye automáticamente */
+      @media (max-width: 1200px) {
+        .pago-row {
+          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        }
+      }
+    </style>
+
+
     <!-- ================= TEMPLATE PAGO (UX GUIADO) ================= -->
     <div id="empty-pago" class="d-none">
-      <div class="row g-1 border rounded-3 px-2 py-2 mb-2 pago-row bg-light">
+      <div class="pago-row border rounded-3 px-2 py-2 mb-2 bg-light">
 
-        <!-- MEDIO -->
-        <div class="col-6 col-md-3 col-lg-2">
-          <select class="form-select form-select-sm pago-medio">
-            <option value="">Medio</option>
-          </select>
-        </div>
+        <select class="form-select form-select-sm pago-medio" name="medio_pago[]">
+          <option value="">Medio</option>
+        </select>
 
-        <!-- ORIGEN -->
-        <div class="col-6 col-md-3 col-lg-2">
-          <select class="form-select form-select-sm pago-canal">
-            <option value="">Canal</option>
-          </select>
-        </div>
+        <select class="form-select form-select-sm pago-canal" name="canal_pago[]">
+          <option value="">Canal</option>
+        </select>
 
-        <!-- CUENTA -->
-        <div class="col-6 col-md-3 col-lg-2">
-          <select class="form-select form-select-sm pago-cuenta">
-            <option value="">Cuenta</option>
-          </select>
-        </div>
+        <select class="form-select form-select-sm pago-cuenta" name="cuenta_pago[]">
+          <option value="">Cuenta destino</option>
+        </select>
 
-        <!-- FECHA -->
-        <div class="col-6 col-md-3 col-lg-2">
-          <input type="date" class="form-control form-control-sm pago-fecha">
-        </div>
+        <input type="date"
+              class="form-control form-control-sm pago-fecha"
+              name="fecha_pago[]"
+              value="{{ today|date:'Y-m-d' }}">
 
-        <!-- REFERENCIA -->
-        <div class="col-8 col-md-4 col-lg-2">
-          <input type="text" class="form-control form-control-sm pago-referencia">
-        </div>
+        <input type="text"
+              class="form-control form-control-sm pago-referencia"
+              name="referencia_pago[]"
+              placeholder="Referencia">
 
-        <!-- VALOR -->
-        <div class="col-4 col-md-2 col-lg-1">
-          <input type="number" class="form-control form-control-sm pago-valor text-end">
-        </div>
+        <input type="number"
+              step="0.01"
+              min="0"
+              class="form-control form-control-sm pago-valor text-end"
+              name="valor_pago[]"
+              placeholder="0.00">
 
-        <!-- ACCIÓN -->
-        <div class="col-12 col-md-2 col-lg-1 d-flex justify-content-end">
-          <button type="button" class="btn btn-outline-danger btn-sm remove-pago">
-            ✖
-          </button>
-        </div>
+        <button type="button"
+                class="btn btn-outline-danger btn-sm remove-pago">
+          ✖
+        </button>
 
-        <!-- CONFIG OCULTA (FIJA A LA FILA) -->
-        <div class="col-12 d-none">
-          <input type="hidden"
-                name="configuracion_pago_id[]"
-                class="pago-config-id">
-        </div>
+        <input type="hidden"
+              name="configuracion_pago_id[]"
+              class="pago-config-id">
       </div>
     </div>
+
 
 
 
