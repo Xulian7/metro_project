@@ -147,28 +147,7 @@
       </div>
     </div>
 
-    <style>
-      .pago-row {
-      display: grid;
-      grid-template-columns:
-        minmax(120px, 1.2fr)   /* Medio */
-        minmax(120px, 1.2fr)   /* Origen */
-        minmax(140px, 1.5fr)   /* Cuenta */
-        minmax(130px, 1fr)     /* Fecha */
-        minmax(160px, 1.5fr)   /* Referencia */
-        minmax(110px, 1fr)     /* Valor */
-        minmax(44px, 44px);    /* Acción FIJA */
-      gap: 0.5rem;
-      align-items: end;
-    }
-
-    .pago-accion {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    </style>
-
+    
 
     <!-- ================= TEMPLATE PAGO (UX GUIADO) ================= -->
     <div id="empty-pago" class="d-none">
@@ -203,13 +182,12 @@
               name="valor_pago[]"
               placeholder="0.00">
 
-        <div class="pago-accion">
+        <div class="d-flex justify-content-end">       
           <button type="button"
                   class="btn btn-outline-danger btn-sm remove-pago">
             ✖
           </button>
         </div>
-
 
         <input type="hidden"
               name="configuracion_pago_id[]"
