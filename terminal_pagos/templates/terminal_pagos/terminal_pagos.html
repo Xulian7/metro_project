@@ -149,25 +149,24 @@
 
     <style>
       .pago-row {
-        display: grid;
-        grid-template-columns:
-          minmax(120px, 1.2fr)   /* Medio */
-          minmax(120px, 1.2fr)   /* Origen */
-          minmax(140px, 1.5fr)   /* Cuenta */
-          minmax(130px, 1fr)     /* Fecha */
-          minmax(160px, 1.5fr)   /* Referencia */
-          minmax(100px, 0.8fr)   /* Valor */
-          40px;                  /* Acción */
-        gap: 0.5rem;
-        align-items: end;
-      }
+      display: grid;
+      grid-template-columns:
+        minmax(120px, 1.2fr)   /* Medio */
+        minmax(120px, 1.2fr)   /* Origen */
+        minmax(140px, 1.5fr)   /* Cuenta */
+        minmax(130px, 1fr)     /* Fecha */
+        minmax(160px, 1.5fr)   /* Referencia */
+        minmax(110px, 1fr)     /* Valor */
+        minmax(44px, 44px);    /* Acción FIJA */
+      gap: 0.5rem;
+      align-items: end;
+    }
 
-      /* En ventanas angostas: refluye automáticamente */
-      @media (max-width: 1200px) {
-        .pago-row {
-          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        }
-      }
+    .pago-accion {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
     </style>
 
 
@@ -204,10 +203,13 @@
               name="valor_pago[]"
               placeholder="0.00">
 
-        <button type="button"
-                class="btn btn-outline-danger btn-sm remove-pago">
-          ✖
-        </button>
+        <div class="pago-accion">
+          <button type="button"
+                  class="btn btn-outline-danger btn-sm remove-pago">
+            ✖
+          </button>
+        </div>
+
 
         <input type="hidden"
               name="configuracion_pago_id[]"
