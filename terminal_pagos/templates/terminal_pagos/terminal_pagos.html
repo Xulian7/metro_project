@@ -329,8 +329,15 @@
     document.querySelectorAll('.item-row').forEach(r => {
       total += parseFloat(r.dataset.subtotal || 0);
     });
-    document.getElementById('total').innerText = total.toLocaleString('es-CO');
+
+    document.getElementById('total').innerText =
+      total.toLocaleString('es-CO', { minimumFractionDigits: 2 });
+
+    if (typeof recalcularResumen === "function") {
+      recalcularResumen();
+    }
   }
+
 
   $('#items-container')
     .on('change', '.tipo-item', function () {
@@ -507,19 +514,35 @@
       TOTALES
     ========================= */
     function recalcularPagos() {
-      let total = 0;
+      let totalPagado = 0;
 
       document.querySelectorAll(".pago-valor").forEach(i => {
-        total += parseFloat(i.value || 0);
+        totalPagado += parseFloat(i.value || 0);
       });
 
-      const totalEl = document.getElementById("total-pagado");
-      if (totalEl) {
-        totalEl.innerText = total.toLocaleString("es-CO", {
+      const totalPagadoEl = document.getElementById("total-pagado");
+      if (totalPagadoEl) {
+        totalPagadoEl.innerText = totalPagado.toLocaleString("es-CO", {
+          minimumFractionDigits: 2
+        });
+      }
+
+      // ===== SALDO PENDIENTE =====
+      let totalFactura = 0;
+      document.querySelectorAll(".item-row").forEach(r => {
+        totalFactura += parseFloat(r.dataset.subtotal || 0);
+      });
+
+      const saldo = totalFactura - totalPagado;
+
+      const saldoEl = document.getElementById("saldo-pendiente");
+      if (saldoEl) {
+        saldoEl.innerText = saldo.toLocaleString("es-CO", {
           minimumFractionDigits: 2
         });
       }
     }
+
 
     /* =========================
       EVENTOS
@@ -540,6 +563,25 @@
     });
 
   });
+
+  function recalcularResumen() {
+    const totalFactura = Array.from(document.querySelectorAll('.item-row'))
+      .reduce((acc, r) => acc + parseFloat(r.dataset.subtotal || 0), 0);
+
+    const totalPagado = Array.from(document.querySelectorAll('.pago-valor'))
+      .reduce((acc, i) => acc + parseFloat(i.value || 0), 0);
+
+    const saldo = totalFactura - totalPagado;
+
+    document.getElementById("total-pagado").innerText =
+      totalPagado.toLocaleString("es-CO", { minimumFractionDigits: 2 });
+
+    document.getElementById("saldo-pendiente").innerText =
+      saldo.toLocaleString("es-CO", { minimumFractionDigits: 2 });
+  }
+
+
+
 </script>
 
 <script>
