@@ -157,51 +157,39 @@
     <div id="empty-pago" class="d-none">
       <div class="row align-items-center g-2 border rounded-3 px-2 py-2 mb-2 pago-row bg-light">
 
-        <!-- MEDIO -->
-        <div class="col-md-2">
+        <div class="col">
           <select class="form-select form-select-sm pago-medio" name="medio_pago[]">
             <option value="">Medio</option>
           </select>
         </div>
 
-        <!-- CANAL / ORIGEN -->
-        <div class="col-md-2">
-          <select class="form-select form-select-sm pago-canal"
-                  name="canal_pago[]"
-                  >
+        <div class="col">
+          <select class="form-select form-select-sm pago-canal" name="canal_pago[]">
             <option value="">Canal</option>
           </select>
         </div>
 
-        <!-- CUENTA DESTINO -->
-        <div class="col-md-2">
-          <select class="form-select form-select-sm pago-cuenta"
-                  name="cuenta_pago[]"
-                  >
+        <div class="col">
+          <select class="form-select form-select-sm pago-cuenta" name="cuenta_pago[]">
             <option value="">Cuenta destino</option>
           </select>
         </div>
 
-        
-        <!-- FECHA -->
-        <div class="col-md-2">
+        <div class="col">
           <input type="date"
                 class="form-control form-control-sm pago-fecha"
                 name="fecha_pago[]"
                 value="{{ today|date:'Y-m-d' }}">
         </div>
 
-        <!-- REFERENCIA -->
-        <div class="col-md-2">
+        <div class="col">
           <input type="text"
                 class="form-control form-control-sm pago-referencia"
                 name="referencia_pago[]"
-                placeholder="Referencia"
-                >
+                placeholder="Referencia">
         </div>
 
-        <!-- VALOR -->
-        <div class="col-md-1">
+        <div class="col">
           <input type="number"
                 step="0.01"
                 min="0"
@@ -210,15 +198,14 @@
                 placeholder="0.00">
         </div>
 
-        <!-- ACCIÓN -->
-        <div class="col-md-1 d-flex justify-content-end">
+        <!-- ACCIÓN (ligeramente más chica pero estable) -->
+        <div class="col-auto d-flex justify-content-center">
           <button type="button"
                   class="btn btn-outline-danger btn-sm remove-pago">
             ✖
           </button>
         </div>
 
-        <!-- CONFIG OCULTA -->
         <input type="hidden"
               name="configuracion_pago_id[]"
               class="pago-config-id">
