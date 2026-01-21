@@ -312,7 +312,7 @@
     }
 
     row.dataset.subtotal = subtotal;
-    row.querySelector('.valor-unitario-item').value = valorUnitario ? valorUnitario.toFixed(2) : '';
+    row.querySelector('.valor-unitario-item').value = subtotal ? subtotal.toFixed(2) : '';
     recalcularTotales();
   }
 
