@@ -167,7 +167,7 @@ def crear_factura(request):
             print(f"   ↳ Servicio taller ID={servicio.id}") # type: ignore
 
         # ---- SUBTOTAL ----
-        item.subtotal = item.cantidad * item.valor_unitario
+        item.subtotal =  item.valor_unitario
         item.save()
 
         total_factura += item.subtotal
