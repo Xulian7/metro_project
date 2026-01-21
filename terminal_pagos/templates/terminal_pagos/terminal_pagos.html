@@ -36,7 +36,7 @@
 <div class="card p-4 shadow-sm">
   <h3 class="fw-bold fs-5 mb-4">Nueva Transacción</h3>
 
-  <form method="post" 
+  <form id="factura-form" method="post" 
     action="{% url 'terminal_pagos:crear_factura' %}"
     class="row g-3">
     {% csrf_token %}
@@ -232,58 +232,47 @@
   </form>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.querySelector("form");
-      if (!form) return;
+    const form = document.getElementById("factura-form");
 
-      form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", function (e) {
 
-        // =========================
-        // VALIDACIÓN DE PAGOS
-        // =========================
-        const totalFactura = Array.from(document.querySelectorAll(".item-row"))
-          .reduce((acc, r) => acc + parseFloat(r.dataset.subtotal || 0), 0);
+      // ⛔ cortar TODO
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
 
-        const totalPagado = Array.from(document.querySelectorAll(".pago-valor"))
-          .reduce((acc, i) => acc + parseFloat(i.value || 0), 0);
+      const totalFactura = Array.from(document.querySelectorAll(".item-row"))
+        .reduce((acc, r) => acc + parseFloat(r.dataset.subtotal || 0), 0);
 
-        // Normalizamos a 2 decimales para evitar ruido flotante
-        const tf = Number(totalFactura.toFixed(2));
-        const tp = Number(totalPagado.toFixed(2));
+      const totalPagado = Array.from(document.querySelectorAll(".pago-valor"))
+        .reduce((acc, i) => acc + parseFloat(i.value || 0), 0);
 
-        if (tp !== tf) {
-          e.preventDefault(); // ⛔ bloquea submit
+      const tf = Number(totalFactura.toFixed(2));
+      const tp = Number(totalPagado.toFixed(2));
 
-          let msg = "";
-          if (tp < tf) {
-            msg = `❌ El total pagado (${tp.toLocaleString("es-CO")}) NO cubre el total de la factura (${tf.toLocaleString("es-CO")}).`;
-          } else {
-            msg = `❌ El total pagado (${tp.toLocaleString("es-CO")}) EXCEDE el total de la factura (${tf.toLocaleString("es-CO")}).`;
-          }
-
-          alert(msg);
-          return;
+      if (tp !== tf) {
+        if (tp < tf) {
+          alert("❌ El total pagado no cubre el total de la factura.");
+        } else {
+          alert("❌ El total pagado excede el total de la factura.");
         }
+        return false; // ❌ NO enviar
+      }
 
-        // =========================
-        // SINCRONIZAR CONFIGURACIÓN
-        // =========================
-        document.querySelectorAll(".pago-row").forEach(row => {
-          const cuentaSel = row.querySelector(".pago-cuenta");
-          const configIdInput = row.querySelector(".pago-config-id");
-
-          if (cuentaSel && configIdInput) {
-            configIdInput.value = cuentaSel.value || "";
-          }
-        });
-
-        // ✅ submit permitido
+      // 🔑 sincronizar configuraciones
+      document.querySelectorAll(".pago-row").forEach(row => {
+        const cuentaSel = row.querySelector(".pago-cuenta");
+        const configIdInput = row.querySelector(".pago-config-id");
+        if (cuentaSel && configIdInput) {
+          configIdInput.value = cuentaSel.value || "";
+        }
       });
+
+      // ✅ ahora SÍ enviamos
+      form.submit();
     });
-
-
-
   </script>
+
 
 </div>
 
