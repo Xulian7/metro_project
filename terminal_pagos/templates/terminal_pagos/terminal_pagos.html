@@ -581,9 +581,38 @@
     const form = document.querySelector("form");
     if (!form) return;
 
-    form.addEventListener("submit", () => {
+    form.addEventListener("submit", (e) => {
 
-      // 🔑 Sincronizar configuraciones de pago antes de enviar
+      // =========================
+      // VALIDACIÓN DE PAGOS
+      // =========================
+      const totalFactura = Array.from(document.querySelectorAll(".item-row"))
+        .reduce((acc, r) => acc + parseFloat(r.dataset.subtotal || 0), 0);
+
+      const totalPagado = Array.from(document.querySelectorAll(".pago-valor"))
+        .reduce((acc, i) => acc + parseFloat(i.value || 0), 0);
+
+      // Normalizamos a 2 decimales para evitar ruido flotante
+      const tf = Number(totalFactura.toFixed(2));
+      const tp = Number(totalPagado.toFixed(2));
+
+      if (tp !== tf) {
+        e.preventDefault(); // ⛔ bloquea submit
+
+        let msg = "";
+        if (tp < tf) {
+          msg = `❌ El total pagado (${tp.toLocaleString("es-CO")}) NO cubre el total de la factura (${tf.toLocaleString("es-CO")}).`;
+        } else {
+          msg = `❌ El total pagado (${tp.toLocaleString("es-CO")}) EXCEDE el total de la factura (${tf.toLocaleString("es-CO")}).`;
+        }
+
+        alert(msg);
+        return;
+      }
+
+      // =========================
+      // SINCRONIZAR CONFIGURACIÓN
+      // =========================
       document.querySelectorAll(".pago-row").forEach(row => {
         const cuentaSel = row.querySelector(".pago-cuenta");
         const configIdInput = row.querySelector(".pago-config-id");
@@ -593,9 +622,12 @@
         }
       });
 
-      // Nada más: dejamos que el submit fluya normal
+      // ✅ submit permitido
     });
   });
+
+
+
 </script>
 
 

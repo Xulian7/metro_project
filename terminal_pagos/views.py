@@ -254,9 +254,15 @@ def crear_factura(request):
         factura.estado_pago = "parcial"
     else:
         factura.estado_pago = "pagada"
+        
+    # ---- ESTADO ADMINISTRATIVO ----
+    if factura.estado_pago == "pagada":
+        factura.estado = "confirmada"
+    else:
+        factura.estado = "borrador"
 
-    factura.save()
-
+        factura.save()
+        
     print(
         f"🎉 FACTURA FINALIZADA | "
         f"Total={factura.total} | "
