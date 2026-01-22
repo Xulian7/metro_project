@@ -19,7 +19,7 @@
         type="text"
         id="buscador-contratos"
         class="form-control"
-        placeholder="Buscar por placa, cliente o contrato">
+        placeholder="Buscar por contrato, cliente o placa">
     </div>
   </div>
 
@@ -33,6 +33,7 @@
           <th>Contrato</th>
           <th>Cliente</th>
           <th>Vehículo</th>
+          <th>Inicio</th>
           <th class="text-end">Tarifa</th>
           <th class="text-center">Teóricas</th>
           <th class="text-center">Facturadas</th>
@@ -46,6 +47,13 @@
           <td>#{{ row.contrato.id }}</td>
           <td>{{ row.contrato.cliente.nombre }}</td>
           <td>{{ row.contrato.vehiculo.placa }}</td>
+          <td>
+            {{ row.fecha_inicio }}
+            <br>
+            <small class="text-muted">
+              {{ row.dias_transcurridos }} días
+            </small>
+          </td>
           <td class="text-end">{{ row.tarifa }}</td>
           <td class="text-center">{{ row.tarifas_teoricas }}</td>
           <td class="text-center">
@@ -63,12 +71,12 @@
             {% endif %}
           </td>
           <td class="text-end fw-semibold">
-            {{ row.total_facturado }}
+            {{ row.total_facturado|floatformat:2 }}
           </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="8" class="text-center text-muted">
+          <td colspan="9" class="text-center text-muted">
             No hay contratos para mostrar
           </td>
         </tr>
@@ -91,8 +99,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const texto = buscador.value.toLowerCase();
 
     filas.forEach(fila => {
-      const contenido = fila.innerText.toLowerCase();
-      fila.style.display = contenido.includes(texto) ? "" : "none";
+      const contrato = fila.children[0].innerText.toLowerCase();
+      const cliente  = fila.children[1].innerText.toLowerCase();
+      const placa    = fila.children[2].innerText.toLowerCase();
+
+      const match =
+        contrato.includes(texto) ||
+        cliente.includes(texto) ||
+        placa.includes(texto);
+
+      fila.style.display = match ? "" : "none";
     });
   });
 });

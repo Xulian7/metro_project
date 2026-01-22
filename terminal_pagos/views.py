@@ -403,12 +403,9 @@ def validar_pago(request, pago_id):
 
 
 from datetime import date
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.shortcuts import render
-
-from arrendamientos.models import Contrato
-from terminal_pagos.models import ItemFactura
-
+from .models import Contrato, ItemFactura
 
 def resumen_contratos(request):
     hoy = date.today()
@@ -420,6 +417,24 @@ def resumen_contratos(request):
         .all()
     )
 
+    # =========================
+    # AGRUPAR ITEMS TARIFA POR CONTRATO
+    # =========================
+    items_por_contrato = (
+        ItemFactura.objects
+        .filter(tipo_item="tarifa")
+        .values("factura__contrato")
+        .annotate(
+            total_facturado=Sum("subtotal"),
+            tarifas_facturadas=Count("id")
+        )
+    )
+
+    mapa_items = {
+        i["factura__contrato"]: i
+        for i in items_por_contrato
+    }
+
     for contrato in contratos:
         if not contrato.fecha_inicio or not contrato.tarifa:
             continue
@@ -428,6 +443,7 @@ def resumen_contratos(request):
         # TARIFAS TEÓRICAS
         # -------------------------
         dias_transcurridos = (hoy - contrato.fecha_inicio).days
+
         tarifas_teoricas = (
             (dias_transcurridos // contrato.dias_contrato) + 1
             if dias_transcurridos >= 0
@@ -435,28 +451,23 @@ def resumen_contratos(request):
         )
 
         # -------------------------
-        # TARIFAS FACTURADAS (REAL)
+        # TARIFAS FACTURADAS (REALES)
         # -------------------------
-        total_facturado = (
-            ItemFactura.objects
-            .filter(
-                tipo_item="tarifa",
-                factura__contrato=contrato
-            )
-            .aggregate(total=Sum("subtotal"))["total"]
-            or 0
-        )
+        data = mapa_items.get(contrato.id, {}) # type: ignore
+        total_facturado = data.get("total_facturado", 0) or 0
+        tarifas_facturadas = data.get("tarifas_facturadas", 0) or 0
 
-        tarifas_facturadas = int(total_facturado // contrato.tarifa)
-        saldo_tarifas = tarifas_teoricas - tarifas_facturadas
+        saldo_tarifas = max(tarifas_teoricas - tarifas_facturadas, 0)
 
         filas.append({
             "contrato": contrato,
+            "fecha_inicio": contrato.fecha_inicio,
             "tarifa": contrato.tarifa,
             "tarifas_teoricas": tarifas_teoricas,
             "tarifas_facturadas": tarifas_facturadas,
             "saldo_tarifas": saldo_tarifas,
             "total_facturado": total_facturado,
+            "dias_transcurridos": dias_transcurridos,
         })
 
     return render(
