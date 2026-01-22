@@ -69,6 +69,7 @@
       placeholder="Buscar por nombre o cédula..."
     >
   </div>
+
   <!-- ========================= -->
   <!-- TABLA -->
   <!-- ========================= -->
@@ -232,6 +233,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const searchInput = document.getElementById("cliente-search");
+  const rows = document.querySelectorAll("table tbody tr");
+
+  if (!searchInput) return;
+
+  searchInput.addEventListener("input", () => {
+    const filtro = searchInput.value.toLowerCase().trim();
+
+    rows.forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(filtro)
+        ? ""
+        : "none";
+    });
+  });
+});
+</script>
+
 
 
 {% endblock %}
