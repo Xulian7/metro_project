@@ -325,8 +325,11 @@
   function cargarDescripcion(row) {
     const tipo = row.querySelector('.tipo-item');
     const desc = row.querySelector('.descripcion-item');
+    const valorInput = row.querySelector('.valor-unitario-item');
+
     const opciones = datosDescripcion[tipo.value] || [];
 
+    // ---- reset descripción ----
     desc.innerHTML = '';
     opciones.forEach(o => {
       const opt = document.createElement('option');
@@ -340,25 +343,53 @@
       desc.appendChild(opt);
     });
 
-    $(desc).select2({ width:'100%', placeholder:'Buscar…', allowClear:true });
+    // ---- reset valor manual ----
+    valorInput.dataset.manual = "0";
+    valorInput.value = "";
+
+    // ---- reset subtotal frontend ----
+    row.dataset.subtotal = "0";
+
+    // ---- reinicializar select2 ----
+    if ($(desc).hasClass("select2-hidden-accessible")) {
+      $(desc).select2("destroy");
+    }
+
+    $(desc).select2({
+      width: '100%',
+      placeholder: 'Buscar…',
+      allowClear: true
+    });
   }
+
 
   function recalcularFila(row) {
     const tipo = row.querySelector('.tipo-item').value;
     const cant = parseFloat(row.querySelector('.cantidad-item').value || 0);
+    const valorInput = row.querySelector('.valor-unitario-item');
+
     let subtotal = 0;
 
-    if (tipo === 'tarifa') {
-      subtotal = getTarifaContrato() * cant;
+    // 👇 SI el usuario escribió manualmente un valor
+    if (valorInput.dataset.manual === "1") {
+      const manualValue = parseFloat(valorInput.value || 0);
+      subtotal = manualValue;
     } else {
-      const opt = row.querySelector('.descripcion-item').selectedOptions[0];
-      subtotal = (opt?.dataset.valor || 0) * cant;
+      // 👇 comportamiento normal
+      if (tipo === 'tarifa') {
+        subtotal = getTarifaContrato() * cant;
+      } else {
+        const opt = row.querySelector('.descripcion-item').selectedOptions[0];
+        subtotal = (opt?.dataset.valor || 0) * cant;
+      }
+
+      valorInput.value = subtotal ? subtotal.toFixed(2) : '';
     }
 
     row.dataset.subtotal = subtotal;
-    row.querySelector('.valor-unitario-item').value = subtotal ? subtotal.toFixed(2) : '';
     recalcularTotales();
   }
+
 
   function recalcularTotales() {
     let total = 0;
@@ -384,6 +415,12 @@
     .on('input', '.cantidad-item', function () {
       recalcularFila(this.closest('.item-row'));
     })
+    // 👇 NUEVO: detectar edición manual del valor
+    .on('input', '.valor-unitario-item', function () {
+      const row = this.closest('.item-row');
+      this.dataset.manual = "1";
+      recalcularFila(row);
+    })
     .on('select2:select select2:clear', '.descripcion-item', function () {
       recalcularFila(this.closest('.item-row'));
     })
@@ -391,6 +428,7 @@
       this.closest('.item-row').remove();
       recalcularTotales();
     });
+
 
   function inicializarItem(row) {
     cargarDescripcion(row);
