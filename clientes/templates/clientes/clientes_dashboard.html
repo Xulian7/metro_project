@@ -190,69 +190,129 @@
 <!-- JS -->
 <!-- ========================= -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
 
-  function toggleInversionista(tipo) {
-    document.querySelectorAll('.inversionista-only')
-      .forEach(el => el.classList.toggle('d-none', tipo !== 'Inversionista'));
-  }
+    /* =========================
+      HELPERS
+    ========================= */
+    function toggleInversionista(tipo) {
+      document.querySelectorAll('.inversionista-only')
+        .forEach(el => el.classList.toggle('d-none', tipo !== 'Inversionista'));
+    }
 
-  const tipoCreate = document.getElementById('tipo-create');
-  if (tipoCreate) {
-    toggleInversionista(tipoCreate.value);
-    tipoCreate.addEventListener('change', e => toggleInversionista(e.target.value));
-  }
-
-  document.querySelectorAll('.edit-cliente-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const map = {
-        id: 'modal-id',
-        cedula: 'modal-cedula',
-        nombre: 'modal-nombre',
-        nacionalidad: 'modal-nacionalidad',
-        direccion: 'modal-direccion',
-        telefono: 'modal-telefono',
-        ref1: 'modal-ref1',
-        telref1: 'modal-telref1',
-        ref2: 'modal-ref2',
-        telref2: 'modal-telref2',
-        tipo: 'modal-tipo',
-        status: 'modal-status',
-        costoOperativo: 'modal-costo-operativo',
-        costoAdministrativo: 'modal-costo-administrativo'
-      };
-
-      Object.entries(map).forEach(([k, id]) => {
-        const el = document.getElementById(id);
-        if (el) el.value = btn.dataset[k] || '';
+    /* =========================
+      FORM CREAR CLIENTE
+    ========================= */
+    const tipoCreate = document.getElementById('tipo-create');
+    if (tipoCreate) {
+      toggleInversionista(tipoCreate.value);
+      tipoCreate.addEventListener('change', e => {
+        toggleInversionista(e.target.value);
       });
+    }
 
-      toggleInversionista(btn.dataset.tipo);
+    /* =========================
+      ABRIR MODAL EDITAR
+    ========================= */
+    document.querySelectorAll('.edit-cliente-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+
+        const map = {
+          id: 'modal-id',
+          cedula: 'modal-cedula',
+          nombre: 'modal-nombre',
+          nacionalidad: 'modal-nacionalidad',
+          direccion: 'modal-direccion',
+          telefono: 'modal-telefono',
+          ref1: 'modal-ref1',
+          telref1: 'modal-telref1',
+          ref2: 'modal-ref2',
+          telref2: 'modal-telref2',
+          tipo: 'modal-tipo',
+          status: 'modal-status',
+          costoOperativo: 'modal-costo-operativo',
+          costoAdministrativo: 'modal-costo-administrativo'
+        };
+
+        Object.entries(map).forEach(([key, inputId]) => {
+          const input = document.getElementById(inputId);
+          if (input) {
+            input.value = btn.dataset[key] ?? '';
+          }
+        });
+
+        toggleInversionista(btn.dataset.tipo || 'Normal');
+      });
     });
-  });
 
-});
+    /* =========================
+      CAMBIO TIPO EN MODAL
+    ========================= */
+    const modalTipo = document.getElementById('modal-tipo');
+    if (modalTipo) {
+      modalTipo.addEventListener('change', e => {
+        toggleInversionista(e.target.value);
+      });
+    }
+
+    /* =========================
+      SUBMIT EDITAR (AJAX)
+    ========================= */
+    const editForm = document.getElementById('edit-form');
+
+    if (editForm) {
+      editForm.addEventListener('submit', async e => {
+        e.preventDefault();
+
+        const formData = new FormData(editForm);
+
+        try {
+          const response = await fetch('/clientes/update/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+            }
+          });
+
+          if (!response.ok) {
+            const data = await response.json();
+            console.error('❌ Errores de validación:', data.errors);
+            alert('Error al guardar. Revisa la consola.');
+            return;
+          }
+
+          // ✔ OK
+          location.reload();
+
+        } catch (err) {
+          console.error('❌ Error de red:', err);
+          alert('Error inesperado al guardar.');
+        }
+      });
+    }
+
+  });
 </script>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const searchInput = document.getElementById("cliente-search");
-  const rows = document.querySelectorAll("table tbody tr");
+  document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.getElementById("cliente-search");
+    const rows = document.querySelectorAll("table tbody tr");
 
-  if (!searchInput) return;
+    if (!searchInput) return;
 
-  searchInput.addEventListener("input", () => {
-    const filtro = searchInput.value.toLowerCase().trim();
+    searchInput.addEventListener("input", () => {
+      const filtro = searchInput.value.toLowerCase().trim();
 
-    rows.forEach(row => {
-      row.style.display = row.textContent.toLowerCase().includes(filtro)
-        ? ""
-        : "none";
+      rows.forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(filtro)
+          ? ""
+          : "none";
+      });
     });
   });
-});
 </script>
-
 
 
 {% endblock %}
