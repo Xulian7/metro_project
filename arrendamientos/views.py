@@ -56,14 +56,33 @@ def contratos(request):
     })
 
 
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.views.decorators.http import require_POST
+
+from .models import Contrato
+
+
 @require_POST
 def actualizar_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, id=contrato_id)
-
-    nuevo_estado = request.POST.get("estado")
     vehiculo = contrato.vehiculo
 
-    # 🛑 VALIDACIÓN CLAVE
+    # =========================
+    # DATOS POST
+    # =========================
+    fecha_inicio = request.POST.get("fecha_inicio")
+    cuota_inicial = request.POST.get("cuota_inicial")
+    tarifa = request.POST.get("tarifa")
+    frecuencia_pago = request.POST.get("frecuencia_pago")
+    dias_contrato = request.POST.get("dias_contrato")
+    visitador = request.POST.get("visitador")
+    nuevo_estado = request.POST.get("estado")
+    motivo = request.POST.get("motivo")
+
+    # =========================
+    # VALIDACIÓN CLAVE
+    # =========================
     if contrato.estado == "Inactivo" and nuevo_estado == "Activo":
         existe_otro_activo = Contrato.objects.filter(
             vehiculo=vehiculo,
@@ -73,20 +92,35 @@ def actualizar_contrato(request, contrato_id):
         if existe_otro_activo:
             messages.error(
                 request,
-                f"La placa {vehiculo} ya tiene un contrato activo. Misión fallida."
+                f"La placa {vehiculo} ya tiene un contrato activo. No se puede reactivar."
             )
             return redirect('arrendamientos:contratos')
 
-    # 🔹 Actualización normal
-    contrato.fecha_inicio = request.POST.get("fecha_inicio")
-    contrato.tarifa = request.POST.get("tarifa")
-    contrato.dias_contrato = request.POST.get("dias_contrato")
-    contrato.visitador = request.POST.get("visitador")
+    # =========================
+    # ACTUALIZAR CONTRATO
+    # =========================
+    contrato.fecha_inicio = fecha_inicio
+    contrato.cuota_inicial = cuota_inicial
+    contrato.tarifa = tarifa
+    contrato.frecuencia_pago = frecuencia_pago
+    contrato.dias_contrato = dias_contrato
+    contrato.visitador = visitador
     contrato.estado = nuevo_estado
 
+    # =========================
+    # ESTADO / MOTIVO / VEHÍCULO
+    # =========================
     if nuevo_estado == "Inactivo":
-        contrato.motivo = request.POST.get("motivo")
+        if not motivo:
+            messages.error(
+                request,
+                "Debes indicar un motivo al inactivar el contrato."
+            )
+            return redirect('arrendamientos:contratos')
+
+        contrato.motivo = motivo
         vehiculo.estado = "Vitrina"
+
     else:
         contrato.motivo = None
         vehiculo.estado = "Activo"
@@ -96,6 +130,7 @@ def actualizar_contrato(request, contrato_id):
 
     messages.success(request, "Contrato actualizado correctamente.")
     return redirect('arrendamientos:contratos')
+
 
 
 
