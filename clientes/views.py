@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib import messages
-
 from .models import Cliente
 from .forms import ClienteForm
+from django.db import IntegrityError
 
 
 # ==========================================================
@@ -19,17 +19,34 @@ def clientes_dashboard(request):
         # ========================
         if 'cliente_submit' in request.POST:
             form = ClienteForm(request.POST)
+
             if form.is_valid():
-                form.save()
-                messages.success(request, "🐾 Cliente creado correctamente.")
-                return redirect('clientes_dashboard')
+                try:
+                    form.save()
+                    messages.success(
+                        request,
+                        "🐾 Cliente creado correctamente."
+                    )
+                    return redirect('clientes_dashboard')
+
+                except IntegrityError:
+                    # 👇 ESTE ES EL CASO DE CÉDULA DUPLICADA
+                    messages.error(
+                        request,
+                        "⚠️ Ya existe un cliente con esa cédula."
+                    )
+
             else:
-                messages.error(request, "⚠️ Revisa los datos del formulario.")
+                messages.error(
+                    request,
+                    "⚠️ Revisa los datos del formulario."
+                )
 
     context = {
         'clientes': clientes,
         'form': form,
     }
+
     return render(request, "clientes/clientes_dashboard.html", context)
 
 
