@@ -12,81 +12,45 @@
     <form method="post" class="row g-3 align-items-end mb-4">
       {% csrf_token %}
 
-      <div class="col-md-2">
-        <label class="form-label">Cédula</label>
-        <input type="text" name="cedula" class="form-control">
-      </div>
+      <div class="col-md-2"><label>Cédula</label><input name="cedula" class="form-control"></div>
+      <div class="col-md-2"><label>Nombre</label><input name="nombre" class="form-control"></div>
+      <div class="col-md-2"><label>Nacionalidad</label><input name="nacionalidad" class="form-control"></div>
+      <div class="col-md-2"><label>Dirección</label><input name="direccion" class="form-control"></div>
+      <div class="col-md-2"><label>Teléfono</label><input name="telefono" class="form-control"></div>
+      <div class="col-md-2"><label>Referencia 1</label><input name="referencia_1" class="form-control"></div>
+      <div class="col-md-2"><label>Tel Ref 1</label><input name="telefono_ref_1" class="form-control"></div>
+      <div class="col-md-2"><label>Referencia 2</label><input name="referencia_2" class="form-control"></div>
+      <div class="col-md-2"><label>Tel Ref 2</label><input name="telefono_ref_2" class="form-control"></div>
 
       <div class="col-md-2">
-        <label class="form-label">Nombre</label>
-        <input type="text" name="nombre" class="form-control">
-      </div>
-
-      <div class="col-md-2">
-        <label class="form-label">Nacionalidad</label>
-        <input type="text" name="nacionalidad" class="form-control">
-      </div>
-
-      <div class="col-md-2">
-        <label class="form-label">Dirección</label>
-        <input type="text" name="direccion" class="form-control">
-      </div>
-
-      <div class="col-md-2">
-        <label class="form-label">Teléfono</label>
-        <input type="text" name="telefono" class="form-control">
-      </div>
-
-      <div class="col-md-2">
-        <label class="form-label">Referencia 1</label>
-        <input type="text" name="referencia_1" class="form-control">
-      </div>
-
-      <div class="col-md-2">
-        <label class="form-label">Tel. Ref. 1</label>
-        <input type="text" name="telefono_ref_1" class="form-control">
-      </div>
-
-      <div class="col-md-2">
-        <label class="form-label">Referencia 2</label>
-        <input type="text" name="referencia_2" class="form-control">
-      </div>
-
-      <div class="col-md-2">
-        <label class="form-label">Tel. Ref. 2</label>
-        <input type="text" name="telefono_ref_2" class="form-control">
-      </div>
-
-      <div class="col-md-2">
-        <label class="form-label">Tipo</label>
-        <select name="tipo" class="form-select" id="tipo-create">
+        <label>Tipo</label>
+        <select name="tipo" id="tipo-create" class="form-select">
           <option value="Normal">Normal</option>
           <option value="Inversionista">Inversionista</option>
         </select>
       </div>
 
       <div class="col-md-2">
-        <label class="form-label">Status</label>
+        <label>Status</label>
         <select name="status" class="form-select">
           <option value="Normal">Normal</option>
           <option value="Lista Negra">Lista Negra</option>
         </select>
       </div>
 
-      <!-- SOLO INVERSIONISTA -->
       <div class="col-md-2 inversionista-only d-none">
-        <label class="form-label">Costo Operativo</label>
+        <label>Costo Operativo</label>
         <input type="number" step="0.01" name="costo_operativo" class="form-control">
       </div>
 
       <div class="col-md-2 inversionista-only d-none">
-        <label class="form-label">Costo Administrativo</label>
+        <label>Costo Administrativo</label>
         <input type="number" step="0.01" name="costo_administrativo" class="form-control">
       </div>
 
-      <div class="col-md-2 d-flex align-items-end">
+      <div class="col-md-2">
         <button type="submit" name="cliente_submit" class="btn btn-primary w-100">
-          Guardar Cliente
+          Guardar
         </button>
       </div>
     </form>
@@ -99,12 +63,11 @@
     <table class="table table-striped align-middle">
       <thead>
         <tr>
-          <th>Cédula</th>
-          <th>Nombre</th>
-          <th>Tipo</th>
-          <th>Status</th>
-          <th class="text-end">Costo Operativo</th>
-          <th class="text-end">Costo Administrativo</th>
+          <th>Cédula</th><th>Nombre</th><th>Nacionalidad</th><th>Dirección</th>
+          <th>Teléfono</th><th>Ref 1</th><th>Tel Ref 1</th>
+          <th>Ref 2</th><th>Tel Ref 2</th>
+          <th>Tipo</th><th>Status</th>
+          <th>Costo Operativo</th><th>Costo Administrativo</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -113,31 +76,29 @@
         <tr>
           <td>{{ c.cedula }}</td>
           <td>{{ c.nombre }}</td>
+          <td>{{ c.nacionalidad }}</td>
+          <td>{{ c.direccion }}</td>
+          <td>{{ c.telefono }}</td>
+          <td>{{ c.referencia_1 }}</td>
+          <td>{{ c.telefono_ref_1 }}</td>
+          <td>{{ c.referencia_2 }}</td>
+          <td>{{ c.telefono_ref_2 }}</td>
           <td>{{ c.tipo }}</td>
           <td>{{ c.status }}</td>
-
-          <td class="text-end">
-            {% if c.tipo == "Inversionista" %}
-              {{ c.costo_operativo|default:"0.00" }}
-            {% else %}
-              —
-            {% endif %}
-          </td>
-
-          <td class="text-end">
-            {% if c.tipo == "Inversionista" %}
-              {{ c.costo_administrativo|default:"0.00" }}
-            {% else %}
-              —
-            {% endif %}
-          </td>
-
+          <td>{{ c.costo_operativo|default:"—" }}</td>
+          <td>{{ c.costo_administrativo|default:"—" }}</td>
           <td>
-            <button
-              class="btn btn-warning btn-sm edit-cliente-btn"
+            <button class="btn btn-warning btn-sm edit-cliente-btn"
               data-id="{{ c.id }}"
               data-cedula="{{ c.cedula }}"
               data-nombre="{{ c.nombre }}"
+              data-nacionalidad="{{ c.nacionalidad }}"
+              data-direccion="{{ c.direccion }}"
+              data-telefono="{{ c.telefono }}"
+              data-ref1="{{ c.referencia_1 }}"
+              data-telref1="{{ c.telefono_ref_1 }}"
+              data-ref2="{{ c.referencia_2 }}"
+              data-telref2="{{ c.telefono_ref_2 }}"
               data-tipo="{{ c.tipo }}"
               data-status="{{ c.status }}"
               data-costo-operativo="{{ c.costo_operativo }}"
@@ -155,60 +116,51 @@
 </div>
 
 <!-- ========================= -->
-<!-- MODAL EDITAR -->
+<!-- MODAL -->
 <!-- ========================= -->
 <div class="modal fade" id="editarClienteModal" tabindex="-1">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <form method="post" id="edit-form">
         {% csrf_token %}
+        <input type="hidden" name="cliente_id" id="modal-id">
+
         <div class="modal-body row g-3">
+          <div class="col-md-3"><label>Cédula</label><input id="modal-cedula" name="cedula" class="form-control"></div>
+          <div class="col-md-3"><label>Nombre</label><input id="modal-nombre" name="nombre" class="form-control"></div>
+          <div class="col-md-3"><label>Nacionalidad</label><input id="modal-nacionalidad" name="nacionalidad" class="form-control"></div>
+          <div class="col-md-3"><label>Dirección</label><input id="modal-direccion" name="direccion" class="form-control"></div>
+          <div class="col-md-3"><label>Teléfono</label><input id="modal-telefono" name="telefono" class="form-control"></div>
+          <div class="col-md-3"><label>Referencia 1</label><input id="modal-ref1" name="referencia_1" class="form-control"></div>
+          <div class="col-md-3"><label>Tel Ref 1</label><input id="modal-telref1" name="telefono_ref_1" class="form-control"></div>
+          <div class="col-md-3"><label>Referencia 2</label><input id="modal-ref2" name="referencia_2" class="form-control"></div>
+          <div class="col-md-3"><label>Tel Ref 2</label><input id="modal-telref2" name="telefono_ref_2" class="form-control"></div>
 
-          <input type="hidden" name="cliente_id" id="modal-id">
-
-          <div class="col-md-4">
-            <label>Cédula</label>
-            <input type="text" name="cedula" id="modal-cedula" class="form-control">
-          </div>
-
-          <div class="col-md-4">
-            <label>Nombre</label>
-            <input type="text" name="nombre" id="modal-nombre" class="form-control">
-          </div>
-
-          <div class="col-md-4">
+          <div class="col-md-3">
             <label>Tipo</label>
-            <select name="tipo" id="modal-tipo" class="form-select">
+            <select id="modal-tipo" name="tipo" class="form-select">
               <option value="Normal">Normal</option>
               <option value="Inversionista">Inversionista</option>
             </select>
           </div>
 
-          <div class="col-md-4">
+          <div class="col-md-3">
             <label>Status</label>
-            <select name="status" id="modal-status" class="form-select">
+            <select id="modal-status" name="status" class="form-select">
               <option value="Normal">Normal</option>
               <option value="Lista Negra">Lista Negra</option>
             </select>
           </div>
 
-          <!-- SOLO INVERSIONISTA -->
-          <div class="col-md-4 inversionista-only d-none">
+          <div class="col-md-3 inversionista-only d-none">
             <label>Costo Operativo</label>
-            <input type="number" step="0.01"
-                   name="costo_operativo"
-                   id="modal-costo-operativo"
-                   class="form-control">
+            <input id="modal-costo-operativo" name="costo_operativo" type="number" step="0.01" class="form-control">
           </div>
 
-          <div class="col-md-4 inversionista-only d-none">
+          <div class="col-md-3 inversionista-only d-none">
             <label>Costo Administrativo</label>
-            <input type="number" step="0.01"
-                   name="costo_administrativo"
-                   id="modal-costo-administrativo"
-                   class="form-control">
+            <input id="modal-costo-administrativo" name="costo_administrativo" type="number" step="0.01" class="form-control">
           </div>
-
         </div>
 
         <div class="modal-footer">
@@ -224,69 +176,48 @@
 <!-- JS -->
 <!-- ========================= -->
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
 
-    const modalId = document.getElementById('modal-id');
-    const modalCedula = document.getElementById('modal-cedula');
-    const modalNombre = document.getElementById('modal-nombre');
-    const modalTipo = document.getElementById('modal-tipo');
-    const modalStatus = document.getElementById('modal-status');
-    const modalCostoOperativo = document.getElementById('modal-costo-operativo');
-    const modalCostoAdministrativo = document.getElementById('modal-costo-administrativo');
+  function toggleInversionista(tipo) {
+    document.querySelectorAll('.inversionista-only')
+      .forEach(el => el.classList.toggle('d-none', tipo !== 'Inversionista'));
+  }
 
-    const editForm = document.getElementById('edit-form');
-    const tipoCreate = document.getElementById('tipo-create');
+  const tipoCreate = document.getElementById('tipo-create');
+  if (tipoCreate) {
+    toggleInversionista(tipoCreate.value);
+    tipoCreate.addEventListener('change', e => toggleInversionista(e.target.value));
+  }
 
-    function toggleInversionistaFields(tipo) {
-      document.querySelectorAll('.inversionista-only').forEach(el => {
-        el.classList.toggle('d-none', tipo !== 'Inversionista');
+  document.querySelectorAll('.edit-cliente-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const map = {
+        id: 'modal-id',
+        cedula: 'modal-cedula',
+        nombre: 'modal-nombre',
+        nacionalidad: 'modal-nacionalidad',
+        direccion: 'modal-direccion',
+        telefono: 'modal-telefono',
+        ref1: 'modal-ref1',
+        telref1: 'modal-telref1',
+        ref2: 'modal-ref2',
+        telref2: 'modal-telref2',
+        tipo: 'modal-tipo',
+        status: 'modal-status',
+        costoOperativo: 'modal-costo-operativo',
+        costoAdministrativo: 'modal-costo-administrativo'
+      };
+
+      Object.entries(map).forEach(([k, id]) => {
+        const el = document.getElementById(id);
+        if (el) el.value = btn.dataset[k] || '';
       });
-    }
 
-    if (tipoCreate) {
-      toggleInversionistaFields(tipoCreate.value);
-      tipoCreate.addEventListener('change', () => {
-        toggleInversionistaFields(tipoCreate.value);
-      });
-    }
-
-    document.querySelectorAll('.edit-cliente-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        modalId.value = btn.dataset.id;
-        modalCedula.value = btn.dataset.cedula;
-        modalNombre.value = btn.dataset.nombre;
-        modalTipo.value = btn.dataset.tipo;
-        modalStatus.value = btn.dataset.status;
-        modalCostoOperativo.value = btn.dataset.costoOperativo || '';
-        modalCostoAdministrativo.value = btn.dataset.costoAdministrativo || '';
-        toggleInversionistaFields(btn.dataset.tipo);
-      });
+      toggleInversionista(btn.dataset.tipo);
     });
-
-    modalTipo.addEventListener('change', e => {
-      toggleInversionistaFields(e.target.value);
-    });
-
-    editForm.addEventListener('submit', async e => {
-      e.preventDefault();
-      const formData = new FormData(editForm);
-
-      const response = await fetch('/clientes/update/', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
-        }
-      });
-
-      if (response.ok) {
-        location.reload();
-      } else {
-        alert('Error al actualizar el cliente');
-      }
-    });
-
   });
+
+});
 </script>
 
 {% endblock %}
