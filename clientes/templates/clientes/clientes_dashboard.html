@@ -56,6 +56,18 @@
     </form>
   </div>
 
+
+  <!-- ========================= -->
+  <!-- BUSCADOR -->
+  <!-- ========================= -->
+  <div class="mb-3">
+    <input
+      type="text"
+      id="cliente-search"
+      class="form-control"
+      placeholder="Buscar por nombre o cédula..."
+    >
+  </div>
   <!-- ========================= -->
   <!-- TABLA -->
   <!-- ========================= -->
@@ -219,5 +231,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  const searchInput = document.getElementById('cliente-search');
+  if (!searchInput) return;
+
+  searchInput.addEventListener('input', () => {
+    const filtro = searchInput.value.toLowerCase().trim();
+
+    document.querySelectorAll('table tbody tr').forEach(row => {
+      const cedula = row.children[0]?.textContent.toLowerCase() || '';
+      const nombre = row.children[1]?.textContent.toLowerCase() || '';
+
+      const match = cedula.includes(filtro) || nombre.includes(filtro);
+      row.style.display = match ? '' : 'none';
+    });
+  });
+
+});
+</script>
+
+
+
 
 {% endblock %}
