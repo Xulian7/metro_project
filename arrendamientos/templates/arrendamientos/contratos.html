@@ -1,376 +1,359 @@
 {% extends "accounts/home.html" %}
 {% load static %}
 {% load widget_tweaks %}
-
 {% block content %}
-<div class="card p-4 shadow-sm">
 
+<div class="card p-4 shadow-sm">
   <h3 class="fw-bold mb-4">Contratos</h3>
 
-    <form method="post" class="row g-3 mb-4">
-      {% csrf_token %}
+  <!-- ========================= -->
+  <!-- FORM CREAR CONTRATO -->
+  <!-- ========================= -->
+  <form method="post" class="row g-3 mb-4">
+    {% csrf_token %}
 
-      <!-- Fila 1 -->
-      <div class="col-md-3">
-        <label class="form-label">Cliente</label>
-        {{ form.cliente|add_class:"select2" }}
-      </div>
+    <div class="col-md-3">
+      <label class="form-label">Cliente</label>
+      {{ form.cliente|add_class:"select2" }}
+    </div>
 
-      <div class="col-md-3">
-        <label class="form-label">Cédula</label>
-        {{ form.cedula }}
-      </div>
+    <div class="col-md-3">
+      <label class="form-label">Cédula</label>
+      {{ form.cedula }}
+    </div>
 
-      <div class="col-md-3">
-        <label class="form-label">Vehículo</label>
-        {{ form.vehiculo|add_class:"select2" }}
-      </div>
+    <div class="col-md-3">
+      <label class="form-label">Vehículo</label>
+      {{ form.vehiculo|add_class:"select2" }}
+    </div>
 
-      <div class="col-md-3">
-        <label class="form-label">Fecha inicio</label>
-        {{ form.fecha_inicio }}
-      </div>
+    <div class="col-md-3">
+      <label class="form-label">Fecha inicio</label>
+      {{ form.fecha_inicio }}
+    </div>
 
-      <!-- Fila 2 -->
-      <div class="col-md-3">
-        <label class="form-label">Cuota inicial</label>
-        {{ form.cuota_inicial }}
+    <div class="col-md-3">
+      <label class="form-label">Cuota inicial</label>
+      {{ form.cuota_inicial }}
+    </div>
 
-        <div id="cuotasRapidas" class="mt-2 d-flex gap-2 flex-wrap"></div>
-      </div>
+    <div class="col-md-3">
+      <label class="form-label">Tarifa</label>
+      {{ form.tarifa }}
+    </div>
 
-      <div class="col-md-3">
-        <label class="form-label">Tarifa</label>
-        {{ form.tarifa }}
+    <div class="col-md-3">
+      <label class="form-label">Frecuencia de pago</label>
+      {{ form.frecuencia_pago }}
+    </div>
 
-        <div id="tarifasRapidas" class="mt-2 d-flex gap-2 flex-wrap"></div>
-      </div>
+    <div class="col-md-3">
+      <label class="form-label">Días contrato</label>
+      {{ form.dias_contrato }}
+    </div>
 
-      <div class="col-md-3">
-        <label class="form-label">Días contrato</label>
-        {{ form.dias_contrato }}
+    <div class="col-md-3">
+      <label class="form-label">Visitador</label>
+      {{ form.visitador }}
+    </div>
 
-        <div id="diasRapidos" class="mt-2 d-flex gap-2 flex-wrap"></div>
-      </div>
+    <div class="col-md-3">
+      <label class="form-label">Tipo contrato</label>
+      {{ form.tipo_contrato }}
+    </div>
 
+    <div class="col-md-3">
+      <label class="form-label">Estado</label>
+      {{ form.estado }}
+    </div>
 
-      <div class="col-md-3">
-        <label class="form-label">Visitador</label>
-        {{ form.visitador }}
-      </div>
+    <div class="col-md-3">
+      <label class="form-label">Motivo</label>
+      {{ form.motivo }}
+    </div>
 
-      <!-- Fila 3 -->
-      <div class="col-md-3">
-        <label class="form-label">Tipo de contrato</label>
-        {{ form.tipo_contrato }}
-      </div>
+    <div class="col-md-12 d-flex justify-content-end">
+      <button class="btn btn-primary px-4">Guardar contrato</button>
+    </div>
+  </form>
 
-      <div class="col-md-9 d-flex align-items-end justify-content-end">
-        <button type="submit" class="btn btn-primary px-4">
-          Guardar Contrato
-        </button>
-      </div>
-    </form>
+  <!-- ========================= -->
+  <!-- BUSCADOR -->
+  <!-- ========================= -->
+  <input id="filtroTabla" class="form-control mb-3" placeholder="Filtrar contratos…">
 
-  <!-- 🔍 Filtro dinámico -->
-  <div class="mb-3">
-    <input type="text" id="filtroTabla" class="form-control" placeholder="Filtrar contratos..." />
+  <!-- ========================= -->
+  <!-- TABLA -->
+  <!-- ========================= -->
+  <div class="table-responsive">
+    <table class="table table-sm table-striped" id="tablaContratos">
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>Cédula</th>
+          <th>Vehículo</th>
+          <th>Inicio</th>
+          <th>Cuota</th>
+          <th>Tarifa</th>
+          <th>Frecuencia</th>
+          <th>Días</th>
+          <th>Visitador</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th>Motivo</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in contratos %}
+        <tr>
+          <td>{{ c.cliente.nombre }}</td>
+          <td>{{ c.cliente.cedula }}</td>
+          <td>{{ c.vehiculo }}</td>
+          <td>{{ c.fecha_inicio|date:"d/m/Y" }}</td>
+          <td>{{ c.cuota_inicial }}</td>
+          <td>{{ c.tarifa }}</td>
+          <td>{{ c.get_frecuencia_pago_display }}</td>
+          <td>{{ c.dias_contrato }}</td>
+          <td>{{ c.visitador }}</td>
+          <td>{{ c.tipo_contrato }}</td>
+          <td>{{ c.estado }}</td>
+          <td>{{ c.get_motivo_display|default:"—" }}</td>
+          <td>
+            <button
+              class="btn btn-sm btn-primary editar-contrato-btn"
+              data-bs-toggle="modal"
+              data-bs-target="#editarContratoModal"
+              data-json='{
+                "id":"{{ c.id }}",
+                "fecha":"{{ c.fecha_inicio|date:'Y-m-d' }}",
+                "cuota":"{{ c.cuota_inicial }}",
+                "tarifa":"{{ c.tarifa }}",
+                "frecuencia":"{{ c.frecuencia_pago }}",
+                "dias":"{{ c.dias_contrato }}",
+                "visitador":"{{ c.visitador }}",
+                "estado":"{{ c.estado }}",
+                "motivo":"{{ c.motivo }}"
+              }'>
+              Editar
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
+</div>
 
-  <!-- 📋 Tabla de contratos -->
-  <table class="table modern-table mt-3" id="tablaContratos">
-    <thead>
-      <tr>
-        <th>Cliente</th>
-        <th>Cedula</th>
-        <th>Vehículo</th>
-        <th>Fecha inicio</th>
-        <th>Cuota inicial</th>
-        <th>Tarifa</th>
-        <th>Días</th>
-        <th>Visitador</th>
-        <th>Tipo</th>
-        <th>Estado</th>
-        <th>Motivo</th>
-        <th>Acciones</th> <!-- Boton -->
-      </tr>
-    </thead>
+<!-- ========================= -->
+<!-- MODAL EDITAR -->
+<!-- ========================= -->
+<div class="modal fade" id="editarContratoModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form method="post" id="formEditarContrato" class="modal-content">
+      {% csrf_token %}
+      <input type="hidden" name="id" id="modal-id">
 
-    <tbody>
-      {% for c in contratos %}
-      <tr>
-        <td>{{ c.cliente }}</td>
-        <td>{{ c.cliente.cedula|default:"—" }}</td>
-        <td>{{ c.vehiculo }}</td>
-        <td>{{ c.fecha_inicio|date:"d/m/Y" }}</td>
-        <td>{{ c.cuota_inicial }}</td>
-        <td>{{ c.tarifa }}</td>
-        <td>{{ c.dias_contrato }}</td>
-        <td>{{ c.visitador }}</td>
-        <td>{{ c.tipo_contrato }}</td>
-        <td>{{ c.estado }}</td>
-        <td>
-          {% if c.estado == "Inactivo" %}
-            {{ c.get_motivo_display }}
-          {% else %}
-            —
-          {% endif %}
-        </td>
-
-        <td>
-          <button
-            class="btn btn-sm btn-primary editar-contrato-btn"
-            data-bs-toggle="modal"
-            data-bs-target="#editarContratoModal"
-            data-id="{{ c.id }}"
-            data-cliente-id="{{ c.cliente.id }}"
-            data-cliente-nombre="{{ c.cliente }}"
-            data-vehiculo-id="{{ c.vehiculo.id }}"
-            data-vehiculo-placa="{{ c.vehiculo }}"
-            data-fecha="{{ c.fecha_inicio|date:'Y-m-d' }}"
-            data-cuota="{{ c.cuota_inicial }}"
-            data-tarifa="{{ c.tarifa }}"
-            data-dias="{{ c.dias_contrato }}"
-            data-visitador="{{ c.visitador }}"
-            data-tipo="{{ c.tipo_contrato }}"
-            data-estado="{{ c.estado }}"
-            data-motivo="{{ c.motivo }}"
-          >
-            Editar
-          </button>
-        </td>
-
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="10" class="text-center">Sin contratos registrados</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  
-  <!-- Modal de edición -->
-  <div class="modal fade" id="editarContratoModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-
-        <div class="modal-header">
-          <h5 class="modal-title">Editar contrato</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      <div class="modal-body row g-3">
+        <div class="col-md-6">
+          <label>Fecha inicio</label>
+          <input type="date" name="fecha_inicio" id="modal-fecha" class="form-control">
         </div>
 
-        <form id="formEditarContrato"
-          method="post"
-        >
-          {% csrf_token %}
-          <input type="hidden" id="modal-id" name="id">
+        <div class="col-md-6">
+          <label>Cuota inicial</label>
+          <input type="number" name="cuota_inicial" id="modal-cuota" class="form-control">
+        </div>
 
-          <div class="modal-body">
+        <div class="col-md-6">
+          <label>Tarifa</label>
+          <input type="number" name="tarifa" id="modal-tarifa" class="form-control">
+        </div>
 
-            <div class="mb-3">
-              <label>Cliente</label>
-              <input type="text" id="modal-cliente" class="form-control" disabled>
-            </div>
+        <div class="col-md-6">
+          <label>Frecuencia de pago</label>
+          <select name="frecuencia_pago" id="modal-frecuencia" class="form-select">
+            {% for k,v in form.fields.frecuencia_pago.choices %}
+              <option value="{{ k }}">{{ v }}</option>
+            {% endfor %}
+          </select>
+        </div>
 
-            <div class="mb-3">
-              <label>Vehículo</label>
-              <input type="text" id="modal-vehiculo" class="form-control" disabled>
-            </div>
+        <div class="col-md-6">
+          <label>Días contrato</label>
+          <input type="number" name="dias_contrato" id="modal-dias" class="form-control">
+        </div>
 
-            <div class="mb-3">
-              <label>Fecha inicio</label>
-              <input type="date" id="modal-fecha" name="fecha_inicio" class="form-control">
-            </div>
+        <div class="col-md-6">
+          <label>Visitador</label>
+          <input type="text" name="visitador" id="modal-visitador" class="form-control">
+        </div>
 
-            <div class="mb-3">
-              <label>Tarifa</label>
-              <input type="number" id="modal-tarifa" name="tarifa" class="form-control">
-            </div>
+        <div class="col-md-6">
+          <label>Estado</label>
+          <select name="estado" id="modal-estado" class="form-select">
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </div>
 
-            <div class="mb-3">
-              <label>Días</label>
-              <input type="number" id="modal-dias" name="dias_contrato" class="form-control">
-            </div>
-
-            <div class="mb-3">
-              <label>Visitador</label>
-              <input type="text" id="modal-visitador" name="visitador" class="form-control">
-            </div>
-
-            <div class="mb-3">
-              <label>Tipo de contrato</label>
-              <input type="text" id="modal-tipo" name="tipo_contrato" class="form-control" disabled>
-            </div>
-
-            <div class="mb-3">
-              <label>Estado</label>
-              <select id="modal-estado" name="estado" class="form-select">
-                <option value="Activo">Activo</option>
-                <option value="Inactivo">Inactivo</option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label>Motivo (solo si está inactivo)</label>
-              <select id="modal-motivo" name="motivo" class="form-select" disabled>
-                <option value="Finalizado">Finalizado</option>
-                <option value="Cancelado">Cancelado</option>
-              </select>
-            </div>
-
-          </div>
-
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Actualizar</button>
-          </div>
-        </form>
+        <div class="col-md-6">
+          <label>Motivo</label>
+          <select name="motivo" id="modal-motivo" class="form-select">
+            <option value="">—</option>
+            <option value="Finalizado">Finalizado</option>
+            <option value="Cancelado">Cancelado</option>
+          </select>
+        </div>
       </div>
-    </div>
-  </div>
 
+      <div class="modal-footer">
+        <button class="btn btn-primary">Actualizar</button>
+      </div>
+    </form>
+  </div>
 </div>
+
 
 <!-- ============================= -->
 <!-- 🧠 Select2 + jQuery + estilos -->
 <!-- ============================= -->
-
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <style>
-/* 🎨 Ajustes visuales para que Select2 combine con Bootstrap 5 */
-.select2-container--default .select2-selection--single {
-  height: calc(2.25rem + 2px);
-  padding: 0.375rem 0.75rem;
-  border: 1px solid #ced4da;
-  border-radius: 0.375rem;
-  background-color: #fff;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
+  /* 🎨 Ajustes visuales para que Select2 combine con Bootstrap 5 */
+  .select2-container--default .select2-selection--single {
+    height: calc(2.25rem + 2px);
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    background-color: #fff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
 
-.select2-container--default .select2-selection--single:focus,
-.select2-container--default .select2-selection--single:hover {
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-}
+  .select2-container--default .select2-selection--single:focus,
+  .select2-container--default .select2-selection--single:hover {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
 
-.select2-selection__rendered {
-  color: #212529 !important;
-  line-height: 1.5 !important;
-}
+  .select2-selection__rendered {
+    color: #212529 !important;
+    line-height: 1.5 !important;
+  }
 
-.select2-selection__arrow {
-  height: 100% !important;
-}
+  .select2-selection__arrow {
+    height: 100% !important;
+  }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function() {
 
-  /* =========================
-     SELECT2
-  ========================= */
-  $('.select2').select2({
-    width: '100%',
-    placeholder: 'Buscar...',
-    allowClear: true,
-    language: {
-      noResults: function() {
-        return "Sin resultados";
+    /* =========================
+      SELECT2
+    ========================= */
+    $('.select2').select2({
+      width: '100%',
+      placeholder: 'Buscar...',
+      allowClear: true,
+      language: {
+        noResults: function() {
+          return "Sin resultados";
+        }
       }
+    });
+
+    /* =========================
+      CLIENTE → CÉDULA
+    ========================= */
+    const clienteSelect = document.querySelector('select[name="cliente"]');
+    const cedulaInput = document.querySelector('input[name="cedula"]');
+
+    function actualizarCedula() {
+      if (!clienteSelect || !cedulaInput) return;
+      const option = clienteSelect.options[clienteSelect.selectedIndex];
+      cedulaInput.value = option?.dataset?.cedula || '';
+    }
+
+    if (clienteSelect && cedulaInput) {
+      actualizarCedula();
+      clienteSelect.addEventListener('change', actualizarCedula);
+      $(clienteSelect).on('select2:select select2:clear', actualizarCedula);
+    }
+
+    /* =========================
+      FILTRO TABLA
+    ========================= */
+    const input = document.getElementById("filtroTabla");
+    const tablaBody = document
+      .getElementById("tablaContratos")
+      ?.getElementsByTagName("tbody")[0];
+
+    if (input && tablaBody) {
+      input.addEventListener("keyup", () => {
+        const filtro = input.value.toLowerCase().trim();
+        [...tablaBody.rows].forEach(row => {
+          row.style.display = row.textContent.toLowerCase().includes(filtro)
+            ? ""
+            : "none";
+        });
+      });
     }
   });
 
-  /* =========================
-     CLIENTE → CÉDULA
-  ========================= */
-  const clienteSelect = document.querySelector('select[name="cliente"]');
-  const cedulaInput = document.querySelector('input[name="cedula"]');
 
-  function actualizarCedula() {
-    if (!clienteSelect || !cedulaInput) return;
-    const option = clienteSelect.options[clienteSelect.selectedIndex];
-    cedulaInput.value = option?.dataset?.cedula || '';
-  }
+  document.addEventListener("DOMContentLoaded", function () {
 
-  if (clienteSelect && cedulaInput) {
-    actualizarCedula();
-    clienteSelect.addEventListener('change', actualizarCedula);
-    $(clienteSelect).on('select2:select select2:clear', actualizarCedula);
-  }
+    const estadoSelect = document.getElementById("modal-estado");
+    const motivoSelect = document.getElementById("modal-motivo");
+    const modalFrecuencia = document.getElementById("modal-frecuencia");
+    const formEditar = document.getElementById("formEditarContrato");
 
-  /* =========================
-     FILTRO TABLA
-  ========================= */
-  const input = document.getElementById("filtroTabla");
-  const tablaBody = document
-    .getElementById("tablaContratos")
-    ?.getElementsByTagName("tbody")[0];
+    function actualizarMotivos() {
+      if (estadoSelect.value === "Inactivo") {
+        motivoSelect.disabled = false;
+        motivoSelect.innerHTML = `
+          <option value="">Seleccione...</option>
+          <option value="Finalizado">Finalizado</option>
+          <option value="Cancelado">Cancelado</option>
+        `;
+      } else {
+        motivoSelect.disabled = true;
+        motivoSelect.innerHTML = `<option value="">N/A</option>`;
+      }
+    }
 
-  if (input && tablaBody) {
-    input.addEventListener("keyup", () => {
-      const filtro = input.value.toLowerCase().trim();
-      [...tablaBody.rows].forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(filtro)
-          ? ""
-          : "none";
+    estadoSelect?.addEventListener("change", actualizarMotivos);
+
+    document.querySelectorAll('.editar-contrato-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+
+        document.getElementById('modal-id').value = btn.dataset.id;
+        document.getElementById('modal-cliente').value = btn.dataset.clienteNombre;
+        document.getElementById('modal-vehiculo').value = btn.dataset.vehiculoPlaca;
+        document.getElementById('modal-fecha').value = btn.dataset.fecha;
+        document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
+        document.getElementById('modal-dias').value = btn.dataset.dias;
+        document.getElementById('modal-visitador').value = btn.dataset.visitador;
+        document.getElementById('modal-tipo').value = btn.dataset.tipo;
+
+        estadoSelect.value = btn.dataset.estado;
+        actualizarMotivos();
+        motivoSelect.value = btn.dataset.motivo || "";
+
+        if (modalFrecuencia) {
+          modalFrecuencia.value = btn.dataset.frecuencia || "";
+        }
+
+        formEditar.action =
+          `/arrendamientos/contratos/update/${btn.dataset.id}/`;
       });
     });
-  }
-});
-
-
-document.addEventListener("DOMContentLoaded", function () {
-
-  const estadoSelect = document.getElementById("modal-estado");
-  const motivoSelect = document.getElementById("modal-motivo");
-  const modalFrecuencia = document.getElementById("modal-frecuencia");
-  const formEditar = document.getElementById("formEditarContrato");
-
-  function actualizarMotivos() {
-    if (estadoSelect.value === "Inactivo") {
-      motivoSelect.disabled = false;
-      motivoSelect.innerHTML = `
-        <option value="">Seleccione...</option>
-        <option value="Finalizado">Finalizado</option>
-        <option value="Cancelado">Cancelado</option>
-      `;
-    } else {
-      motivoSelect.disabled = true;
-      motivoSelect.innerHTML = `<option value="">N/A</option>`;
-    }
-  }
-
-  estadoSelect?.addEventListener("change", actualizarMotivos);
-
-  document.querySelectorAll('.editar-contrato-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-
-      document.getElementById('modal-id').value = btn.dataset.id;
-      document.getElementById('modal-cliente').value = btn.dataset.clienteNombre;
-      document.getElementById('modal-vehiculo').value = btn.dataset.vehiculoPlaca;
-      document.getElementById('modal-fecha').value = btn.dataset.fecha;
-      document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
-      document.getElementById('modal-dias').value = btn.dataset.dias;
-      document.getElementById('modal-visitador').value = btn.dataset.visitador;
-      document.getElementById('modal-tipo').value = btn.dataset.tipo;
-
-      estadoSelect.value = btn.dataset.estado;
-      actualizarMotivos();
-      motivoSelect.value = btn.dataset.motivo || "";
-
-      if (modalFrecuencia) {
-        modalFrecuencia.value = btn.dataset.frecuencia || "";
-      }
-
-      formEditar.action =
-        `/arrendamientos/contratos/update/${btn.dataset.id}/`;
-    });
   });
-});
 </script>
-
 
 <!-- Sugerido Cédula automática -->
 <script>
