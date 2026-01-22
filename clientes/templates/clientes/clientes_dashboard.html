@@ -96,13 +96,15 @@
   <!-- TABLA -->
   <!-- ========================= -->
   <div class="table-responsive">
-    <table class="table">
+    <table class="table table-striped align-middle">
       <thead>
         <tr>
           <th>Cédula</th>
           <th>Nombre</th>
           <th>Tipo</th>
           <th>Status</th>
+          <th class="text-end">Costo Operativo</th>
+          <th class="text-end">Costo Administrativo</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -113,8 +115,26 @@
           <td>{{ c.nombre }}</td>
           <td>{{ c.tipo }}</td>
           <td>{{ c.status }}</td>
+
+          <td class="text-end">
+            {% if c.tipo == "Inversionista" %}
+              {{ c.costo_operativo|default:"0.00" }}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+
+          <td class="text-end">
+            {% if c.tipo == "Inversionista" %}
+              {{ c.costo_administrativo|default:"0.00" }}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+
           <td>
-            <button class="btn btn-warning btn-sm edit-cliente-btn"
+            <button
+              class="btn btn-warning btn-sm edit-cliente-btn"
               data-id="{{ c.id }}"
               data-cedula="{{ c.cedula }}"
               data-nombre="{{ c.nombre }}"
@@ -143,6 +163,7 @@
       <form method="post" id="edit-form">
         {% csrf_token %}
         <div class="modal-body row g-3">
+
           <input type="hidden" name="cliente_id" id="modal-id">
 
           <div class="col-md-4">
@@ -174,13 +195,20 @@
           <!-- SOLO INVERSIONISTA -->
           <div class="col-md-4 inversionista-only d-none">
             <label>Costo Operativo</label>
-            <input type="number" step="0.01" name="costo_operativo" id="modal-costo-operativo" class="form-control">
+            <input type="number" step="0.01"
+                   name="costo_operativo"
+                   id="modal-costo-operativo"
+                   class="form-control">
           </div>
 
           <div class="col-md-4 inversionista-only d-none">
             <label>Costo Administrativo</label>
-            <input type="number" step="0.01" name="costo_administrativo" id="modal-costo-administrativo" class="form-control">
+            <input type="number" step="0.01"
+                   name="costo_administrativo"
+                   id="modal-costo-administrativo"
+                   class="form-control">
           </div>
+
         </div>
 
         <div class="modal-footer">
@@ -198,9 +226,6 @@
 <script>
   document.addEventListener('DOMContentLoaded', () => {
 
-    /* =========================
-       ELEMENTOS DOM
-    ========================= */
     const modalId = document.getElementById('modal-id');
     const modalCedula = document.getElementById('modal-cedula');
     const modalNombre = document.getElementById('modal-nombre');
@@ -212,81 +237,56 @@
     const editForm = document.getElementById('edit-form');
     const tipoCreate = document.getElementById('tipo-create');
 
-    /* =========================
-       HELPERS
-    ========================= */
     function toggleInversionistaFields(tipo) {
       document.querySelectorAll('.inversionista-only').forEach(el => {
         el.classList.toggle('d-none', tipo !== 'Inversionista');
       });
     }
 
-    /* =========================
-       FORM CREAR CLIENTE
-    ========================= */
     if (tipoCreate) {
       toggleInversionistaFields(tipoCreate.value);
-
       tipoCreate.addEventListener('change', () => {
         toggleInversionistaFields(tipoCreate.value);
       });
     }
 
-    /* =========================
-       ABRIR MODAL EDITAR
-    ========================= */
     document.querySelectorAll('.edit-cliente-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-
-        modalId.value = btn.dataset.id || '';
-        modalCedula.value = btn.dataset.cedula || '';
-        modalNombre.value = btn.dataset.nombre || '';
-        modalTipo.value = btn.dataset.tipo || 'Normal';
-        modalStatus.value = btn.dataset.status || 'Normal';
-
+        modalId.value = btn.dataset.id;
+        modalCedula.value = btn.dataset.cedula;
+        modalNombre.value = btn.dataset.nombre;
+        modalTipo.value = btn.dataset.tipo;
+        modalStatus.value = btn.dataset.status;
         modalCostoOperativo.value = btn.dataset.costoOperativo || '';
         modalCostoAdministrativo.value = btn.dataset.costoAdministrativo || '';
-
         toggleInversionistaFields(btn.dataset.tipo);
       });
     });
 
-    /* =========================
-       CAMBIO TIPO EN MODAL
-    ========================= */
-    modalTipo?.addEventListener('change', e => {
+    modalTipo.addEventListener('change', e => {
       toggleInversionistaFields(e.target.value);
     });
 
-    /* =========================
-       SUBMIT EDITAR (AJAX)
-    ========================= */
-    if (editForm) {
-      editForm.addEventListener('submit', async e => {
-        e.preventDefault();
+    editForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(editForm);
 
-        const formData = new FormData(editForm);
-
-        const response = await fetch('/clientes/update/', {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
-          }
-        });
-
-        if (response.ok) {
-          location.reload();
-        } else {
-          const data = await response.json().catch(() => null);
-          alert('Error al actualizar el cliente');
-          console.error(data);
+      const response = await fetch('/clientes/update/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
         }
       });
-    }
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        alert('Error al actualizar el cliente');
+      }
+    });
 
   });
 </script>
-
 
 {% endblock %}
