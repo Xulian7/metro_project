@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib import messages
+
 from .models import Cliente
 from .forms import ClienteForm
+
 
 # ==========================================================
 # DASHBOARD PRINCIPAL (listar y crear clientes)
@@ -32,48 +34,48 @@ def clientes_dashboard(request):
 
 
 # ==========================================================
-# ACTUALIZAR CLIENTE (AJAX)
+# ACTUALIZAR CLIENTE (AJAX / MODAL)
 # ==========================================================
 def cliente_update(request):
-    if request.method == 'POST':
-        cliente_id = request.POST.get('cliente_id')
-        if not cliente_id:
-            return HttpResponseBadRequest('Falta el ID del cliente.')
+    if request.method != 'POST':
+        return HttpResponseBadRequest('Método no permitido.')
 
-        cliente = get_object_or_404(Cliente, id=cliente_id)
+    cliente_id = request.POST.get('cliente_id')
+    if not cliente_id:
+        return HttpResponseBadRequest('Falta el ID del cliente.')
 
-        # Actualizar campos
-        cliente.cedula = request.POST.get('cedula')
-        cliente.nombre = request.POST.get('nombre')
-        cliente.nacionalidad = request.POST.get('nacionalidad')
-        cliente.direccion = request.POST.get('direccion')
-        cliente.telefono = request.POST.get('telefono')
-        cliente.referencia_1 = request.POST.get('referencia_1')
-        cliente.telefono_ref_1 = request.POST.get('telefono_ref_1')
-        cliente.referencia_2 = request.POST.get('referencia_2')
-        cliente.telefono_ref_2 = request.POST.get('telefono_ref_2')
-        cliente.tipo = request.POST.get('tipo')
-        cliente.status = request.POST.get('status')
-        cliente.save()
+    cliente = get_object_or_404(Cliente, id=cliente_id)
 
-        # Devolver JSON para actualizar tabla sin recargar
+    # 🔑 USAR EL FORM (no asignaciones manuales)
+    form = ClienteForm(request.POST, instance=cliente)
+
+    if not form.is_valid():
         return JsonResponse({
-            'status': 'ok',
-            'cliente': {
-                'id': cliente.id,
-                'cedula': cliente.cedula,
-                'nombre': cliente.nombre,
-                'nacionalidad': cliente.nacionalidad,
-                'direccion': cliente.direccion,
-                'telefono': cliente.telefono,
-                'referencia_1': cliente.referencia_1,
-                'telefono_ref_1': cliente.telefono_ref_1,
-                'referencia_2': cliente.referencia_2,
-                'telefono_ref_2': cliente.telefono_ref_2,
-                'tipo': cliente.tipo,
-                'status': cliente.status,
-            }
-        })
+            'status': 'error',
+            'errors': form.errors,
+        }, status=400)
 
-    return HttpResponseBadRequest('Método no permitido.')
+    cliente = form.save()
 
+    # ✅ Respuesta JSON para actualizar la tabla sin recargar
+    return JsonResponse({
+        'status': 'ok',
+        'cliente': {
+            'id': cliente.id,
+            'cedula': cliente.cedula,
+            'nombre': cliente.nombre,
+            'nacionalidad': cliente.nacionalidad,
+            'direccion': cliente.direccion,
+            'telefono': cliente.telefono,
+            'referencia_1': cliente.referencia_1,
+            'telefono_ref_1': cliente.telefono_ref_1,
+            'referencia_2': cliente.referencia_2,
+            'telefono_ref_2': cliente.telefono_ref_2,
+            'tipo': cliente.tipo,
+            'status': cliente.status,
+
+            # 👇 NUEVOS CAMPOS (solo si es Inversionista)
+            'costo_operativo': cliente.costo_operativo,
+            'costo_administrativo': cliente.costo_administrativo,
+        }
+    })

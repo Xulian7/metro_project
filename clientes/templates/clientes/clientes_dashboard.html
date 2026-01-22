@@ -3,11 +3,10 @@
 {% block content %}
 
 <div class="card p-4 shadow-sm">
-
   <h3 class="fw-bold fs-5 mb-4">Clientes</h3>
 
   <!-- ========================= -->
-  <!-- Formulario Crear Cliente -->
+  <!-- FORM CREAR CLIENTE -->
   <!-- ========================= -->
   <div class="w-100 overflow-auto">
     <form method="post" class="row g-3 align-items-end mb-4">
@@ -44,7 +43,7 @@
       </div>
 
       <div class="col-md-2">
-        <label class="form-label">Teléfono Ref. 1</label>
+        <label class="form-label">Tel. Ref. 1</label>
         <input type="text" name="telefono_ref_1" class="form-control">
       </div>
 
@@ -54,13 +53,13 @@
       </div>
 
       <div class="col-md-2">
-        <label class="form-label">Teléfono Ref. 2</label>
+        <label class="form-label">Tel. Ref. 2</label>
         <input type="text" name="telefono_ref_2" class="form-control">
       </div>
 
       <div class="col-md-2">
         <label class="form-label">Tipo</label>
-        <select name="tipo" class="form-select">
+        <select name="tipo" class="form-select" id="tipo-create">
           <option value="Normal">Normal</option>
           <option value="Inversionista">Inversionista</option>
         </select>
@@ -74,38 +73,34 @@
         </select>
       </div>
 
-      <div class="col-md-2 d-flex align-items-end justify-content-end">
-        <button type="submit" name="cliente_submit" class="btn btn-primary btn-app-action w-100">
+      <!-- SOLO INVERSIONISTA -->
+      <div class="col-md-2 inversionista-only d-none">
+        <label class="form-label">Costo Operativo</label>
+        <input type="number" step="0.01" name="costo_operativo" class="form-control">
+      </div>
+
+      <div class="col-md-2 inversionista-only d-none">
+        <label class="form-label">Costo Administrativo</label>
+        <input type="number" step="0.01" name="costo_administrativo" class="form-control">
+      </div>
+
+      <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" name="cliente_submit" class="btn btn-primary w-100">
           Guardar Cliente
         </button>
       </div>
-
     </form>
   </div>
 
   <!-- ========================= -->
-  <!-- Buscador -->
-  <!-- ========================= -->
-  <div class="mb-3">
-    <input type="text" id="busquedaCliente" class="form-control" placeholder="Buscar por nombre o cédula...">
-  </div>
-
-  <!-- ========================= -->
-  <!-- Tabla de Clientes -->
+  <!-- TABLA -->
   <!-- ========================= -->
   <div class="table-responsive">
-    <table class="modern-table table w-100">
+    <table class="table">
       <thead>
         <tr>
           <th>Cédula</th>
           <th>Nombre</th>
-          <th>Nacionalidad</th>
-          <th>Dirección</th>
-          <th>Teléfono</th>
-          <th>Ref 1</th>
-          <th>Tel. Ref 1</th>
-          <th>Ref 2</th>
-          <th>Tel. Ref 2</th>
           <th>Tipo</th>
           <th>Status</th>
           <th>Acciones</th>
@@ -116,29 +111,17 @@
         <tr>
           <td>{{ c.cedula }}</td>
           <td>{{ c.nombre }}</td>
-          <td>{{ c.nacionalidad }}</td>
-          <td>{{ c.direccion }}</td>
-          <td>{{ c.telefono }}</td>
-          <td>{{ c.referencia_1 }}</td>
-          <td>{{ c.telefono_ref_1 }}</td>
-          <td>{{ c.referencia_2 }}</td>
-          <td>{{ c.telefono_ref_2 }}</td>
           <td>{{ c.tipo }}</td>
           <td>{{ c.status }}</td>
           <td>
-            <button type="button" class="btn btn-sm btn-warning edit-cliente-btn"
+            <button class="btn btn-warning btn-sm edit-cliente-btn"
               data-id="{{ c.id }}"
               data-cedula="{{ c.cedula }}"
               data-nombre="{{ c.nombre }}"
-              data-nacionalidad="{{ c.nacionalidad }}"
-              data-direccion="{{ c.direccion }}"
-              data-telefono="{{ c.telefono }}"
-              data-ref1="{{ c.referencia_1 }}"
-              data-telref1="{{ c.telefono_ref_1 }}"
-              data-ref2="{{ c.referencia_2 }}"
-              data-telref2="{{ c.telefono_ref_2 }}"
               data-tipo="{{ c.tipo }}"
               data-status="{{ c.status }}"
+              data-costo-operativo="{{ c.costo_operativo }}"
+              data-costo-administrativo="{{ c.costo_administrativo }}"
               data-bs-toggle="modal"
               data-bs-target="#editarClienteModal">
               Editar
@@ -149,109 +132,161 @@
       </tbody>
     </table>
   </div>
-
-
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const input = document.getElementById('busquedaCliente');
-    const filas = document.querySelectorAll('table tbody tr');
-    input.addEventListener('keyup', function() {
-      const filtro = this.value.toLowerCase();
-      filas.forEach(fila => {
-        const texto = fila.textContent.toLowerCase();
-        fila.style.display = texto.includes(filtro) ? '' : 'none';
-      });
-    });
-  });
-  </script>
 </div>
 
-<!-- ============================ -->
-<!-- Modal Editar Cliente -->
-<!-- ============================ -->
-<div class="modal fade" id="editarClienteModal" tabindex="-1" aria-labelledby="editarClienteLabel" aria-hidden="true">
+<!-- ========================= -->
+<!-- MODAL EDITAR -->
+<!-- ========================= -->
+<div class="modal fade" id="editarClienteModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <form method="post">
+      <form method="post" id="edit-form">
         {% csrf_token %}
-        <div class="modal-header">
-          <h5 class="modal-title" id="editarClienteLabel">Editar Cliente</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-
         <div class="modal-body row g-3">
-          <input type="hidden" name="cliente_id" id="modal-cliente-id">
-          <div class="col-md-3"><label class="form-label">Cédula</label><input type="text" id="modal-cedula" name="cedula" class="form-control"></div>
-          <div class="col-md-3"><label class="form-label">Nombre</label><input type="text" id="modal-nombre" name="nombre" class="form-control"></div>
-          <div class="col-md-3"><label class="form-label">Nacionalidad</label><input type="text" id="modal-nacionalidad" name="nacionalidad" class="form-control"></div>
-          <div class="col-md-3"><label class="form-label">Dirección</label><input type="text" id="modal-direccion" name="direccion" class="form-control"></div>
-          <div class="col-md-3"><label class="form-label">Teléfono</label><input type="text" id="modal-telefono" name="telefono" class="form-control"></div>
-          <div class="col-md-3"><label class="form-label">Referencia 1</label><input type="text" id="modal-ref1" name="referencia_1" class="form-control"></div>
-          <div class="col-md-3"><label class="form-label">Tel. Ref 1</label><input type="text" id="modal-telref1" name="telefono_ref_1" class="form-control"></div>
-          <div class="col-md-3"><label class="form-label">Referencia 2</label><input type="text" id="modal-ref2" name="referencia_2" class="form-control"></div>
-          <div class="col-md-3"><label class="form-label">Tel. Ref 2</label><input type="text" id="modal-telref2" name="telefono_ref_2" class="form-control"></div>
-          <div class="col-md-3">
-            <label class="form-label">Tipo</label>
-            <select id="modal-tipo" name="tipo" class="form-select">
+          <input type="hidden" name="cliente_id" id="modal-id">
+
+          <div class="col-md-4">
+            <label>Cédula</label>
+            <input type="text" name="cedula" id="modal-cedula" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label>Nombre</label>
+            <input type="text" name="nombre" id="modal-nombre" class="form-control">
+          </div>
+
+          <div class="col-md-4">
+            <label>Tipo</label>
+            <select name="tipo" id="modal-tipo" class="form-select">
               <option value="Normal">Normal</option>
               <option value="Inversionista">Inversionista</option>
             </select>
           </div>
-          <div class="col-md-3">
-            <label class="form-label">Status</label>
-            <select id="modal-status" name="status" class="form-select">
+
+          <div class="col-md-4">
+            <label>Status</label>
+            <select name="status" id="modal-status" class="form-select">
               <option value="Normal">Normal</option>
               <option value="Lista Negra">Lista Negra</option>
             </select>
           </div>
+
+          <!-- SOLO INVERSIONISTA -->
+          <div class="col-md-4 inversionista-only d-none">
+            <label>Costo Operativo</label>
+            <input type="number" step="0.01" name="costo_operativo" id="modal-costo-operativo" class="form-control">
+          </div>
+
+          <div class="col-md-4 inversionista-only d-none">
+            <label>Costo Administrativo</label>
+            <input type="number" step="0.01" name="costo_administrativo" id="modal-costo-administrativo" class="form-control">
+          </div>
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" name="cliente_update" class="btn btn-primary">Guardar Cambios</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-primary">Guardar</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-<!-- ============================ -->
+<!-- ========================= -->
 <!-- JS -->
-<!-- ============================ -->
+<!-- ========================= -->
 <script>
-  document.querySelectorAll('.edit-cliente-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.getElementById('modal-cliente-id').value = btn.dataset.id;
-      document.getElementById('modal-cedula').value = btn.dataset.cedula;
-      document.getElementById('modal-nombre').value = btn.dataset.nombre;
-      document.getElementById('modal-nacionalidad').value = btn.dataset.nacionalidad;
-      document.getElementById('modal-direccion').value = btn.dataset.direccion;
-      document.getElementById('modal-telefono').value = btn.dataset.telefono;
-      document.getElementById('modal-ref1').value = btn.dataset.ref1;
-      document.getElementById('modal-telref1').value = btn.dataset.telref1;
-      document.getElementById('modal-ref2').value = btn.dataset.ref2;
-      document.getElementById('modal-telref2').value = btn.dataset.telref2;
-      document.getElementById('modal-tipo').value = btn.dataset.tipo;
-      document.getElementById('modal-status').value = btn.dataset.status;
-    });
-  });
+  document.addEventListener('DOMContentLoaded', () => {
 
-  document.querySelector('#editarClienteModal form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const formData = new FormData(form);
-    const response = await fetch('/clientes/update/', {
-      method: 'POST',
-      body: formData,
-      headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') },
-    });
+    /* =========================
+       ELEMENTOS DOM
+    ========================= */
+    const modalId = document.getElementById('modal-id');
+    const modalCedula = document.getElementById('modal-cedula');
+    const modalNombre = document.getElementById('modal-nombre');
+    const modalTipo = document.getElementById('modal-tipo');
+    const modalStatus = document.getElementById('modal-status');
+    const modalCostoOperativo = document.getElementById('modal-costo-operativo');
+    const modalCostoAdministrativo = document.getElementById('modal-costo-administrativo');
 
-    if (response.ok) {
-      location.reload();
-    } else {
-      alert('Error al actualizar el cliente.');
+    const editForm = document.getElementById('edit-form');
+    const tipoCreate = document.getElementById('tipo-create');
+
+    /* =========================
+       HELPERS
+    ========================= */
+    function toggleInversionistaFields(tipo) {
+      document.querySelectorAll('.inversionista-only').forEach(el => {
+        el.classList.toggle('d-none', tipo !== 'Inversionista');
+      });
     }
+
+    /* =========================
+       FORM CREAR CLIENTE
+    ========================= */
+    if (tipoCreate) {
+      toggleInversionistaFields(tipoCreate.value);
+
+      tipoCreate.addEventListener('change', () => {
+        toggleInversionistaFields(tipoCreate.value);
+      });
+    }
+
+    /* =========================
+       ABRIR MODAL EDITAR
+    ========================= */
+    document.querySelectorAll('.edit-cliente-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+
+        modalId.value = btn.dataset.id || '';
+        modalCedula.value = btn.dataset.cedula || '';
+        modalNombre.value = btn.dataset.nombre || '';
+        modalTipo.value = btn.dataset.tipo || 'Normal';
+        modalStatus.value = btn.dataset.status || 'Normal';
+
+        modalCostoOperativo.value = btn.dataset.costoOperativo || '';
+        modalCostoAdministrativo.value = btn.dataset.costoAdministrativo || '';
+
+        toggleInversionistaFields(btn.dataset.tipo);
+      });
+    });
+
+    /* =========================
+       CAMBIO TIPO EN MODAL
+    ========================= */
+    modalTipo?.addEventListener('change', e => {
+      toggleInversionistaFields(e.target.value);
+    });
+
+    /* =========================
+       SUBMIT EDITAR (AJAX)
+    ========================= */
+    if (editForm) {
+      editForm.addEventListener('submit', async e => {
+        e.preventDefault();
+
+        const formData = new FormData(editForm);
+
+        const response = await fetch('/clientes/update/', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+          }
+        });
+
+        if (response.ok) {
+          location.reload();
+        } else {
+          const data = await response.json().catch(() => null);
+          alert('Error al actualizar el cliente');
+          console.error(data);
+        }
+      });
+    }
+
   });
 </script>
+
 
 {% endblock %}

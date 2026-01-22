@@ -2,6 +2,7 @@ from django import forms
 from .models import Cliente
 from core.forms_mixins import SmartCleanMixin
 
+
 class ClienteForm(SmartCleanMixin, forms.ModelForm):
     class Meta:
         model = Cliente
@@ -18,4 +19,12 @@ class ClienteForm(SmartCleanMixin, forms.ModelForm):
             'telefono_ref_2': forms.TextInput(attrs={'class': 'form-control'}),
             'tipo': forms.Select(attrs={'class': 'form-select'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
+
+            # 👇 nuevos campos
+            'costo_operativo': forms.NumberInput(
+                attrs={'class': 'form-control', 'step': '0.01'}
+            ),
+            'costo_administrativo': forms.NumberInput(
+                attrs={'class': 'form-control', 'step': '0.01'}
+            ),
         }
