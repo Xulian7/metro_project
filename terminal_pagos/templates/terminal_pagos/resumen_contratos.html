@@ -10,7 +10,7 @@
     </h5>
   </div>
 
-  <!-- BUSCADOR -->
+  <!-- 🔍 BUSCADOR -->
   <div class="row mb-3">
     <div class="col-md-4">
       <input
@@ -21,7 +21,7 @@
     </div>
   </div>
 
-  <!-- TABLA -->
+  <!-- 📋 TABLA -->
   <div class="table-responsive">
     <table class="table table-sm table-striped align-middle">
       <thead class="table-light">
@@ -35,6 +35,7 @@
           <th class="text-center">Cuotas vencidas</th>
           <th class="text-center">Pagos tarifa</th>
           <th class="text-center">Saldo</th>
+          <th></th>
         </tr>
       </thead>
 
@@ -45,27 +46,31 @@
           <td>{{ row.contrato.cliente.nombre }}</td>
           <td>{{ row.contrato.vehiculo.placa }}</td>
 
-          <!-- Antigüedad -->
+          <!-- Inicio + antigüedad -->
           <td>
-            {{ row.fecha_inicio|date:"d/m/Y" }}<br>
+            {{ row.fecha_inicio|date:"d/m/Y" }}
+            <br>
             <small class="text-muted">
               {{ row.dias_transcurridos }} días
             </small>
           </td>
 
+          <!-- Tarifa -->
           <td class="text-end">
             ${{ row.tarifa|floatformat:0 }}
           </td>
 
+          <!-- Frecuencia -->
           <td class="text-center">
             {{ row.contrato.get_frecuencia_pago_display }}
           </td>
 
-          <td class="text-center">
+          <!-- Cuotas vencidas -->
+          <td class="text-center fw-semibold">
             {{ row.cuotas_vencidas|floatformat:1 }}
           </td>
 
-          <!-- Pagos -->
+          <!-- Pagos (cuotas + dinero) -->
           <td class="text-center">
             <div class="fw-semibold">
               {{ row.cuotas_pagadas|floatformat:1 }} cuotas
@@ -75,21 +80,34 @@
             </small>
           </td>
 
-          <!-- Saldo -->
-          <td class="text-center">
+          <!-- Saldo mixto (deuda / adelanto) -->
+          <td class="text-center fw-semibold
             {% if row.saldo_cuotas > 0 %}
-              <span class="badge bg-danger">
-                {{ row.saldo_cuotas|floatformat:1 }}
-              </span>
+              text-danger
+            {% elif row.saldo_cuotas < 0 %}
+              text-primary
             {% else %}
-              <span class="badge bg-success">0.0</span>
+              text-success
             {% endif %}
+          ">
+            {{ row.saldo_cuotas|floatformat:1 }}
+            <br>
+            <small>
+              ${{ row.saldo_dinero|floatformat:0 }}
+            </small>
+          </td>
+
+          <!-- Acción rápida (sin lógica aún) -->
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-success">
+              💵 Cobrar
+            </button>
           </td>
         </tr>
 
         {% empty %}
         <tr>
-          <td colspan="9" class="text-center text-muted">
+          <td colspan="10" class="text-center text-muted">
             No hay contratos para mostrar
           </td>
         </tr>
@@ -100,7 +118,7 @@
 
 </div>
 
-<!-- BUSCADOR JS -->
+<!-- 🔎 BUSCADOR JS -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const buscador = document.getElementById("buscador-contratos");

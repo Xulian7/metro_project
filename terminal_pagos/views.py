@@ -463,22 +463,27 @@ def resumen_contratos(request):
         ).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
 
         # -------------------------
-        # SALDO
+        # SALDO (cuotas + dinero)
         # -------------------------
         saldo_cuotas = (
             cuotas_vencidas - cuotas_pagadas
         ).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
+
+        saldo_dinero = (
+            saldo_cuotas * contrato.tarifa
+        ).quantize(Decimal("1"), rounding=ROUND_HALF_UP)
 
         filas.append({
             "contrato": contrato,
             "fecha_inicio": contrato.fecha_inicio,
             "dias_transcurridos": dias_transcurridos,
             "tarifa": contrato.tarifa,
-            "frecuencia": contrato.frecuencia_pago,
+            "frecuencia": contrato.get_frecuencia_pago_display(), # type: ignore
             "cuotas_vencidas": cuotas_vencidas,
             "cuotas_pagadas": cuotas_pagadas,
             "total_pagado": total_pagado,
             "saldo_cuotas": saldo_cuotas,
+            "saldo_dinero": saldo_dinero,  # 👈 NUEVO
         })
 
     return render(
