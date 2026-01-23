@@ -236,7 +236,7 @@
 
     form.addEventListener("submit", function (e) {
 
-      // ⛔ cortar TODO
+      // ⛔ Cortar submit nativo
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
@@ -250,16 +250,29 @@
       const tf = Number(totalFactura.toFixed(2));
       const tp = Number(totalPagado.toFixed(2));
 
+      // ❌ Validación de montos
       if (tp !== tf) {
         if (tp < tf) {
           alert("❌ El total pagado no cubre el total de la factura.");
         } else {
           alert("❌ El total pagado excede el total de la factura.");
         }
-        return false; // ❌ NO enviar
+        return false;
       }
 
-      // 🔑 sincronizar configuraciones
+      // ⚠️ CONFIRMACIÓN DEL USUARIO
+      const ok = confirm(
+        `¿Confirmas guardar la factura?\n\n` +
+        `Total factura: $${tf.toLocaleString("es-CO")}\n` +
+        `Total pagado:  $${tp.toLocaleString("es-CO")}`
+      );
+
+      if (!ok) {
+        // 🛑 Usuario canceló → no se envía, no se borra nada
+        return false;
+      }
+
+      // 🔑 Sincronizar configuraciones de pago
       document.querySelectorAll(".pago-row").forEach(row => {
         const cuentaSel = row.querySelector(".pago-cuenta");
         const configIdInput = row.querySelector(".pago-config-id");
@@ -268,11 +281,10 @@
         }
       });
 
-      // ✅ ahora SÍ enviamos
+      // ✅ Submit real (controlado)
       form.submit();
     });
   </script>
-
 
 </div>
 
@@ -654,10 +666,7 @@
       saldo.toLocaleString("es-CO", { minimumFractionDigits: 2 });
   }
 
-
-
 </script>
-
 
 
 
