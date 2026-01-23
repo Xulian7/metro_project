@@ -410,6 +410,13 @@ from arrendamientos.models import Contrato
 from terminal_pagos.models import ItemFactura
 
 
+from datetime import date
+from django.db.models import Sum
+from django.shortcuts import render
+from arrendamientos.models import Contrato
+from terminal_pagos.models import ItemFactura
+
+
 def resumen_contratos(request):
     hoy = date.today()
     filas = []
@@ -424,14 +431,16 @@ def resumen_contratos(request):
         if not contrato.fecha_inicio or not contrato.tarifa:
             continue
 
-        # -------------------------
+        # =========================
         # ANTIGÜEDAD
-        # -------------------------
-        dias_transcurridos = max((hoy - contrato.fecha_inicio).days, 0)
+        # =========================
+        dias_transcurridos = (hoy - contrato.fecha_inicio).days
+        if dias_transcurridos < 0:
+            dias_transcurridos = 0
 
-        # -------------------------
-        # CUOTAS VENCIDAS (ANTES: TEÓRICAS)
-        # -------------------------
+        # =========================
+        # CUOTAS VENCIDAS (ANTES: teóricas)
+        # =========================
         if contrato.frecuencia_pago == "diario":
             cuotas_vencidas = dias_transcurridos
         elif contrato.frecuencia_pago == "semanal":
@@ -441,9 +450,12 @@ def resumen_contratos(request):
         else:  # mensual
             cuotas_vencidas = dias_transcurridos // 30
 
-        # -------------------------
-        # PAGOS REALES EN TARIFAS
-        # -------------------------
+        if cuotas_vencidas < 0:
+            cuotas_vencidas = 0
+
+        # =========================
+        # PAGOS EN TARIFAS
+        # =========================
         total_pagado = (
             ItemFactura.objects
             .filter(
@@ -454,33 +466,27 @@ def resumen_contratos(request):
             or 0
         )
 
-        # -------------------------
-        # AVANCE EN CUOTAS
-        # -------------------------
-        avance_cuotas = (
-            float(total_pagado) / float(contrato.tarifa)
-            if contrato.tarifa > 0 else 0
-        )
-
-        cuotas_pagadas = int(avance_cuotas)
-        avance_parcial = total_pagado - (cuotas_pagadas * contrato.tarifa)
-
-        saldo_cuotas = max(cuotas_vencidas - cuotas_pagadas, 0)
+        cuotas_pagadas = int(total_pagado // contrato.tarifa) if contrato.tarifa else 0
+        saldo_cuotas = cuotas_vencidas - cuotas_pagadas
+        if saldo_cuotas < 0:
+            saldo_cuotas = 0
 
         filas.append({
             "contrato": contrato,
             "fecha_inicio": contrato.fecha_inicio,
             "dias_transcurridos": dias_transcurridos,
 
-            "frecuencia": contrato.get_frecuencia_pago_display(),
+            "frecuencia": contrato.get_frecuencia_pago_display(), # type: ignore
             "tarifa": contrato.tarifa,
 
             "cuotas_vencidas": cuotas_vencidas,
-            "cuotas_pagadas": cuotas_pagadas,
             "saldo_cuotas": saldo_cuotas,
 
-            "total_pagado": total_pagado,
-            "avance_parcial": avance_parcial,
+            # 👇 CAMPO UNIFICADO
+            "pagos_tarifa": {
+                "monto": total_pagado,
+                "cuotas": cuotas_pagadas,
+            },
         })
 
     return render(

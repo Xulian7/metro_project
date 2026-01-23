@@ -3,12 +3,16 @@
 
 <div class="card p-4 shadow-sm">
 
-  <h5 class="fw-bold mb-3">
-    Resumen de contratos
-    <small class="text-muted">(al {{ hoy }})</small>
-  </h5>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold mb-0">
+      Resumen de contratos por tarifas
+      <small class="text-muted">(al {{ hoy }})</small>
+    </h5>
+  </div>
 
+  <!-- ========================= -->
   <!-- BUSCADOR -->
+  <!-- ========================= -->
   <div class="row mb-3">
     <div class="col-md-4">
       <input
@@ -19,22 +23,22 @@
     </div>
   </div>
 
+  <!-- ========================= -->
   <!-- TABLA -->
+  <!-- ========================= -->
   <div class="table-responsive">
     <table class="table table-sm table-striped align-middle">
       <thead class="table-light">
         <tr>
           <th>Contrato</th>
           <th>Cliente</th>
-          <th>Placa</th>
+          <th>Vehículo</th>
           <th>Inicio</th>
           <th class="text-end">Tarifa</th>
           <th>Frecuencia</th>
           <th class="text-center">Cuotas vencidas</th>
-          <th class="text-center">Cuotas pagadas</th>
           <th class="text-center">Saldo</th>
-          <th class="text-end">Pagado</th>
-          <th class="text-end">Avance parcial</th>
+          <th class="text-end">Pagos tarifa</th>
         </tr>
       </thead>
 
@@ -45,6 +49,7 @@
           <td>{{ row.contrato.cliente.nombre }}</td>
           <td>{{ row.contrato.vehiculo.placa }}</td>
 
+          <!-- Fecha + antigüedad -->
           <td>
             {{ row.fecha_inicio }}
             <br>
@@ -54,19 +59,15 @@
           </td>
 
           <td class="text-end">
-            {{ row.tarifa|floatformat:0 }}
+            ${{ row.tarifa|floatformat:0 }}
           </td>
 
-          <td>{{ row.frecuencia }}</td>
+          <td>
+            {{ row.frecuencia }}
+          </td>
 
           <td class="text-center">
             {{ row.cuotas_vencidas }}
-          </td>
-
-          <td class="text-center">
-            <span class="badge bg-success">
-              {{ row.cuotas_pagadas }}
-            </span>
           </td>
 
           <td class="text-center">
@@ -79,21 +80,20 @@
             {% endif %}
           </td>
 
-          <td class="text-end fw-semibold">
-            {{ row.total_pagado|floatformat:2 }}
-          </td>
-
-          <td class="text-end text-muted">
-            {% if row.avance_parcial > 0 %}
-              {{ row.avance_parcial|floatformat:2 }}
-            {% else %}
-              —
-            {% endif %}
+          <!-- 👇 CAMPO UNIFICADO -->
+          <td class="text-end">
+            <div class="fw-semibold">
+              ${{ row.pagos_tarifa.monto|floatformat:0 }}
+            </div>
+            <small class="text-muted">
+              {{ row.pagos_tarifa.cuotas }} cuotas
+            </small>
           </td>
         </tr>
+
         {% empty %}
         <tr>
-          <td colspan="11" class="text-center text-muted">
+          <td colspan="9" class="text-center text-muted">
             No hay contratos para mostrar
           </td>
         </tr>
@@ -101,20 +101,31 @@
       </tbody>
     </table>
   </div>
+
 </div>
 
-<!-- BUSCADOR JS -->
+<!-- ========================= -->
+<!-- JS BUSCADOR -->
+<!-- ========================= -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const buscador = document.getElementById("buscador-contratos");
   const filas = document.querySelectorAll("#tabla-contratos tr");
 
-  buscador.addEventListener("input", () => {
+  buscador?.addEventListener("input", () => {
     const texto = buscador.value.toLowerCase();
 
     filas.forEach(fila => {
-      const contenido = fila.innerText.toLowerCase();
-      fila.style.display = contenido.includes(texto) ? "" : "none";
+      const contrato = fila.children[0]?.innerText.toLowerCase() || "";
+      const cliente  = fila.children[1]?.innerText.toLowerCase() || "";
+      const placa    = fila.children[2]?.innerText.toLowerCase() || "";
+
+      const match =
+        contrato.includes(texto) ||
+        cliente.includes(texto) ||
+        placa.includes(texto);
+
+      fila.style.display = match ? "" : "none";
     });
   });
 });
