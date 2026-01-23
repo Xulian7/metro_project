@@ -28,8 +28,6 @@ def contratos(request):
     contratos = Contrato.objects.all()
     form = ContratoForm(request.POST or None)
 
-    print("🔥 Método:", request.method)
-    print("🔥 POST data:", request.POST)
 
     if request.method == 'POST':
         print("Form is_valid antes de commit:", form.is_valid())
@@ -40,14 +38,13 @@ def contratos(request):
             contrato = form.save(commit=False)
             contrato.estado = 'Activo'  # Se asigna automáticamente
             contrato.save()
-            print("🔥 Contrato guardado con estado:", contrato.estado)
 
             # Cambiar el estado del vehículo a Activo
             vehiculo = contrato.vehiculo
             vehiculo.estado = 'Activo'
             vehiculo.save()
-            print("🔥 Vehículo actualizado a estado:", vehiculo.estado)
-
+            messages.success(request, "Contrato creado correctamente.")
+            
             return redirect('arrendamientos:contratos')
 
     return render(request, 'arrendamientos/contratos.html', {
@@ -59,7 +56,6 @@ def contratos(request):
 @require_POST
 def actualizar_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, id=contrato_id)
-
     nuevo_estado = request.POST.get("estado")
     vehiculo = contrato.vehiculo
 
@@ -73,13 +69,14 @@ def actualizar_contrato(request, contrato_id):
         if existe_otro_activo:
             messages.error(
                 request,
-                f"La placa {vehiculo} ya tiene un contrato activo. Misión fallida."
+                f"La placa {vehiculo} ya tiene un contrato activo."
             )
             return redirect('arrendamientos:contratos')
 
     # 🔹 Actualización normal
     contrato.fecha_inicio = request.POST.get("fecha_inicio")
     contrato.tarifa = request.POST.get("tarifa")
+    contrato.frecuencia_pago = request.POST.get("frecuencia_pago")  # 👈 NUEVO
     contrato.dias_contrato = request.POST.get("dias_contrato")
     contrato.visitador = request.POST.get("visitador")
     contrato.estado = nuevo_estado
@@ -96,6 +93,7 @@ def actualizar_contrato(request, contrato_id):
 
     messages.success(request, "Contrato actualizado correctamente.")
     return redirect('arrendamientos:contratos')
+
 
 
 

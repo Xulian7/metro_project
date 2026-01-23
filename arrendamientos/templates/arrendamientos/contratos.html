@@ -47,6 +47,11 @@
       </div>
 
       <div class="col-md-3">
+        <label class="form-label">Frecuencia de pago</label>
+        {{ form.frecuencia_pago }}
+      </div>
+
+      <div class="col-md-3">
         <label class="form-label">Días contrato</label>
         {{ form.dias_contrato }}
 
@@ -87,6 +92,7 @@
         <th>Fecha inicio</th>
         <th>Cuota inicial</th>
         <th>Tarifa</th>
+        <th>Frecuencia</th>
         <th>Días</th>
         <th>Visitador</th>
         <th>Tipo</th>
@@ -105,9 +111,11 @@
         <td>{{ c.fecha_inicio|date:"d/m/Y" }}</td>
         <td>{{ c.cuota_inicial }}</td>
         <td>{{ c.tarifa }}</td>
+        <td>{{ c.get_frecuencia_pago_display }}</td>
         <td>{{ c.dias_contrato }}</td>
         <td>{{ c.visitador }}</td>
         <td>{{ c.tipo_contrato }}</td>
+        <td>{{ c.get_frecuencia_pago_display }}</td>
         <td>{{ c.estado }}</td>
         <td>
           {% if c.estado == "Inactivo" %}
@@ -185,6 +193,16 @@
             <div class="mb-3">
               <label>Tarifa</label>
               <input type="number" id="modal-tarifa" name="tarifa" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label>Frecuencia de pago</label>
+              <select id="modal-frecuencia" name="frecuencia_pago" class="form-select">
+                <option value="diario">Diario</option>
+                <option value="semanal">Semanal</option>
+                <option value="quincenal">Quincenal</option>
+                <option value="mensual">Mensual</option>
+              </select>
             </div>
 
             <div class="mb-3">
@@ -326,6 +344,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('modal-vehiculo').value = btn.dataset.vehiculoPlaca;
         document.getElementById('modal-fecha').value = btn.dataset.fecha;
         document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
+        document.getElementById('modal-frecuencia').value = btn.dataset.frecuencia;
         document.getElementById('modal-dias').value = btn.dataset.dias;
         document.getElementById('modal-visitador').value = btn.dataset.visitador;
         document.getElementById('modal-tipo').value = btn.dataset.tipo;
