@@ -231,6 +231,35 @@
     </div>
   </form>
 
+  <!-- ================= MODAL RESUMEN FACTURA ================= -->
+  <div class="modal fade" id="facturaResumenModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Factura generada</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body" id="factura-resumen-body">
+          <!-- Se llena dinámicamente -->
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary"
+                  data-bs-dismiss="modal">
+            Cerrar
+          </button>
+          <button type="button" class="btn btn-outline-primary">
+            🖨️ Imprimir
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
   <script>
     const form = document.getElementById("factura-form");
 
@@ -281,8 +310,50 @@
         }
       });
 
-      // ✅ Submit real (controlado)
-      form.submit();
+      // ❌ antes
+      // form.submit();
+      // ✅ ahora
+      fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        headers: {
+          "X-Requested-With": "XMLHttpRequest"
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.ok) {
+          alert("Error al guardar la factura");
+          return;
+        }
+
+        // 🧾 construir resumen tipo factura digital
+        const body = document.getElementById("factura-resumen-body");
+
+        body.innerHTML = `
+          <p><strong>Factura #:</strong> ${data.factura.numero}</p>
+          <p><strong>Contrato:</strong> ${data.factura.contrato}</p>
+          <p><strong>Fecha:</strong> ${data.factura.fecha}</p>
+          <hr>
+          <p><strong>Total:</strong> $${data.factura.total}</p>
+          <p><strong>Pagado:</strong> $${data.factura.pagado}</p>
+          <p><strong>Saldo:</strong> $${data.factura.saldo}</p>
+        `;
+
+        const modal = new bootstrap.Modal(
+          document.getElementById("facturaResumenModal")
+        );
+        modal.show();
+
+        // 🔄 opcional: limpiar form
+        // form.reset();
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Error inesperado");
+      });
+
+
     });
   </script>
 
@@ -668,6 +739,53 @@
 
 </script>
 
+<script>
+    function mostrarFacturaDigital(data) {
+    const cont = document.getElementById("factura-contenido");
+
+    let html = `
+      <div class="mb-3">
+        <strong>Factura #${data.factura.id}</strong><br>
+        Contrato: ${data.factura.contrato}<br>
+        Fecha: ${data.factura.fecha}
+      </div>
+
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th>Descripción</th>
+            <th class="text-end">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    data.items.forEach(i => {
+      html += `
+        <tr>
+          <td>${i.descripcion}</td>
+          <td class="text-end">$${i.subtotal.toLocaleString("es-CO")}</td>
+        </tr>
+      `;
+    });
+
+    html += `
+        </tbody>
+      </table>
+
+      <div class="text-end fw-bold fs-5">
+        Total: $${data.factura.total.toLocaleString("es-CO")}
+      </div>
+    `;
+
+    cont.innerHTML = html;
+
+    const modal = new bootstrap.Modal(
+      document.getElementById("facturaModal")
+    );
+    modal.show();
+  }
+</script>
 
 
 {% endblock %}
