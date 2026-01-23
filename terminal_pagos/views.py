@@ -403,14 +403,7 @@ def validar_pago(request, pago_id):
 
 
 from datetime import date
-from django.db.models import Sum
-from django.shortcuts import render
-
-from arrendamientos.models import Contrato
-from terminal_pagos.models import ItemFactura
-
-
-from datetime import date
+from decimal import Decimal, ROUND_HALF_UP
 from django.db.models import Sum
 from django.shortcuts import render
 from arrendamientos.models import Contrato
@@ -431,31 +424,30 @@ def resumen_contratos(request):
         if not contrato.fecha_inicio or not contrato.tarifa:
             continue
 
-        # =========================
+        # -------------------------
         # ANTIGÜEDAD
-        # =========================
+        # -------------------------
         dias_transcurridos = (hoy - contrato.fecha_inicio).days
         if dias_transcurridos < 0:
             dias_transcurridos = 0
 
-        # =========================
-        # CUOTAS VENCIDAS (ANTES: teóricas)
-        # =========================
-        if contrato.frecuencia_pago == "diario":
-            cuotas_vencidas = dias_transcurridos
-        elif contrato.frecuencia_pago == "semanal":
-            cuotas_vencidas = dias_transcurridos // 7
-        elif contrato.frecuencia_pago == "quincenal":
-            cuotas_vencidas = dias_transcurridos // 15
-        else:  # mensual
-            cuotas_vencidas = dias_transcurridos // 30
+        # -------------------------
+        # CUOTAS VENCIDAS
+        # -------------------------
+        dias_por_cuota = {
+            "diario": 1,
+            "semanal": 7,
+            "quincenal": 15,
+            "mensual": 30,
+        }.get(contrato.frecuencia_pago, 30)
 
-        if cuotas_vencidas < 0:
-            cuotas_vencidas = 0
+        cuotas_vencidas = Decimal(
+            dias_transcurridos / dias_por_cuota
+        ).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
 
-        # =========================
-        # PAGOS EN TARIFAS
-        # =========================
+        # -------------------------
+        # PAGOS EN TARIFA
+        # -------------------------
         total_pagado = (
             ItemFactura.objects
             .filter(
@@ -463,30 +455,30 @@ def resumen_contratos(request):
                 factura__contrato=contrato
             )
             .aggregate(total=Sum("subtotal"))["total"]
-            or 0
+            or Decimal("0")
         )
 
-        cuotas_pagadas = int(total_pagado // contrato.tarifa) if contrato.tarifa else 0
-        saldo_cuotas = cuotas_vencidas - cuotas_pagadas
-        if saldo_cuotas < 0:
-            saldo_cuotas = 0
+        cuotas_pagadas = (
+            total_pagado / contrato.tarifa
+        ).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
+
+        # -------------------------
+        # SALDO
+        # -------------------------
+        saldo_cuotas = (
+            cuotas_vencidas - cuotas_pagadas
+        ).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
 
         filas.append({
             "contrato": contrato,
             "fecha_inicio": contrato.fecha_inicio,
             "dias_transcurridos": dias_transcurridos,
-
-            "frecuencia": contrato.get_frecuencia_pago_display(), # type: ignore
             "tarifa": contrato.tarifa,
-
+            "frecuencia": contrato.frecuencia_pago,
             "cuotas_vencidas": cuotas_vencidas,
+            "cuotas_pagadas": cuotas_pagadas,
+            "total_pagado": total_pagado,
             "saldo_cuotas": saldo_cuotas,
-
-            # 👇 CAMPO UNIFICADO
-            "pagos_tarifa": {
-                "monto": total_pagado,
-                "cuotas": cuotas_pagadas,
-            },
         })
 
     return render(
