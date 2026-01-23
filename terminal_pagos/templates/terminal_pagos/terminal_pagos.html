@@ -287,14 +287,19 @@
   {% endif %}
 
   {% if factura %}
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const modal = new bootstrap.Modal(
-        document.getElementById("facturaModal")
-      );
-      modal.show();
-    });
-  </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const modal = new bootstrap.Modal(
+          document.getElementById("facturaModal")
+        );
+        modal.show();
+
+        // 🧼 limpia ?factura= del URL sin recargar
+        const url = new URL(window.location);
+        url.searchParams.delete("factura");
+        window.history.replaceState({}, "", url);
+      });
+    </script>
   {% endif %}
 
   
