@@ -30,7 +30,7 @@
       }
     </style>
 
-    <form method="post" class="mb-4 contrato-grid">
+    <form method="post" action="{% url 'arrendamientos:contratos' %}" id="formCrearContrato" class="mb-4 contrato-grid">
       {% csrf_token %}
 
       <div>
@@ -336,6 +336,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const estadoSelect = document.getElementById("modal-estado");
     const motivoSelect = document.getElementById("modal-motivo");
     const formEditar = document.getElementById("formEditarContrato");
+
+    if (formEditar) {
+      formEditar.addEventListener("submit", function (e) {
+        // ⚠️ SOLO el modal, nadie más
+      });
+    }
+
 
     function actualizarMotivos() {
         const estado = estadoSelect.value;
