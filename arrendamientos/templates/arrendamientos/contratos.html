@@ -6,76 +6,95 @@
 <div class="card p-4 shadow-sm">
 
   <h3 class="fw-bold mb-4">Contratos</h3>
+  
+  <!-- 📝 Formulario de nuevo contrato -->
+    <style>
+      .contrato-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+      }
 
-    <form method="post" class="row g-3 mb-4">
+      /* Tablet */
+      @media (max-width: 992px) {
+        .contrato-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      /* Mobile */
+      @media (max-width: 576px) {
+        .contrato-grid {
+          grid-template-columns: repeat(1, 1fr);
+        }
+      }
+    </style>
+
+    <form method="post" class="mb-4 contrato-grid">
       {% csrf_token %}
 
-      <!-- Fila 1 -->
-      <div class="col-md-3">
+      <div>
         <label class="form-label">Cliente</label>
         {{ form.cliente|add_class:"select2" }}
       </div>
 
-      <div class="col-md-3">
+      <div>
         <label class="form-label">Cédula</label>
         {{ form.cedula }}
       </div>
 
-      <div class="col-md-3">
+      <div>
         <label class="form-label">Vehículo</label>
         {{ form.vehiculo|add_class:"select2" }}
       </div>
 
-      <div class="col-md-3">
+      <div>
         <label class="form-label">Fecha inicio</label>
         {{ form.fecha_inicio }}
       </div>
 
-      <!-- Fila 2 -->
-      <div class="col-md-3">
+      <div>
         <label class="form-label">Cuota inicial</label>
         {{ form.cuota_inicial }}
-
         <div id="cuotasRapidas" class="mt-2 d-flex gap-2 flex-wrap"></div>
       </div>
 
-      <div class="col-md-3">
+      <div>
         <label class="form-label">Tarifa</label>
         {{ form.tarifa }}
-
         <div id="tarifasRapidas" class="mt-2 d-flex gap-2 flex-wrap"></div>
       </div>
 
-      <div class="col-md-3">
+      <div>
         <label class="form-label">Frecuencia de pago</label>
         {{ form.frecuencia_pago }}
       </div>
 
-      <div class="col-md-3">
+      <div>
         <label class="form-label">Días contrato</label>
         {{ form.dias_contrato }}
-
         <div id="diasRapidos" class="mt-2 d-flex gap-2 flex-wrap"></div>
       </div>
 
-
-      <div class="col-md-3">
+      <div>
         <label class="form-label">Visitador</label>
         {{ form.visitador }}
       </div>
 
-      <!-- Fila 3 -->
-      <div class="col-md-3">
+      <div>
         <label class="form-label">Tipo de contrato</label>
         {{ form.tipo_contrato }}
       </div>
 
-      <div class="col-md-9 d-flex align-items-end justify-content-end">
-        <button type="submit" class="btn btn-primary px-4">
+      <!-- BOTÓN -->
+      <div class="d-flex align-items-end justify-content-end">
+        <button type="submit" class="btn btn-primary px-4 w-100">
           Guardar Contrato
         </button>
       </div>
     </form>
+
+
 
   <!-- 🔍 Filtro dinámico -->
   <div class="mb-3">
