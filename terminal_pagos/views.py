@@ -246,28 +246,6 @@ def crear_factura(request):
     factura.estado = "confirmada" if factura.estado_pago == "pagada" else "borrador"
     factura.save()
     
-    #  RESPUESTA FINAL
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        return JsonResponse({
-            "status": "ok",
-            "factura": {
-                "id": factura.id,
-                "fecha": factura.fecha.strftime("%Y-%m-%d"),
-                "total": float(factura.total),
-                "total_pagado": float(factura.total_pagado),
-                "estado": factura.estado_pago,
-                "contrato": str(factura.contrato),
-            },
-            "items": [
-                {
-                    "descripcion": i.descripcion,
-                    "subtotal": float(i.subtotal),
-                }
-                for i in factura.items.all()
-            ]
-        })
-
-    return redirect("terminal_pagos:nueva_transaccion")
 
     print("🎉 FACTURA FINALIZADA")
 

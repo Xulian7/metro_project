@@ -281,25 +281,22 @@
 
       // ❌ Validación de montos
       if (tp !== tf) {
-        if (tp < tf) {
-          alert("❌ El total pagado no cubre el total de la factura.");
-        } else {
-          alert("❌ El total pagado excede el total de la factura.");
-        }
-        return false;
+        alert(
+          tp < tf
+            ? "❌ El total pagado no cubre el total de la factura."
+            : "❌ El total pagado excede el total de la factura."
+        );
+        return;
       }
 
-      // ⚠️ CONFIRMACIÓN DEL USUARIO
+      // ⚠️ Confirmación
       const ok = confirm(
         `¿Confirmas guardar la factura?\n\n` +
         `Total factura: $${tf.toLocaleString("es-CO")}\n` +
         `Total pagado:  $${tp.toLocaleString("es-CO")}`
       );
 
-      if (!ok) {
-        // 🛑 Usuario canceló → no se envía, no se borra nada
-        return false;
-      }
+      if (!ok) return;
 
       // 🔑 Sincronizar configuraciones de pago
       document.querySelectorAll(".pago-row").forEach(row => {
@@ -310,9 +307,7 @@
         }
       });
 
-      // ❌ antes
-      // form.submit();
-      // ✅ ahora
+      // 🚀 Envío AJAX
       fetch(form.action, {
         method: "POST",
         body: new FormData(form),
@@ -322,22 +317,22 @@
       })
       .then(res => res.json())
       .then(data => {
-        if (!data.ok) {
-          alert("Error al guardar la factura");
+
+        if (data.status !== "ok") {
+          alert("❌ Error al guardar la factura");
           return;
         }
 
-        // 🧾 construir resumen tipo factura digital
+        // 🧾 Resumen tipo factura digital
         const body = document.getElementById("factura-resumen-body");
 
         body.innerHTML = `
-          <p><strong>Factura #:</strong> ${data.factura.numero}</p>
+          <p><strong>Factura #:</strong> ${data.factura.id}</p>
           <p><strong>Contrato:</strong> ${data.factura.contrato}</p>
           <p><strong>Fecha:</strong> ${data.factura.fecha}</p>
           <hr>
-          <p><strong>Total:</strong> $${data.factura.total}</p>
-          <p><strong>Pagado:</strong> $${data.factura.pagado}</p>
-          <p><strong>Saldo:</strong> $${data.factura.saldo}</p>
+          <p><strong>Total:</strong> $${data.factura.total.toLocaleString("es-CO")}</p>
+          <p><strong>Pagado:</strong> $${data.factura.total_pagado.toLocaleString("es-CO")}</p>
         `;
 
         const modal = new bootstrap.Modal(
@@ -345,17 +340,25 @@
         );
         modal.show();
 
-        // 🔄 opcional: limpiar form
-        // form.reset();
+        // 🔄 Limpieza segura (opcional pero recomendada)
+        form.reset();
+        document.getElementById("items-container").innerHTML = "";
+        document.getElementById("pagos-container").innerHTML = "";
+        document.getElementById("total").innerText = "$0";
+        document.getElementById("total-pagado").innerText = "$0";
+        document.getElementById("saldo-pendiente").innerText = "$0";
+
+        if (window.$) {
+          $(".select-buscable").val(null).trigger("change");
+        }
       })
       .catch(err => {
         console.error(err);
-        alert("Error inesperado");
+        alert("❌ Error inesperado al guardar la factura");
       });
-
-
     });
   </script>
+
 
 </div>
 
