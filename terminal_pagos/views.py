@@ -34,6 +34,27 @@ from .forms import (
 # TERMINAL DE PAGOS
 # =========================
 def nueva_transaccion(request):
+    
+    # -------------------------------------------------
+    # FACTURA RECIÉN CREADA (si viene por GET)
+    # -------------------------------------------------
+    factura_id = request.GET.get("factura")
+    factura = None
+
+    if factura_id:
+        try:
+            factura = (
+                Factura.objects
+                .prefetch_related(
+                    "items",
+                    "pagos__configuracion__medio",
+                    "pagos__canal",
+                )
+                .get(id=factura_id)
+            )
+        except Factura.DoesNotExist:
+            factura = None
+
 
     productos = Producto.objects.values(
         "id",
