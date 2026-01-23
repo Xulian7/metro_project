@@ -231,6 +231,73 @@
     </div>
   </form>
 
+  {% if factura %}
+  <div class="modal fade" id="facturaModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">
+            Factura #{{ factura.id }}
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+
+          <p>
+            <strong>Contrato:</strong> {{ factura.contrato }}<br>
+            <strong>Fecha:</strong> {{ factura.fecha_creacion|date:"d/m/Y H:i" }}
+          </p>
+
+          <hr>
+
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Descripción</th>
+                <th class="text-end">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in factura.items.all %}
+              <tr>
+                <td>{{ i.descripcion }}</td>
+                <td class="text-end">
+                  ${{ i.subtotal|floatformat:0 }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <hr>
+
+          <div class="text-end">
+            <p><strong>Total:</strong> ${{ factura.total|floatformat:0 }}</p>
+            <p><strong>Pagado:</strong> ${{ factura.total_pagado|floatformat:0 }}</p>
+            <p><strong>Estado:</strong> {{ factura.get_estado_pago_display }}</p>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if factura %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const modal = new bootstrap.Modal(
+        document.getElementById("facturaModal")
+      );
+      modal.show();
+    });
+  </script>
+  {% endif %}
+
+  
   <script>
     const form = document.getElementById("factura-form");
 
@@ -286,6 +353,7 @@
     });
   </script>
 
+  
 </div>
 
 

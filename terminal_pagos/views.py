@@ -9,6 +9,8 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
+from django.urls import reverse
+
 
 from .models import (
     Factura,
@@ -271,7 +273,9 @@ def crear_factura(request):
     )
 
     print("✅ [crear_factura] FIN OK")
-    return redirect("terminal_pagos:nueva_transaccion")
+    return redirect(f"{reverse('terminal_pagos:nueva_transaccion')}?factura={factura.id}"
+)
+
 
 # =========================
 # CATÁLOGOS DE MEDIOS DE PAGO (ADMIN)
