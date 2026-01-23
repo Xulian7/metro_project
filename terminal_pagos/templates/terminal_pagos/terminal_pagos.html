@@ -231,35 +231,6 @@
     </div>
   </form>
 
-  <!-- ================= MODAL RESUMEN FACTURA ================= -->
-  <div class="modal fade" id="facturaResumenModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-
-        <div class="modal-header">
-          <h5 class="modal-title">Factura generada</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-
-        <div class="modal-body" id="factura-resumen-body">
-          <!-- Se llena dinámicamente -->
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary"
-                  data-bs-dismiss="modal">
-            Cerrar
-          </button>
-          <button type="button" class="btn btn-outline-primary">
-            🖨️ Imprimir
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-
   <script>
     const form = document.getElementById("factura-form");
 
@@ -281,22 +252,25 @@
 
       // ❌ Validación de montos
       if (tp !== tf) {
-        alert(
-          tp < tf
-            ? "❌ El total pagado no cubre el total de la factura."
-            : "❌ El total pagado excede el total de la factura."
-        );
-        return;
+        if (tp < tf) {
+          alert("❌ El total pagado no cubre el total de la factura.");
+        } else {
+          alert("❌ El total pagado excede el total de la factura.");
+        }
+        return false;
       }
 
-      // ⚠️ Confirmación
+      // ⚠️ CONFIRMACIÓN DEL USUARIO
       const ok = confirm(
         `¿Confirmas guardar la factura?\n\n` +
         `Total factura: $${tf.toLocaleString("es-CO")}\n` +
         `Total pagado:  $${tp.toLocaleString("es-CO")}`
       );
 
-      if (!ok) return;
+      if (!ok) {
+        // 🛑 Usuario canceló → no se envía, no se borra nada
+        return false;
+      }
 
       // 🔑 Sincronizar configuraciones de pago
       document.querySelectorAll(".pago-row").forEach(row => {
@@ -307,58 +281,10 @@
         }
       });
 
-      // 🚀 Envío AJAX
-      fetch(form.action, {
-        method: "POST",
-        body: new FormData(form),
-        headers: {
-          "X-Requested-With": "XMLHttpRequest"
-        }
-      })
-      .then(res => res.json())
-      .then(data => {
-
-        if (data.status !== "ok") {
-          alert("❌ Error al guardar la factura");
-          return;
-        }
-
-        // 🧾 Resumen tipo factura digital
-        const body = document.getElementById("factura-resumen-body");
-
-        body.innerHTML = `
-          <p><strong>Factura #:</strong> ${data.factura.id}</p>
-          <p><strong>Contrato:</strong> ${data.factura.contrato}</p>
-          <p><strong>Fecha:</strong> ${data.factura.fecha}</p>
-          <hr>
-          <p><strong>Total:</strong> $${data.factura.total.toLocaleString("es-CO")}</p>
-          <p><strong>Pagado:</strong> $${data.factura.total_pagado.toLocaleString("es-CO")}</p>
-        `;
-
-        const modal = new bootstrap.Modal(
-          document.getElementById("facturaResumenModal")
-        );
-        modal.show();
-
-        // 🔄 Limpieza segura (opcional pero recomendada)
-        form.reset();
-        document.getElementById("items-container").innerHTML = "";
-        document.getElementById("pagos-container").innerHTML = "";
-        document.getElementById("total").innerText = "$0";
-        document.getElementById("total-pagado").innerText = "$0";
-        document.getElementById("saldo-pendiente").innerText = "$0";
-
-        if (window.$) {
-          $(".select-buscable").val(null).trigger("change");
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        alert("❌ Error inesperado al guardar la factura");
-      });
+      // ✅ Submit real (controlado)
+      form.submit();
     });
   </script>
-
 
 </div>
 
@@ -742,53 +668,6 @@
 
 </script>
 
-<script>
-    function mostrarFacturaDigital(data) {
-    const cont = document.getElementById("factura-contenido");
-
-    let html = `
-      <div class="mb-3">
-        <strong>Factura #${data.factura.id}</strong><br>
-        Contrato: ${data.factura.contrato}<br>
-        Fecha: ${data.factura.fecha}
-      </div>
-
-      <table class="table table-sm">
-        <thead>
-          <tr>
-            <th>Descripción</th>
-            <th class="text-end">Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
-
-    data.items.forEach(i => {
-      html += `
-        <tr>
-          <td>${i.descripcion}</td>
-          <td class="text-end">$${i.subtotal.toLocaleString("es-CO")}</td>
-        </tr>
-      `;
-    });
-
-    html += `
-        </tbody>
-      </table>
-
-      <div class="text-end fw-bold fs-5">
-        Total: $${data.factura.total.toLocaleString("es-CO")}
-      </div>
-    `;
-
-    cont.innerHTML = html;
-
-    const modal = new bootstrap.Modal(
-      document.getElementById("facturaModal")
-    );
-    modal.show();
-  }
-</script>
 
 
 {% endblock %}
