@@ -35,13 +35,14 @@ class ContratoForm(forms.ModelForm):
             'fecha_inicio',
             'cuota_inicial',
             'tarifa',
-            'frecuencia_pago',      # 👈 NUEVO
+            'frecuencia_pago',   # ✅ nuevo campo
             'dias_contrato',
             'visitador',
             'tipo_contrato',
-            'estado',
             'motivo',
         ]
+        exclude = ['estado']  # 🔥 CLAVE
+
         widgets = {
             'fecha_inicio': forms.DateInput(attrs={
                 'type': 'date',
@@ -49,11 +50,10 @@ class ContratoForm(forms.ModelForm):
             }),
             'cuota_inicial': forms.NumberInput(attrs={'class': 'form-control'}),
             'tarifa': forms.NumberInput(attrs={'class': 'form-control'}),
-            'frecuencia_pago': forms.Select(attrs={'class': 'form-select'}),  # 👈 NUEVO
+            'frecuencia_pago': forms.Select(attrs={'class': 'form-select'}),
             'dias_contrato': forms.NumberInput(attrs={'class': 'form-control'}),
             'visitador': forms.TextInput(attrs={'class': 'form-control'}),
             'tipo_contrato': forms.Select(attrs={'class': 'form-select'}),
-            'estado': forms.Select(attrs={'class': 'form-select'}),
             'motivo': forms.Select(attrs={'class': 'form-select'}),
         }
 
@@ -62,7 +62,7 @@ class ContratoForm(forms.ModelForm):
 
         instancia = self.instance
 
-        # --- Lógica para motivo ---
+        # 🔒 Lógica del motivo
         if instancia and instancia.estado == "Inactivo":
             self.fields['motivo'].widget.attrs.pop('disabled', None)
             self.fields['motivo'].required = True
@@ -73,10 +73,9 @@ class ContratoForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
 
-        estado = cleaned_data.get('estado')
+        estado = getattr(self.instance, 'estado', None)
         motivo = cleaned_data.get('motivo')
 
-        # Si NO está inactivo → motivo debe ser NULL
         if estado != "Inactivo":
             cleaned_data['motivo'] = None
         else:
