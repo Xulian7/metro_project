@@ -3,16 +3,12 @@
 
 <div class="card p-4 shadow-sm">
 
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h5 class="fw-bold mb-0">
-      Resumen de contratos por tarifas
-      <small class="text-muted">(al {{ hoy }})</small>
-    </h5>
-  </div>
+  <h5 class="fw-bold mb-3">
+    Resumen de contratos
+    <small class="text-muted">(al {{ hoy }})</small>
+  </h5>
 
-  <!-- ========================= -->
   <!-- BUSCADOR -->
-  <!-- ========================= -->
   <div class="row mb-3">
     <div class="col-md-4">
       <input
@@ -23,30 +19,32 @@
     </div>
   </div>
 
-  <!-- ========================= -->
   <!-- TABLA -->
-  <!-- ========================= -->
   <div class="table-responsive">
     <table class="table table-sm table-striped align-middle">
       <thead class="table-light">
         <tr>
           <th>Contrato</th>
           <th>Cliente</th>
-          <th>Vehículo</th>
+          <th>Placa</th>
           <th>Inicio</th>
           <th class="text-end">Tarifa</th>
-          <th class="text-center">Teóricas</th>
-          <th class="text-center">Facturadas</th>
+          <th>Frecuencia</th>
+          <th class="text-center">Cuotas vencidas</th>
+          <th class="text-center">Cuotas pagadas</th>
           <th class="text-center">Saldo</th>
-          <th class="text-end">Total facturado</th>
+          <th class="text-end">Pagado</th>
+          <th class="text-end">Avance parcial</th>
         </tr>
       </thead>
+
       <tbody id="tabla-contratos">
         {% for row in filas %}
         <tr>
           <td>#{{ row.contrato.id }}</td>
           <td>{{ row.contrato.cliente.nombre }}</td>
           <td>{{ row.contrato.vehiculo.placa }}</td>
+
           <td>
             {{ row.fecha_inicio }}
             <br>
@@ -54,29 +52,48 @@
               {{ row.dias_transcurridos }} días
             </small>
           </td>
-          <td class="text-end">{{ row.tarifa }}</td>
-          <td class="text-center">{{ row.tarifas_teoricas }}</td>
+
+          <td class="text-end">
+            {{ row.tarifa|floatformat:0 }}
+          </td>
+
+          <td>{{ row.frecuencia }}</td>
+
+          <td class="text-center">
+            {{ row.cuotas_vencidas }}
+          </td>
+
           <td class="text-center">
             <span class="badge bg-success">
-              {{ row.tarifas_facturadas }}
+              {{ row.cuotas_pagadas }}
             </span>
           </td>
+
           <td class="text-center">
-            {% if row.saldo_tarifas > 0 %}
+            {% if row.saldo_cuotas > 0 %}
               <span class="badge bg-danger">
-                {{ row.saldo_tarifas }}
+                {{ row.saldo_cuotas }}
               </span>
             {% else %}
               <span class="badge bg-secondary">0</span>
             {% endif %}
           </td>
+
           <td class="text-end fw-semibold">
-            {{ row.total_facturado|floatformat:2 }}
+            {{ row.total_pagado|floatformat:2 }}
+          </td>
+
+          <td class="text-end text-muted">
+            {% if row.avance_parcial > 0 %}
+              {{ row.avance_parcial|floatformat:2 }}
+            {% else %}
+              —
+            {% endif %}
           </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="9" class="text-center text-muted">
+          <td colspan="11" class="text-center text-muted">
             No hay contratos para mostrar
           </td>
         </tr>
@@ -84,31 +101,20 @@
       </tbody>
     </table>
   </div>
-
 </div>
 
-<!-- ========================= -->
-<!-- JS BUSCADOR -->
-<!-- ========================= -->
+<!-- BUSCADOR JS -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const buscador = document.getElementById("buscador-contratos");
   const filas = document.querySelectorAll("#tabla-contratos tr");
 
-  buscador?.addEventListener("input", () => {
+  buscador.addEventListener("input", () => {
     const texto = buscador.value.toLowerCase();
 
     filas.forEach(fila => {
-      const contrato = fila.children[0].innerText.toLowerCase();
-      const cliente  = fila.children[1].innerText.toLowerCase();
-      const placa    = fila.children[2].innerText.toLowerCase();
-
-      const match =
-        contrato.includes(texto) ||
-        cliente.includes(texto) ||
-        placa.includes(texto);
-
-      fila.style.display = match ? "" : "none";
+      const contenido = fila.innerText.toLowerCase();
+      fila.style.display = contenido.includes(texto) ? "" : "none";
     });
   });
 });

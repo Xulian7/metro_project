@@ -405,8 +405,9 @@ def validar_pago(request, pago_id):
 from datetime import date
 from django.db.models import Sum
 from django.shortcuts import render
-from terminal_pagos.models import ItemFactura
+
 from arrendamientos.models import Contrato
+from terminal_pagos.models import ItemFactura
 
 
 def resumen_contratos(request):
@@ -416,38 +417,32 @@ def resumen_contratos(request):
     contratos = (
         Contrato.objects
         .select_related("cliente", "vehiculo")
-        .all()
+        .filter(estado="Activo")
     )
-
-    FRECUENCIA_DIAS = {
-        "diario": 1,
-        "semanal": 7,
-        "quincenal": 15,
-        "mensual": 30,
-    }
 
     for contrato in contratos:
         if not contrato.fecha_inicio or not contrato.tarifa:
             continue
 
         # -------------------------
-        # DÍAS TRANSCURRIDOS
+        # ANTIGÜEDAD
         # -------------------------
-        dias_transcurridos = (hoy - contrato.fecha_inicio).days
-        if dias_transcurridos < 0:
-            dias_transcurridos = 0
+        dias_transcurridos = max((hoy - contrato.fecha_inicio).days, 0)
 
         # -------------------------
-        # CUOTAS VENCIDAS
+        # CUOTAS VENCIDAS (ANTES: TEÓRICAS)
         # -------------------------
-        dias_por_cuota = FRECUENCIA_DIAS.get(
-            contrato.frecuencia_pago, 30
-        )
-
-        cuotas_vencidas = dias_transcurridos // dias_por_cuota
+        if contrato.frecuencia_pago == "diario":
+            cuotas_vencidas = dias_transcurridos
+        elif contrato.frecuencia_pago == "semanal":
+            cuotas_vencidas = dias_transcurridos // 7
+        elif contrato.frecuencia_pago == "quincenal":
+            cuotas_vencidas = dias_transcurridos // 15
+        else:  # mensual
+            cuotas_vencidas = dias_transcurridos // 30
 
         # -------------------------
-        # PAGOS REALIZADOS
+        # PAGOS REALES EN TARIFAS
         # -------------------------
         total_pagado = (
             ItemFactura.objects
@@ -459,23 +454,33 @@ def resumen_contratos(request):
             or 0
         )
 
-        tarifas_pagas = int(total_pagado // contrato.tarifa)
+        # -------------------------
+        # AVANCE EN CUOTAS
+        # -------------------------
+        avance_cuotas = (
+            float(total_pagado) / float(contrato.tarifa)
+            if contrato.tarifa > 0 else 0
+        )
 
-        # -------------------------
-        # SALDOS
-        # -------------------------
-        cuotas_pendientes = max(cuotas_vencidas - tarifas_pagas, 0)
+        cuotas_pagadas = int(avance_cuotas)
+        avance_parcial = total_pagado - (cuotas_pagadas * contrato.tarifa)
+
+        saldo_cuotas = max(cuotas_vencidas - cuotas_pagadas, 0)
 
         filas.append({
             "contrato": contrato,
             "fecha_inicio": contrato.fecha_inicio,
             "dias_transcurridos": dias_transcurridos,
+
+            "frecuencia": contrato.get_frecuencia_pago_display(),
             "tarifa": contrato.tarifa,
-            "frecuencia": contrato.get_frecuencia_pago_display(), # type: ignore
+
             "cuotas_vencidas": cuotas_vencidas,
-            "tarifas_pagas": tarifas_pagas,
+            "cuotas_pagadas": cuotas_pagadas,
+            "saldo_cuotas": saldo_cuotas,
+
             "total_pagado": total_pagado,
-            "cuotas_pendientes": cuotas_pendientes,
+            "avance_parcial": avance_parcial,
         })
 
     return render(
@@ -483,6 +488,6 @@ def resumen_contratos(request):
         "terminal_pagos/resumen_contratos.html",
         {
             "filas": filas,
-            "hoy": hoy
+            "hoy": hoy,
         }
     )
