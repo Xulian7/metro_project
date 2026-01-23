@@ -55,7 +55,6 @@ def nueva_transaccion(request):
         except Factura.DoesNotExist:
             factura = None
 
-
     productos = Producto.objects.values(
         "id",
         "nombre",
@@ -106,12 +105,12 @@ def nueva_transaccion(request):
         {
             "factura_form": factura_form,
             "item_formset": item_formset,
-
             "productos_json": list(productos),
             "servicios_json": list(servicios),
             "configuraciones_json": list(configuraciones),
             "canales_json": list(canales),
             "today": now().date().isoformat(),
+            "factura": factura,
         }
     )
     
@@ -294,8 +293,9 @@ def crear_factura(request):
     )
 
     print("✅ [crear_factura] FIN OK")
-    return redirect(f"{reverse('terminal_pagos:nueva_transaccion')}?factura={factura.id}"
-)
+    
+    return redirect(f"{reverse('terminal_pagos:nueva_transaccion')}?factura={factura.id}")
+    
 
 
 # =========================
