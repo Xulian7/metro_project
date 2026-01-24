@@ -33,30 +33,42 @@
   </div>
 </div>
 
-<!-- 📌 SCRIPT DEL POPOVER DE FACTURA -->
 <script>
-document.addEventListener("click", function (e) {
+let popover = null;
+let hideTimer = null;
 
+/* =========================
+   HOVER SOBRE FACTURA TAG
+========================= */
+document.addEventListener("mouseover", function (e) {
   const tag = e.target.closest(".factura-tag");
   if (!tag) return;
 
+  // cancelar cierre si estaba programado
+  if (hideTimer) {
+    clearTimeout(hideTimer);
+    hideTimer = null;
+  }
+
+  // si ya hay uno abierto sobre este tag, no recrear
+  if (popover && popover._element === tag) return;
+
+  // cerrar otros
+  document.querySelectorAll(".factura-tag").forEach(t => {
+    bootstrap.Popover.getInstance(t)?.dispose();
+  });
+
   const facturaId = tag.dataset.facturaId;
 
-  // 🧹 cerrar otros popovers
-  document.querySelectorAll(".factura-tag").forEach(t => {
-    if (t !== tag) {
-      bootstrap.Popover.getInstance(t)?.dispose();
-    }
-  });
-
-  const pop = new bootstrap.Popover(tag, {
+  popover = new bootstrap.Popover(tag, {
     html: true,
-    content: "Cargando pagos…",
     trigger: "manual",
     placement: "right",
+    container: "body",
+    content: "Cargando pagos…",
   });
 
-  pop.show();
+  popover.show();
 
   fetch(`/terminal_pagos/extracto/factura/${facturaId}/`)
     .then(res => res.json())
@@ -67,12 +79,12 @@ document.addEventListener("click", function (e) {
         <hr class="my-1">
       `;
 
-      if (data.pagos.length === 0) {
+      if (!data.pagos.length) {
         html += `<em class="text-muted">Sin pagos</em>`;
       } else {
         data.pagos.forEach(p => {
           html += `
-            <div class="mb-1">
+            <div class="mb-2">
               <strong>${p.medio}</strong><br>
               <small class="text-muted">${p.canal}</small><br>
               $${Number(p.valor).toLocaleString("es-CO")}
@@ -82,9 +94,41 @@ document.addEventListener("click", function (e) {
         });
       }
 
-      pop.setContent({ ".popover-body": html });
+      popover.setContent({ ".popover-body": html });
+
+      // 👇 enganchar hover del popover
+      const popEl = document.querySelector(".popover");
+      if (popEl) {
+        popEl.addEventListener("mouseenter", () => {
+          if (hideTimer) clearTimeout(hideTimer);
+        });
+
+        popEl.addEventListener("mouseleave", scheduleHide);
+      }
     });
-
 });
-</script>
 
+
+/* =========================
+   SALIDA DEL TAG
+========================= */
+document.addEventListener("mouseout", function (e) {
+  const tag = e.target.closest(".factura-tag");
+  if (!tag) return;
+
+  scheduleHide();
+});
+
+
+/* =========================
+   CIERRE DIFERIDO (CLAVE)
+========================= */
+function scheduleHide() {
+  hideTimer = setTimeout(() => {
+    document.querySelectorAll(".factura-tag").forEach(t => {
+      bootstrap.Popover.getInstance(t)?.dispose();
+    });
+    popover = null;
+  }, 300); // 👈 delay humano
+}
+</script>
