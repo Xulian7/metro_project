@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
 from django.urls import reverse
+from decimal import Decimal
 
 
 from .models import (
@@ -153,7 +154,8 @@ def crear_factura(request):
         return redirect("terminal_pagos:nueva_transaccion")
 
     items = item_formset.save(commit=False)
-    total_factura = 0
+    total_factura = Decimal("0.00")
+
 
     print(f"🧾 Procesando {len(items)} ítems")
 
@@ -209,7 +211,7 @@ def crear_factura(request):
     valores = request.POST.getlist("valor_pago[]")
     referencias = request.POST.getlist("referencia_pago[]")
 
-    total_pagado = 0
+    total_pagado = Decimal("0.00")
 
     print(f"💳 Procesando pagos | filas={len(valores)}")
     print(request.POST.getlist("configuracion_pago_id[]"))
@@ -232,17 +234,20 @@ def crear_factura(request):
         )
 
         if not valor or not config_id or not canal_id:
-            print(valor)
-            print(config_id)
-            print(canal_id)
+            print(
+                f"➡️ Pago #{i+1} | "
+                f"valor='{valor}' | "
+                f"config={config_id} | "
+                f"canal={canal_id}"
+                f"⚠️ Fila incompleta, se ignora"
+            )
             
-            print("   ⚠️ Fila incompleta, se ignora")
             continue
 
         try:
             configuracion = ConfiguracionPago.objects.get(id=int(config_id))
             canal = CanalPago.objects.get(id=int(canal_id))
-            valor = float(valor)
+            valor = Decimal(valor)
         except Exception as e:
             print("   ❌ Pago inválido:", e)
             continue
@@ -270,7 +275,8 @@ def crear_factura(request):
     factura.total = total_factura
     factura.total_pagado = total_pagado
 
-    if total_pagado == 0:
+    # ---- ESTADO DE PAGO ----
+    if total_pagado == Decimal("0.00"):
         factura.estado_pago = "pendiente"
     elif total_pagado < total_factura:
         factura.estado_pago = "parcial"
@@ -283,7 +289,7 @@ def crear_factura(request):
     else:
         factura.estado = "borrador"
 
-        factura.save()
+    factura.save()
         
     print(
         f"🎉 FACTURA FINALIZADA | "
