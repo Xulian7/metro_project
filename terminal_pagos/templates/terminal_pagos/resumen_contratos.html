@@ -134,65 +134,65 @@
 {% include "terminal_pagos/partials/extracto_modal.html" %}
 
 
-<!--  EXTRACTO DE PAGOS JS -->
+<!-- EXTRACTO DE PAGOS JS -->
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-    document.querySelectorAll(".btn-extracto").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const contratoId = btn.dataset.contratoId;
+  document.querySelectorAll(".btn-extracto").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const contratoId = btn.dataset.contratoId;
 
-        fetch(`/terminal_pagos/extracto/contrato/${contratoId}/`)
-          .then(res => res.json())
-          .then(data => {
-            const tbody = document.getElementById("extracto-body");
-            tbody.innerHTML = "";
+      fetch(`/terminal_pagos/extracto/contrato/${contratoId}/`)
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.getElementById("extracto-body");
+          tbody.innerHTML = "";
 
-            data.filas.forEach(f => {
-              const tr = document.createElement("tr");
+          data.filas.forEach(f => {
+            const tr = document.createElement("tr");
 
-              tr.innerHTML = `
-                <td>${f.fecha_pactada}</td>
+            tr.innerHTML = `
+              <td>${f.fecha_pactada}</td>
 
-                <td class="text-end">
-                  $${Number(f.valor_pactado).toLocaleString()}
-                </td>
+              <td class="text-end">
+                $${Number(f.valor_pactado).toLocaleString("es-CO")}
+              </td>
 
-                <td class="text-end">
-                  $${Number(f.valor_aplicado).toLocaleString()}
-                </td>
+              <td class="text-end">
+                $${Number(f.valor_aplicado).toLocaleString("es-CO")}
+              </td>
 
-                <td>
-                  ${f.fecha_pago ?? "—"}
-                </td>
+              <td>
+                ${f.fecha_pago ?? "—"}
+              </td>
 
-                <td>
-                  ${
-                    f.factura_id
-                      ? `<span class="badge bg-primary factura-tag"
-                              data-factura-id="{{ f.factura_id }}"
-                              role="button">
-                          #{{ f.factura_id }}
-                        </span>
-                      : "—"
-                  }
-                </td>
-              `;
+              <td>
+                ${
+                  f.factura_id
+                    ? `<span class="badge bg-primary factura-tag"
+                            data-factura-id="${f.factura_id}"
+                            role="button">
+                        #${f.factura_id}
+                      </span>`
+                    : "—"
+                }
+              </td>
+            `;
 
-
-              tbody.appendChild(tr);
-            });
-
-            const modal = new bootstrap.Modal(
-              document.getElementById("extractoModal")
-            );
-            modal.show();
+            tbody.appendChild(tr);
           });
-      });
-    });
 
+          const modal = new bootstrap.Modal(
+            document.getElementById("extractoModal")
+          );
+          modal.show();
+        });
+    });
   });
+
+});
 </script>
+
 
 
 <!-- 🔎 BUSCADOR JS -->

@@ -9,27 +9,23 @@
 
       <div class="modal-body">
 
-        <div class="table-responsive">
-          <table class="table table-sm table-striped align-middle">
-            <thead class="table-light">
-              <tr>
-                <th>Fecha pactada</th>
-                <th class="text-end">Valor pactado</th>
-                <th class="text-end">Valor aplicado</th>
-                <th>Fecha de pago</th>
-                <th>Factura</th>
-              </tr>
-            </thead>
-
-            <tbody id="extracto-body">
-              <tr>
-                <td colspan="5" class="text-center text-muted py-4">
-                  Cargando extracto…
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <table class="table table-sm table-striped">
+          <thead>
+            <tr>
+              <th>Fecha pactada</th>
+              <th>Fecha pago</th>
+              <th class="text-end">Valor aplicado</th>
+              <th>Factura</th>
+            </tr>
+          </thead>
+          <tbody id="extracto-body">
+            <tr>
+              <td colspan="4" class="text-center text-muted py-4">
+                Cargando extracto…
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
       </div>
 
@@ -37,59 +33,58 @@
   </div>
 </div>
 
+<!-- 📌 SCRIPT DEL POPOVER DE FACTURA -->
 <script>
-  document.addEventListener("click", function (e) {
+document.addEventListener("click", function (e) {
 
-    const tag = e.target.closest(".factura-tag");
-    if (!tag) return;
+  const tag = e.target.closest(".factura-tag");
+  if (!tag) return;
 
-    const facturaId = tag.dataset.facturaId;
+  const facturaId = tag.dataset.facturaId;
 
-    // 🔁 destruir otros popovers
-    document.querySelectorAll(".factura-tag").forEach(t => {
-      if (t !== tag) {
-        bootstrap.Popover.getInstance(t)?.dispose();
-      }
-    });
-
-    // ⏳ loading
-    const pop = new bootstrap.Popover(tag, {
-      html: true,
-      content: "Cargando pagos…",
-      trigger: "manual",
-      placement: "right",
-    });
-
-    pop.show();
-
-    fetch(`/terminal_pagos/extracto/factura/${facturaId}/`)
-      .then(res => res.json())
-      .then(data => {
-
-        let html = `
-          <strong>Factura #${data.factura}</strong>
-          <hr class="my-1">
-        `;
-
-        if (data.pagos.length === 0) {
-          html += `<em class="text-muted">Sin pagos</em>`;
-        } else {
-          data.pagos.forEach(p => {
-            html += `
-              <div class="mb-1">
-                <strong>${p.medio}</strong><br>
-                <small class="text-muted">${p.canal}</small><br>
-                $${Number(p.valor).toLocaleString("es-CO")}
-                ${p.referencia ? `<br><small>Ref: ${p.referencia}</small>` : ""}
-              </div>
-            `;
-          });
-        }
-
-        pop.setContent({
-          ".popover-body": html
-        });
-      });
-
+  // 🧹 cerrar otros popovers
+  document.querySelectorAll(".factura-tag").forEach(t => {
+    if (t !== tag) {
+      bootstrap.Popover.getInstance(t)?.dispose();
+    }
   });
+
+  const pop = new bootstrap.Popover(tag, {
+    html: true,
+    content: "Cargando pagos…",
+    trigger: "manual",
+    placement: "right",
+  });
+
+  pop.show();
+
+  fetch(`/terminal_pagos/extracto/factura/${facturaId}/`)
+    .then(res => res.json())
+    .then(data => {
+
+      let html = `
+        <strong>Factura #${data.factura}</strong>
+        <hr class="my-1">
+      `;
+
+      if (data.pagos.length === 0) {
+        html += `<em class="text-muted">Sin pagos</em>`;
+      } else {
+        data.pagos.forEach(p => {
+          html += `
+            <div class="mb-1">
+              <strong>${p.medio}</strong><br>
+              <small class="text-muted">${p.canal}</small><br>
+              $${Number(p.valor).toLocaleString("es-CO")}
+              ${p.referencia ? `<br><small>Ref: ${p.referencia}</small>` : ""}
+            </div>
+          `;
+        });
+      }
+
+      pop.setContent({ ".popover-body": html });
+    });
+
+});
 </script>
+
