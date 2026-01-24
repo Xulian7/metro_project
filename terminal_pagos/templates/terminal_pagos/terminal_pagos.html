@@ -231,11 +231,13 @@
     </div>
   </form>
 
+  <!-- ================= MODAL FACTURA ================= -->
   {% if factura %}
   <div class="modal fade" id="facturaModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
 
+        <!-- HEADER -->
         <div class="modal-header">
           <h5 class="modal-title">
             Factura #{{ factura.id }}
@@ -243,15 +245,19 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
 
+        <!-- BODY -->
         <div class="modal-body">
 
-          <p>
+          <!-- DATOS GENERALES -->
+          <div class="mb-3">
             <strong>Contrato:</strong> {{ factura.contrato }}<br>
             <strong>Fecha:</strong> {{ factura.fecha|date:"d/m/Y H:i" }}
-          </p>
+          </div>
 
           <hr>
 
+          <!-- ÍTEMS -->
+          <h6 class="fw-bold">Detalle</h6>
           <table class="table table-sm">
             <thead>
               <tr>
@@ -273,12 +279,71 @@
 
           <hr>
 
+          <!-- MEDIOS DE PAGO -->
+          <h6 class="fw-bold">Pagos recibidos</h6>
+
+          {% if factura.pagos.all %}
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Medio</th>
+                <th>Canal</th>
+                <th>Referencia</th>
+                <th class="text-end">Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in factura.pagos.all %}
+              <tr>
+                <td>{{ p.configuracion.medio.nombre }}</td>
+                <td>{{ p.canal.nombre }}</td>
+                <td class="text-muted">
+                  {{ p.referencia|default:"—" }}
+                </td>
+                <td class="text-end">
+                  ${{ p.valor|floatformat:0 }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+            <p class="text-muted fst-italic">
+              No se registraron pagos en esta factura.
+            </p>
+          {% endif %}
+
+          <hr>
+
+          <!-- TOTALES -->
           <div class="text-end">
-            <p><strong>Total:</strong> ${{ factura.total|floatformat:0 }}</p>
-            <p><strong>Pagado:</strong> ${{ factura.total_pagado|floatformat:0 }}</p>
-            <p><strong>Estado:</strong> {{ factura.get_estado_pago_display }}</p>
+            <p class="mb-1">
+              <strong>Total:</strong>
+              ${{ factura.total|floatformat:0 }}
+            </p>
+            <p class="mb-1">
+              <strong>Pagado:</strong>
+              ${{ factura.total_pagado|floatformat:0 }}
+            </p>
+            <p class="mb-0">
+              <strong>Estado:</strong>
+              {{ factura.get_estado_pago_display }}
+            </p>
           </div>
 
+        </div>
+
+        <!-- FOOTER -->
+        <div class="modal-footer">
+          <button type="button"
+                  class="btn btn-outline-secondary"
+                  data-bs-dismiss="modal">
+            Cerrar
+          </button>
+          <button type="button"
+                  class="btn btn-outline-primary">
+            🖨️ Imprimir
+          </button>
         </div>
 
       </div>
@@ -286,6 +351,7 @@
   </div>
   {% endif %}
 
+  <!-- ================= SCRIPT MODAL FACTURA ================= -->
   {% if factura %}
     <script>
       document.addEventListener("DOMContentLoaded", function () {
@@ -302,7 +368,7 @@
     </script>
   {% endif %}
 
-  
+  <!-- ================= SCRIPT SUBMIT FACTURA ================= -->
   <script>
     const form = document.getElementById("factura-form");
 
@@ -358,7 +424,6 @@
     });
   </script>
 
-  
 </div>
 
 
