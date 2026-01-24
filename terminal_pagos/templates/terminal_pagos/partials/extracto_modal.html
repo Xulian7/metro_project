@@ -35,25 +35,21 @@
 
 <!-- 📌 SCRIPT DEL POPOVER DE FACTURA -->
 <script>
-document.addEventListener("click", function (e) {
+document.addEventListener("mouseover", function (e) {
 
   const tag = e.target.closest(".factura-tag");
   if (!tag) return;
 
-  const facturaId = tag.dataset.facturaId;
+  // si ya existe, no recrear
+  if (bootstrap.Popover.getInstance(tag)) return;
 
-  // 🧹 cerrar otros popovers
-  document.querySelectorAll(".factura-tag").forEach(t => {
-    if (t !== tag) {
-      bootstrap.Popover.getInstance(t)?.dispose();
-    }
-  });
+  const facturaId = tag.dataset.facturaId;
 
   const pop = new bootstrap.Popover(tag, {
     html: true,
-    content: "Cargando pagos…",
     trigger: "manual",
     placement: "right",
+    content: "Cargando pagos…",
   });
 
   pop.show();
@@ -61,7 +57,6 @@ document.addEventListener("click", function (e) {
   fetch(`/terminal_pagos/extracto/factura/${facturaId}/`)
     .then(res => res.json())
     .then(data => {
-
       let html = `
         <strong>Factura #${data.factura}</strong>
         <hr class="my-1">
@@ -84,7 +79,15 @@ document.addEventListener("click", function (e) {
 
       pop.setContent({ ".popover-body": html });
     });
+});
 
+// 👇 cerrar al salir
+document.addEventListener("mouseout", function (e) {
+  const tag = e.target.closest(".factura-tag");
+  if (!tag) return;
+
+  const pop = bootstrap.Popover.getInstance(tag);
+  if (pop) pop.dispose();
 });
 </script>
 
