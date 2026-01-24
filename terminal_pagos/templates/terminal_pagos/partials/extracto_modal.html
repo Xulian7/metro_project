@@ -33,61 +33,59 @@
   </div>
 </div>
 
-<!-- 📌 SCRIPT DEL POPOVER DE FACTURA -->
 <script>
-  document.addEventListener("mouseover", function (e) {
+document.addEventListener("mouseover", function (e) {
 
-    const tag = e.target.closest(".factura-tag");
-    if (!tag) return;
+  const tag = e.target.closest(".factura-tag");
+  if (!tag) return;
 
-    // si ya existe, no recrear
-    if (bootstrap.Popover.getInstance(tag)) return;
+  // si ya existe, no recrear
+  if (bootstrap.Popover.getInstance(tag)) return;
 
-    const facturaId = tag.dataset.facturaId;
+  const facturaId = tag.dataset.facturaId;
 
-    const pop = new bootstrap.Popover(tag, {
-      html: true,
-      trigger: "manual",
-      placement: "right",
-      content: "Cargando pagos…",
+  const pop = new bootstrap.Popover(tag, {
+    html: true,
+    trigger: "manual",
+    placement: "right",
+    content: "Cargando pagos…",
+  });
+
+  pop.show();
+
+  fetch(`/terminal_pagos/extracto/factura/${facturaId}/`)
+    .then(res => res.json())
+    .then(data => {
+      let html = `
+        <strong>Factura #${data.factura}</strong>
+        <hr class="my-1">
+      `;
+
+      if (data.pagos.length === 0) {
+        html += `<em class="text-muted">Sin pagos</em>`;
+      } else {
+        data.pagos.forEach(p => {
+          html += `
+            <div class="mb-1">
+              <strong>${p.medio}</strong><br>
+              <small class="text-muted">${p.canal}</small><br>
+              $${Number(p.valor).toLocaleString("es-CO")}
+              ${p.referencia ? `<br><small>Ref: ${p.referencia}</small>` : ""}
+            </div>
+          `;
+        });
+      }
+
+      pop.setContent({ ".popover-body": html });
     });
+});
 
-    pop.show();
+// 👇 cerrar al salir
+document.addEventListener("mouseout", function (e) {
+  const tag = e.target.closest(".factura-tag");
+  if (!tag) return;
 
-    fetch(`/terminal_pagos/extracto/factura/${facturaId}/`)
-      .then(res => res.json())
-      .then(data => {
-        let html = `
-          <strong>Factura #${data.factura}</strong>
-          <hr class="my-1">
-        `;
-
-        if (data.pagos.length === 0) {
-          html += `<em class="text-muted">Sin pagos</em>`;
-        } else {
-          data.pagos.forEach(p => {
-            html += `
-              <div class="mb-1">
-                <strong>${p.medio}</strong><br>
-                <small class="text-muted">${p.canal}</small><br>
-                $${Number(p.valor).toLocaleString("es-CO")}
-                ${p.referencia ? `<br><small>Ref: ${p.referencia}</small>` : ""}
-              </div>
-            `;
-          });
-        }
-
-        pop.setContent({ ".popover-body": html });
-      });
-  });
-
-  // 👇 cerrar al salir
-  document.addEventListener("mouseout", function (e) {
-    const tag = e.target.closest(".factura-tag");
-    if (!tag) return;
-
-    const pop = bootstrap.Popover.getInstance(tag);
-    if (pop) pop.dispose();
-  });
+  const pop = bootstrap.Popover.getInstance(tag);
+  if (pop) pop.dispose();
+});
 </script>
-
