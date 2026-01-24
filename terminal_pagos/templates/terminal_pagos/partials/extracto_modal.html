@@ -4,23 +4,32 @@
 
       <div class="modal-header">
         <h5 class="modal-title">Extracto de pagos</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
       <div class="modal-body">
 
-        <table class="table table-sm table-striped align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>Fecha pactada</th>
-              <th>Fecha de pago</th>
-              <th class="text-end">Valor</th>
-              <th>Factura</th>
-            </tr>
-          </thead>
-          <tbody id="extracto-body">
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table table-sm table-striped align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Fecha pactada</th>
+                <th class="text-end">Valor pactado</th>
+                <th class="text-end">Valor aplicado</th>
+                <th>Fecha de pago</th>
+                <th>Factura</th>
+              </tr>
+            </thead>
+
+            <tbody id="extracto-body">
+              <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                  Cargando extracto…
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
       </div>
 

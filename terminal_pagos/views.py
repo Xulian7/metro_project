@@ -531,87 +531,90 @@ def resumen_contratos(request):
     )
 
 
-
-
 def extracto_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, id=contrato_id)
 
-    tarifa = Decimal(contrato.tarifa)
+    tarifa = contrato.tarifa
     inicio = contrato.fecha_inicio
-    hoy = now().date()
+    hoy = date.today()
 
-    # 🔹 1. Items tarifa (ladrillos)
+    # -------------------------
+    # 1. Generar fechas pactadas
+    # -------------------------
+    fechas = []
+    actual = inicio
+
+    delta = {
+        "diario": 1,
+        "semanal": 7,
+        "quincenal": 15,
+        "mensual": 30,
+    }.get(contrato.frecuencia_pago, 30)
+
+    while actual <= hoy:
+        fechas.append({
+            "fecha_pactada": actual,
+            "valor_pactado": tarifa,
+            "valor_aplicado": Decimal("0.00"),
+            "fecha_pago": None,
+            "factura_id": None,
+        })
+        actual += timedelta(days=delta)
+
+    # -------------------------
+    # 2. Obtener ladrillos (items tarifa)
+    # -------------------------
     items = (
         ItemFactura.objects
         .filter(
-            factura__contrato_id=contrato_id,
+            factura__contrato=contrato,
             tipo_item="tarifa"
         )
         .select_related("factura")
         .order_by("factura__fecha")
     )
 
-    ladrillos = []
-    for i in items:
-        ladrillos.append({
-            "fecha": i.factura.fecha.date(),
-            "valor": Decimal(i.subtotal),
-            "factura_id": i.factura.id, # type: ignore
-        })
+    idx_fecha = 0
 
-    # 🔹 2. Generar fechas pactadas (DIARIO por ahora)
-    filas = []
-    fecha_cursor = inicio
+    # -------------------------
+    # 3. TETRIS FIFO ESTRICTO
+    # -------------------------
+    for item in items:
+        saldo = item.subtotal
 
-    # generamos hasta que se consuman los ladrillos
-    while ladrillos:
-        filas.append({
-            "fecha_pactada": fecha_cursor,
-            "fecha_pago": None,
-            "valor": tarifa,
-            "factura_id": None,
-        })
-        fecha_cursor += timedelta(days=1)
+        while saldo > 0 and idx_fecha < len(fechas):
+            fila = fechas[idx_fecha]
+            restante = fila["valor_pactado"] - fila["valor_aplicado"]
 
-        # corte de seguridad (no infinito)
-        if fecha_cursor > hoy + timedelta(days=180):
-            break
+            if restante <= 0:
+                idx_fecha += 1
+                continue
 
-    # 🔹 3. TETRIS
-    fila_idx = 0
+            aplicado = min(restante, saldo)
 
-    for ladrillo in ladrillos:
-        restante = ladrillo["valor"]
+            fila["valor_aplicado"] += aplicado
+            fila["fecha_pago"] = item.factura.fecha.date()
+            fila["factura_id"] = item.factura.id # type: ignore
 
-        while restante > 0 and fila_idx < len(filas):
-            fila = filas[fila_idx]
-            falta = fila["valor"]
+            saldo -= aplicado
 
-            if restante >= falta:
-                # llena completamente la fila
-                fila["fecha_pago"] = ladrillo["fecha"]
-                fila["factura_id"] = ladrillo["factura_id"]
-                restante -= falta
-                fila_idx += 1
+            if fila["valor_aplicado"] >= fila["valor_pactado"]:
+                idx_fecha += 1
             else:
-                # no alcanza → parcial
-                fila["valor"] = restante
-                fila["fecha_pago"] = ladrillo["fecha"]
-                fila["factura_id"] = ladrillo["factura_id"]
-                restante = Decimal("0.00")
+                break  # ← última fila parcial
 
-    # 🔹 4. Respuesta
-    data = []
-    for f in filas:
-        data.append({
-            "fecha_pactada": f["fecha_pactada"].strftime("%Y-%m-%d"),
-            "fecha_pago": f["fecha_pago"].strftime("%Y-%m-%d") if f["fecha_pago"] else None,
-            "valor": float(f["valor"]),
-            "factura_id": f["factura_id"],
-        })
-
+    # -------------------------
+    # 4. Respuesta JSON
+    # -------------------------
     return JsonResponse({
-        "contrato": contrato_id,
-        "filas": data,
+        "filas": [
+            {
+                "fecha_pactada": f["fecha_pactada"].isoformat(),
+                "valor_pactado": float(f["valor_pactado"]),
+                "valor_aplicado": float(f["valor_aplicado"]),
+                "fecha_pago": f["fecha_pago"].isoformat() if f["fecha_pago"] else None,
+                "factura_id": f["factura_id"],
+            }
+            for f in fechas
+        ]
     })
-

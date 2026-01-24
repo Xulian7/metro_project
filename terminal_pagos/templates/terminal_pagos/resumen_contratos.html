@@ -153,19 +153,31 @@
 
               tr.innerHTML = `
                 <td>${f.fecha_pactada}</td>
-                <td>${f.fecha_pago ?? "—"}</td>
-                <td class="text-end">$${Number(f.valor).toLocaleString()}</td>
+
+                <td class="text-end">
+                  $${Number(f.valor_pactado).toLocaleString()}
+                </td>
+
+                <td class="text-end">
+                  $${Number(f.valor_aplicado).toLocaleString()}
+                </td>
+
+                <td>
+                  ${f.fecha_pago ?? "—"}
+                </td>
+
                 <td>
                   ${
                     f.factura_id
-                    ? `<span class="badge bg-primary factura-tag"
-                            data-factura-id="${f.factura_id}">
-                        #${f.factura_id}
-                      </span>`
-                    : "—"
+                      ? `<span class="badge bg-primary factura-tag"
+                              data-factura-id="${f.factura_id}">
+                            #${f.factura_id}
+                        </span>`
+                      : "—"
                   }
                 </td>
               `;
+
 
               tbody.appendChild(tr);
             });
