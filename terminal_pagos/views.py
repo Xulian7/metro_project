@@ -11,6 +11,10 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_POST
 from django.urls import reverse
 from decimal import Decimal
+from datetime import date, timedelta
+from arrendamientos.models import Contrato
+from terminal_pagos.models import Factura, ItemFactura
+from django.http import JsonResponse
 
 
 from .models import (
@@ -525,3 +529,89 @@ def resumen_contratos(request):
             "hoy": hoy,
         }
     )
+
+
+
+
+def extracto_contrato(request, contrato_id):
+    contrato = get_object_or_404(Contrato, id=contrato_id)
+
+    tarifa = Decimal(contrato.tarifa)
+    inicio = contrato.fecha_inicio
+    hoy = now().date()
+
+    # 🔹 1. Items tarifa (ladrillos)
+    items = (
+        ItemFactura.objects
+        .filter(
+            factura__contrato_id=contrato_id,
+            tipo_item="tarifa"
+        )
+        .select_related("factura")
+        .order_by("factura__fecha")
+    )
+
+    ladrillos = []
+    for i in items:
+        ladrillos.append({
+            "fecha": i.factura.fecha.date(),
+            "valor": Decimal(i.subtotal),
+            "factura_id": i.factura.id, # type: ignore
+        })
+
+    # 🔹 2. Generar fechas pactadas (DIARIO por ahora)
+    filas = []
+    fecha_cursor = inicio
+
+    # generamos hasta que se consuman los ladrillos
+    while ladrillos:
+        filas.append({
+            "fecha_pactada": fecha_cursor,
+            "fecha_pago": None,
+            "valor": tarifa,
+            "factura_id": None,
+        })
+        fecha_cursor += timedelta(days=1)
+
+        # corte de seguridad (no infinito)
+        if fecha_cursor > hoy + timedelta(days=180):
+            break
+
+    # 🔹 3. TETRIS
+    fila_idx = 0
+
+    for ladrillo in ladrillos:
+        restante = ladrillo["valor"]
+
+        while restante > 0 and fila_idx < len(filas):
+            fila = filas[fila_idx]
+            falta = fila["valor"]
+
+            if restante >= falta:
+                # llena completamente la fila
+                fila["fecha_pago"] = ladrillo["fecha"]
+                fila["factura_id"] = ladrillo["factura_id"]
+                restante -= falta
+                fila_idx += 1
+            else:
+                # no alcanza → parcial
+                fila["valor"] = restante
+                fila["fecha_pago"] = ladrillo["fecha"]
+                fila["factura_id"] = ladrillo["factura_id"]
+                restante = Decimal("0.00")
+
+    # 🔹 4. Respuesta
+    data = []
+    for f in filas:
+        data.append({
+            "fecha_pactada": f["fecha_pactada"].strftime("%Y-%m-%d"),
+            "fecha_pago": f["fecha_pago"].strftime("%Y-%m-%d") if f["fecha_pago"] else None,
+            "valor": float(f["valor"]),
+            "factura_id": f["factura_id"],
+        })
+
+    return JsonResponse({
+        "contrato": contrato_id,
+        "filas": data,
+    })
+
