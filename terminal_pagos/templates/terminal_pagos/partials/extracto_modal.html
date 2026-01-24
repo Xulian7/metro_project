@@ -33,92 +33,58 @@
   </div>
 </div>
 
+<!-- 📌 SCRIPT DEL POPOVER DE FACTURA -->
 <script>
-  let popoverActivo = null;
+document.addEventListener("click", function (e) {
 
-  /* =========================
-    ABRIR / TOGGLE POPOVER
-  ========================= */
-  document.addEventListener("click", function (e) {
+  const tag = e.target.closest(".factura-tag");
+  if (!tag) return;
 
-    const tag = e.target.closest(".factura-tag");
-    if (!tag) return;
+  const facturaId = tag.dataset.facturaId;
 
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Toggle mismo tag
-    if (popoverActivo === tag) {
-      bootstrap.Popover.getInstance(tag)?.dispose();
-      popoverActivo = null;
-      return;
-    }
-
-    // Cerrar otros
-    document.querySelectorAll(".factura-tag").forEach(t => {
+  // 🧹 cerrar otros popovers
+  document.querySelectorAll(".factura-tag").forEach(t => {
+    if (t !== tag) {
       bootstrap.Popover.getInstance(t)?.dispose();
-    });
-
-    const facturaId = tag.dataset.facturaId;
-
-    const pop = new bootstrap.Popover(tag, {
-      html: true,
-      trigger: "manual",
-      placement: "right",
-      container: "body",
-      content: "Cargando pagos…",
-    });
-
-    pop.show();
-    popoverActivo = tag;
-
-    fetch(`/terminal_pagos/extracto/factura/${facturaId}/`)
-      .then(res => res.json())
-      .then(data => {
-
-        let html = `
-          <strong>Factura #${data.factura}</strong>
-          <hr class="my-1">
-        `;
-
-        if (!data.pagos.length) {
-          html += `<em class="text-muted">Sin pagos</em>`;
-        } else {
-          data.pagos.forEach(p => {
-            html += `
-              <div class="mb-2">
-                <strong>${p.medio}</strong><br>
-                <small class="text-muted">${p.canal}</small><br>
-                $${Number(p.valor).toLocaleString("es-CO")}
-                ${p.referencia ? `<br><small>Ref: ${p.referencia}</small>` : ""}
-              </div>
-            `;
-          });
-        }
-
-        pop.setContent({ ".popover-body": html });
-      });
-
+    }
   });
 
+  const pop = new bootstrap.Popover(tag, {
+    html: true,
+    content: "Cargando pagos…",
+    trigger: "manual",
+    placement: "right",
+  });
 
-  /* =========================
-    CERRAR SOLO SI CLICK FUERA
-    (CAPTURE PHASE)
-  ========================= */
-  document.addEventListener("click", function (e) {
+  pop.show();
 
-    // Si el click fue dentro del popover → no cerrar
-    if (e.target.closest(".popover")) return;
+  fetch(`/terminal_pagos/extracto/factura/${facturaId}/`)
+    .then(res => res.json())
+    .then(data => {
 
-    // Si el click fue sobre un tag → no cerrar (lo maneja el otro listener)
-    if (e.target.closest(".factura-tag")) return;
+      let html = `
+        <strong>Factura #${data.factura}</strong>
+        <hr class="my-1">
+      `;
 
-    document.querySelectorAll(".factura-tag").forEach(t => {
-      bootstrap.Popover.getInstance(t)?.dispose();
+      if (data.pagos.length === 0) {
+        html += `<em class="text-muted">Sin pagos</em>`;
+      } else {
+        data.pagos.forEach(p => {
+          html += `
+            <div class="mb-1">
+              <strong>${p.medio}</strong><br>
+              <small class="text-muted">${p.canal}</small><br>
+              $${Number(p.valor).toLocaleString("es-CO")}
+              ${p.referencia ? `<br><small>Ref: ${p.referencia}</small>` : ""}
+            </div>
+          `;
+        });
+      }
+
+      pop.setContent({ ".popover-body": html });
     });
 
-    popoverActivo = null;
-
-  }, true); // 👈 ESTO ES LA CLAVE
+});
 </script>
+
