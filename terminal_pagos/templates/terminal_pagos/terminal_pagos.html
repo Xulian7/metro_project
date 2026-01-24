@@ -341,9 +341,11 @@
             Cerrar
           </button>
           <button type="button"
-                  class="btn btn-outline-primary">
-            🖨️ Imprimir
+                  class="btn btn-outline-primary"
+                  id="btn-imprimir-factura">
+            🖨️ Copiar factura
           </button>
+
         </div>
 
       </div>
@@ -424,10 +426,49 @@
     });
   </script>
 
+  <!-- ================= SCRIPT COPIAR FACTURA ================= -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      const btn = document.getElementById("btn-imprimir-factura");
+      if (!btn) return;
+
+      btn.addEventListener("click", async () => {
+
+        const modal = document.querySelector("#facturaModal .modal-content");
+        if (!modal) return;
+
+        try {
+          const canvas = await html2canvas(modal, {
+            backgroundColor: "#ffffff",
+            scale: 2
+          });
+
+          canvas.toBlob(async blob => {
+            if (!blob) return;
+
+            await navigator.clipboard.write([
+              new ClipboardItem({ "image/png": blob })
+            ]);
+
+            alert("📋 Factura copiada al portapapeles.\nPégala donde quieras.");
+          });
+
+        } catch (err) {
+          console.error(err);
+          alert("❌ No se pudo copiar la factura.");
+        }
+
+      });
+
+    });
+  </script>
+
+
 </div>
 
 
-
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
