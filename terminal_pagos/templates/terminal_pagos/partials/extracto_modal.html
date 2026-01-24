@@ -36,22 +36,16 @@
 <script>
 let popover = null;
 let hideTimer = null;
+let activo = false;
 
-/* =========================
-   HOVER SOBRE FACTURA TAG
-========================= */
 document.addEventListener("mouseover", function (e) {
   const tag = e.target.closest(".factura-tag");
   if (!tag) return;
 
-  // cancelar cierre si estaba programado
-  if (hideTimer) {
-    clearTimeout(hideTimer);
-    hideTimer = null;
-  }
+  if (hideTimer) clearTimeout(hideTimer);
 
-  // si ya hay uno abierto sobre este tag, no recrear
-  if (popover && popover._element === tag) return;
+  // ya activo sobre este tag → no recrear
+  if (activo && popover?._element === tag) return;
 
   // cerrar otros
   document.querySelectorAll(".factura-tag").forEach(t => {
@@ -65,14 +59,22 @@ document.addEventListener("mouseover", function (e) {
     trigger: "manual",
     placement: "right",
     container: "body",
-    content: "Cargando pagos…",
+    content: `
+      <div id="popover-content">
+        <em class="text-muted">Cargando pagos…</em>
+      </div>
+    `,
   });
 
   popover.show();
+  activo = true;
 
+  // 🔁 fetch SOLO actualiza contenido interno
   fetch(`/terminal_pagos/extracto/factura/${facturaId}/`)
     .then(res => res.json())
     .then(data => {
+      const cont = document.getElementById("popover-content");
+      if (!cont) return;
 
       let html = `
         <strong>Factura #${data.factura}</strong>
@@ -94,41 +96,32 @@ document.addEventListener("mouseover", function (e) {
         });
       }
 
-      popover.setContent({ ".popover-body": html });
+      cont.innerHTML = html;
 
-      // 👇 enganchar hover del popover
-      const popEl = document.querySelector(".popover");
+      // mantener hover sobre el popover
+      const popEl = cont.closest(".popover");
       if (popEl) {
         popEl.addEventListener("mouseenter", () => {
           if (hideTimer) clearTimeout(hideTimer);
         });
-
         popEl.addEventListener("mouseleave", scheduleHide);
       }
     });
 });
 
-
-/* =========================
-   SALIDA DEL TAG
-========================= */
 document.addEventListener("mouseout", function (e) {
   const tag = e.target.closest(".factura-tag");
   if (!tag) return;
-
   scheduleHide();
 });
 
-
-/* =========================
-   CIERRE DIFERIDO (CLAVE)
-========================= */
 function scheduleHide() {
   hideTimer = setTimeout(() => {
     document.querySelectorAll(".factura-tag").forEach(t => {
       bootstrap.Popover.getInstance(t)?.dispose();
     });
     popover = null;
-  }, 300); // 👈 delay humano
+    activo = false;
+  }, 300);
 }
 </script>
