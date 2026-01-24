@@ -36,3 +36,60 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("click", function (e) {
+
+    const tag = e.target.closest(".factura-tag");
+    if (!tag) return;
+
+    const facturaId = tag.dataset.facturaId;
+
+    // 🔁 destruir otros popovers
+    document.querySelectorAll(".factura-tag").forEach(t => {
+      if (t !== tag) {
+        bootstrap.Popover.getInstance(t)?.dispose();
+      }
+    });
+
+    // ⏳ loading
+    const pop = new bootstrap.Popover(tag, {
+      html: true,
+      content: "Cargando pagos…",
+      trigger: "manual",
+      placement: "right",
+    });
+
+    pop.show();
+
+    fetch(`/terminal_pagos/extracto/factura/${facturaId}/`)
+      .then(res => res.json())
+      .then(data => {
+
+        let html = `
+          <strong>Factura #${data.factura}</strong>
+          <hr class="my-1">
+        `;
+
+        if (data.pagos.length === 0) {
+          html += `<em class="text-muted">Sin pagos</em>`;
+        } else {
+          data.pagos.forEach(p => {
+            html += `
+              <div class="mb-1">
+                <strong>${p.medio}</strong><br>
+                <small class="text-muted">${p.canal}</small><br>
+                $${Number(p.valor).toLocaleString("es-CO")}
+                ${p.referencia ? `<br><small>Ref: ${p.referencia}</small>` : ""}
+              </div>
+            `;
+          });
+        }
+
+        pop.setContent({
+          ".popover-body": html
+        });
+      });
+
+  });
+</script>

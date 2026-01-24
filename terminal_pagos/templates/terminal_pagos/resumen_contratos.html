@@ -170,9 +170,10 @@
                   ${
                     f.factura_id
                       ? `<span class="badge bg-primary factura-tag"
-                              data-factura-id="${f.factura_id}">
-                            #${f.factura_id}
-                        </span>`
+                              data-factura-id="{{ f.factura_id }}"
+                              role="button">
+                          #{{ f.factura_id }}
+                        </span>
                       : "—"
                   }
                 </td>

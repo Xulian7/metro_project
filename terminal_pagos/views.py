@@ -618,3 +618,40 @@ def extracto_contrato(request, contrato_id):
             for f in fechas
         ]
     })
+    
+    
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from decimal import Decimal
+
+def detalle_factura_pagos(request, factura_id):
+
+    factura = get_object_or_404(
+        Factura.objects.prefetch_related(
+            "pagos__configuracion__medio",
+            "pagos__canal",
+        ),
+        id=factura_id
+    )
+
+    pagos = factura.pagos.all().order_by("id") # type: ignore
+
+    return JsonResponse({
+        "factura": {
+            "id": factura.id, # type: ignore
+            "fecha": factura.fecha.strftime("%d/%m/%Y %H:%M"),
+            "total": str(factura.total),
+            "total_pagado": str(factura.total_pagado),
+            "estado_pago": factura.get_estado_pago_display(), # type: ignore
+        },
+        "pagos": [
+            {
+                "medio": p.configuracion.medio.nombre,
+                "canal": p.canal.nombre,
+                "valor": str(p.valor),      # 👈 NO float
+                "referencia": p.referencia or "",
+            }
+            for p in pagos
+        ]
+    })
+
