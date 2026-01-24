@@ -34,45 +34,43 @@
 </div>
 
 <script>
+let popoverActivo = null;
+
+/* =========================
+   ABRIR POPOVER
+========================= */
 document.addEventListener("click", function (e) {
 
   const tag = e.target.closest(".factura-tag");
+  if (!tag) return;
 
-  // 🔻 click fuera → cerrar todos
-  if (!tag) {
-    document.querySelectorAll(".factura-tag").forEach(t => {
-      bootstrap.Popover.getInstance(t)?.dispose();
-    });
+  e.preventDefault();
+  e.stopPropagation(); // ⛔ CLAVE
+
+  // Toggle
+  if (popoverActivo === tag) {
+    bootstrap.Popover.getInstance(tag)?.dispose();
+    popoverActivo = null;
     return;
   }
 
-  e.stopPropagation();
+  // Cerrar otros
+  document.querySelectorAll(".factura-tag").forEach(t => {
+    bootstrap.Popover.getInstance(t)?.dispose();
+  });
 
   const facturaId = tag.dataset.facturaId;
-
-  // 🔁 toggle: si ya existe, cerrar
-  const existing = bootstrap.Popover.getInstance(tag);
-  if (existing) {
-    existing.dispose();
-    return;
-  }
-
-  // 🔻 cerrar otros
-  document.querySelectorAll(".factura-tag").forEach(t => {
-    if (t !== tag) {
-      bootstrap.Popover.getInstance(t)?.dispose();
-    }
-  });
 
   const pop = new bootstrap.Popover(tag, {
     html: true,
     trigger: "manual",
     placement: "right",
-    content: "Cargando pagos…",
     container: "body",
+    content: "Cargando pagos…",
   });
 
   pop.show();
+  popoverActivo = tag;
 
   fetch(`/terminal_pagos/extracto/factura/${facturaId}/`)
     .then(res => res.json())
@@ -101,11 +99,15 @@ document.addEventListener("click", function (e) {
       pop.setContent({ ".popover-body": html });
     });
 });
+
+
+/* =========================
+   CERRAR AL CLICK FUERA
+========================= */
+document.addEventListener("click", function () {
+  document.querySelectorAll(".factura-tag").forEach(t => {
+    bootstrap.Popover.getInstance(t)?.dispose();
+  });
+  popoverActivo = null;
+});
 </script>
-
-
-<Style>
-  .factura-tag.active {
-  background-color: #0d6efd;
-}
-</Style>
