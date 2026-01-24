@@ -35,7 +35,7 @@
           <th class="text-center">Cuotas vencidas</th>
           <th class="text-center">Pagos tarifa</th>
           <th class="text-center">Saldo</th>
-          <th></th>
+          <th class="text-end">Acciones</th>
         </tr>
       </thead>
 
@@ -70,7 +70,7 @@
             {{ row.cuotas_vencidas|floatformat:1 }}
           </td>
 
-          <!-- Pagos (cuotas + dinero) -->
+          <!-- Pagos -->
           <td class="text-center">
             <div class="fw-semibold">
               {{ row.cuotas_pagadas|floatformat:1 }} cuotas
@@ -80,7 +80,7 @@
             </small>
           </td>
 
-          <!-- Saldo mixto (deuda / adelanto) -->
+          <!-- Saldo -->
           <td class="text-center fw-semibold
             {% if row.saldo_cuotas > 0 %}
               text-danger
@@ -97,11 +97,22 @@
             </small>
           </td>
 
-          <!-- Acción rápida (sin lógica aún) -->
+          <!-- 🔘 ACCIONES -->
           <td class="text-end">
-            <button class="btn btn-sm btn-outline-success">
-              💵 Cobrar
-            </button>
+            <div class="btn-group btn-group-sm" role="group">
+              <button
+                class="btn btn-outline-success"
+                title="Cobrar">
+                💵
+              </button>
+
+              <button
+                class="btn btn-outline-primary btn-extracto"
+                data-contrato-id="{{ row.contrato.id }}"
+                title="Ver extracto de pagos">
+                📄
+              </button>
+            </div>
           </td>
         </tr>
 
