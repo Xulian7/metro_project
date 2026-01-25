@@ -179,7 +179,7 @@
 
         <div class="col">
           <input type="text"
-                class="form-control form-control-sm pago-referencia"
+                class="form-control form-control-sm pago-referencia d-none"
                 name="referencia_pago[]"
                 placeholder="Referencia">
         </div>
@@ -193,7 +193,6 @@
                 placeholder="">
         </div>
 
-        <!-- ACCIÓN (ligeramente más chica pero estable) -->
         <div class="col-auto d-flex justify-content-center">
           <button type="button"
                   class="btn btn-outline-danger btn-sm remove-pago">
@@ -865,7 +864,23 @@
     if (!medio || !canal || !cuenta || !fecha || !referencia || !valor) return;
 
     /* ===============================
-      1️⃣ Campos base completos
+      1️⃣ ¿Canal exige referencia?
+    ================================ */
+    const selectedOption = canal.options[canal.selectedIndex];
+    const exigeReferencia =
+      selectedOption?.dataset.referencia === "1";
+
+    /* ===============================
+      2️⃣ Mostrar / ocultar REFERENCIA
+    ================================ */
+    referencia.classList.toggle("d-none", !exigeReferencia);
+
+    if (!exigeReferencia) {
+      referencia.value = "";
+    }
+
+    /* ===============================
+      3️⃣ Campos base completos
     ================================ */
     const medioOk  = medio.value !== "";
     const canalOk  = canal.value !== "";
@@ -873,20 +888,13 @@
     const fechaOk  = fecha.value !== "";
 
     /* ===============================
-      2️⃣ ¿Canal exige referencia?
-    ================================ */
-    const selectedOption = canal.options[canal.selectedIndex];
-    const exigeReferencia =
-      selectedOption?.dataset.referencia === "1";
-
-    /* ===============================
-      3️⃣ Referencia válida (solo si aplica)
+      4️⃣ Referencia válida (si aplica)
     ================================ */
     const referenciaOk =
       !exigeReferencia || referencia.value.trim() !== "";
 
     /* ===============================
-      4️⃣ ¿Mostrar valor?
+      5️⃣ Mostrar / ocultar VALOR
     ================================ */
     const mostrarValor =
       medioOk &&
@@ -897,7 +905,6 @@
 
     valor.classList.toggle("d-none", !mostrarValor);
 
-    // defensivo: si se oculta, limpiar valor
     if (!mostrarValor) {
       valor.value = "";
     }
