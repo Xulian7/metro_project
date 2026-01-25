@@ -11,19 +11,8 @@
     </h5>
   </div>
 
-  <!-- 🔍 BUSCADOR -->
+  <!-- 🔍 BUSCADOR &  EXPORTAR -->
   <div class="row mb-3">
-    <div class="col-md-4">
-      <input
-        type="text"
-        id="buscador-contratos"
-        class="form-control"
-        placeholder="Buscar por contrato, cliente o placa">
-    </div>
-  </div>
-
-  <!-- EXPORTAR A EXCEL -->
-  <div class="row mb-3 align-items-center">
     <div class="col-md-4">
       <input
         type="text"
@@ -37,8 +26,8 @@
               class="btn btn-outline-success btn-sm">
         📊 Exportar a Excel
       </button>
-    </div>
   </div>
+
 
   <!-- 📋 TABLA -->
   <div class="table-responsive">
@@ -331,37 +320,76 @@ document.addEventListener("DOMContentLoaded", () => {
     const table = document.querySelector("table");
     let html = "<table border='1'><tr>";
 
-    // --- HEADERS (excluye Acciones)
+    // --- HEADERS (con split)
     table.querySelectorAll("thead th").forEach((th, index) => {
-      if (th.innerText.trim() !== "Acciones") {
-        html += `<th>${th.innerText}</th>`;
+
+      const title = th.innerText.trim();
+
+      if (title === "Acciones") return;
+
+      if (index === 3) { // Inicio
+        html += "<th>Inicio</th><th>Días</th>";
+      } 
+      else if (index === 7) { // Pagos tarifa
+        html += "<th>Pagos (cuotas)</th><th>Pagos ($)</th>";
+      }
+      else if (index === 8) { // Saldo
+        html += "<th>Saldo (cuotas)</th><th>Saldo ($)</th>";
+      }
+      else {
+        html += `<th>${title}</th>`;
       }
     });
+
     html += "</tr>";
 
-    // --- FILAS (solo visibles por el buscador)
+    // --- FILAS
     table.querySelectorAll("tbody tr").forEach(tr => {
       if (tr.style.display === "none") return;
 
       html += "<tr>";
-      tr.querySelectorAll("td").forEach((td, index) => {
-        // ignora columna Acciones (última)
-        if (index === tr.children.length - 1) return;
 
-        // limpia saltos de línea y badges
+      tr.querySelectorAll("td").forEach((td, index) => {
+
+        if (index === tr.children.length - 1) return; // Acciones
+
         let text = td.innerText
-          .replace(/\n+/g, " ")
-          .replace(/\s+/g, " ")
+          .replace(/\n+/g, "\n")
           .trim();
 
-        html += `<td>${text}</td>`;
+        // 🗓️ Inicio
+        if (index === 3) {
+          const [fecha, dias] = text.split("\n");
+          html += `<td>${fecha ?? ""}</td>`;
+          html += `<td>${(dias ?? "").replace("días", "").trim()}</td>`;
+          return;
+        }
+
+        // 💰 Pagos tarifa
+        if (index === 7) {
+          const [cuotas, dinero] = text.split("\n");
+          html += `<td>${(cuotas ?? "").replace("cuotas", "").trim()}</td>`;
+          html += `<td>${(dinero ?? "").replace("$", "").trim()}</td>`;
+          return;
+        }
+
+        // 📊 Saldo
+        if (index === 8) {
+          const [cuotas, dinero] = text.split("\n");
+          html += `<td>${cuotas ?? ""}</td>`;
+          html += `<td>${(dinero ?? "").replace("$", "").trim()}</td>`;
+          return;
+        }
+
+        // normal
+        html += `<td>${text.replace(/\n/g, " ")}</td>`;
       });
+
       html += "</tr>";
     });
 
     html += "</table>";
 
-    // --- Descargar
     const blob = new Blob(
       ["\ufeff" + html],
       { type: "application/vnd.ms-excel;charset=utf-8;" }
