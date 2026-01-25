@@ -44,7 +44,18 @@
         {% for row in filas %}
         <tr>
           <td>#{{ row.contrato.id }}</td>
-          <td>{{ row.contrato.cliente.nombre }}</td>
+          
+          <td>
+            {{ row.contrato.cliente.nombre }}
+
+            {% if row.contrato.cliente.status == "Lista Negra" %}
+              <span class="badge bg-dark ms-1"
+                    title="Cliente en lista negra">
+                ⚑
+              </span>
+            {% endif %}
+          </td>
+
           <td>{{ row.contrato.vehiculo.placa }}</td>
 
           
