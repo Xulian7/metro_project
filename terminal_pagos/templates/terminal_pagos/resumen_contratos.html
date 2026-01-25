@@ -10,7 +10,7 @@
     </h5>
   </div>
 
-  <!--  BUSCADOR -->
+  <!-- 🔍 BUSCADOR -->
   <div class="row mb-3">
     <div class="col-md-4">
       <input
@@ -21,7 +21,7 @@
     </div>
   </div>
 
-  <!--  TABLA -->
+  <!-- 📋 TABLA -->
   <div class="table-responsive">
     <table class="table table-sm table-striped align-middle">
       <thead class="table-light">
@@ -33,8 +33,6 @@
           <th class="text-end">Tarifa</th>
           <th class="text-center">Frecuencia</th>
           <th class="text-center">Cuotas vencidas</th>
-          <th id="sort-cuotas" class="text-center" style="cursor:pointer">Cuotas vencidas <span class="sort-indicator"></span></th>
-
           <th class="text-center">Pagos tarifa</th>
           <th class="text-center">Saldo</th>
           <th class="text-end">Acciones</th>
@@ -47,6 +45,7 @@
           <td>#{{ row.contrato.id }}</td>
           <td>{{ row.contrato.cliente.nombre }}</td>
           <td>{{ row.contrato.vehiculo.placa }}</td>
+
           <!-- Fecha de inicio -->
           <td>
             {{ row.fecha_inicio|date:"d/m/Y" }}
@@ -55,16 +54,19 @@
               {{ row.dias_transcurridos }} días
             </small>
           </td>
+
           <!-- Tarifa -->
           <td class="text-end">
             ${{ row.tarifa|floatformat:0 }}
           </td>
+
           <!-- Frecuencia -->
           <td class="text-center">
             {{ row.contrato.get_frecuencia_pago_display }}
           </td>
+
           <!-- Cuotas vencidas -->
-          <td class="text-center fw-semibold" data-cuotas="{{ row.cuotas_vencidas }}">
+          <td class="text-center fw-semibold">
             {{ row.cuotas_vencidas|floatformat:1 }}
           </td>
 
@@ -77,6 +79,7 @@
               ${{ row.total_pagado|floatformat:0 }}
             </small>
           </td>
+
           <!-- Saldo -->
           <td class="text-center fw-semibold
             {% if row.saldo_cuotas > 0 %}
@@ -93,7 +96,8 @@
               ${{ row.saldo_dinero|floatformat:0 }}
             </small>
           </td>
-          <!-- ACCIONES -->
+
+          <!-- 🔘 ACCIONES -->
           <td class="text-end">
             <div class="btn-group btn-group-sm" role="group">
               <button
@@ -122,6 +126,7 @@
       </tbody>
     </table>
   </div>
+
 </div>
 
 
@@ -131,129 +136,88 @@
 
 <!-- EXTRACTO DE PAGOS JS -->
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-    document.querySelectorAll(".btn-extracto").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const contratoId = btn.dataset.contratoId;
+  document.querySelectorAll(".btn-extracto").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const contratoId = btn.dataset.contratoId;
 
-        fetch(`/terminal_pagos/extracto/contrato/${contratoId}/`)
-          .then(res => res.json())
-          .then(data => {
-            const tbody = document.getElementById("extracto-body");
-            tbody.innerHTML = "";
+      fetch(`/terminal_pagos/extracto/contrato/${contratoId}/`)
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.getElementById("extracto-body");
+          tbody.innerHTML = "";
 
-            data.filas.forEach(f => {
-              const tr = document.createElement("tr");
+          data.filas.forEach(f => {
+            const tr = document.createElement("tr");
 
-              tr.innerHTML = `
-                <td>${f.fecha_pactada}</td>
+            tr.innerHTML = `
+              <td>${f.fecha_pactada}</td>
 
-                <td class="text-end">
-                  $${Number(f.valor_pactado).toLocaleString("es-CO")}
-                </td>
+              <td class="text-end">
+                $${Number(f.valor_pactado).toLocaleString("es-CO")}
+              </td>
 
-                <td class="text-end">
-                  $${Number(f.valor_aplicado).toLocaleString("es-CO")}
-                </td>
+              <td class="text-end">
+                $${Number(f.valor_aplicado).toLocaleString("es-CO")}
+              </td>
 
-                <td>
-                  ${f.fecha_pago ?? "—"}
-                </td>
+              <td>
+                ${f.fecha_pago ?? "—"}
+              </td>
 
-                <td>
-                  ${
-                    f.factura_id
-                      ? `<span class="badge bg-primary factura-tag"
-                              data-factura-id="${f.factura_id}"
-                              role="button">
-                          #${f.factura_id}
-                        </span>`
-                      : "—"
-                  }
-                </td>
-              `;
+              <td>
+                ${
+                  f.factura_id
+                    ? `<span class="badge bg-primary factura-tag"
+                            data-factura-id="${f.factura_id}"
+                            role="button">
+                        #${f.factura_id}
+                      </span>`
+                    : "—"
+                }
+              </td>
+            `;
 
-              tbody.appendChild(tr);
-            });
-
-            const modal = new bootstrap.Modal(
-              document.getElementById("extractoModal")
-            );
-            modal.show();
+            tbody.appendChild(tr);
           });
-      });
-    });
 
+          const modal = new bootstrap.Modal(
+            document.getElementById("extractoModal")
+          );
+          modal.show();
+        });
+    });
   });
+
+});
 </script>
 
-<!-- BUSCADOR JS -->
+
+
+<!-- 🔎 BUSCADOR JS -->
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const buscador = document.getElementById("buscador-contratos");
-    const filas = document.querySelectorAll("#tabla-contratos tr");
+document.addEventListener("DOMContentLoaded", () => {
+  const buscador = document.getElementById("buscador-contratos");
+  const filas = document.querySelectorAll("#tabla-contratos tr");
 
-    buscador?.addEventListener("input", () => {
-      const texto = buscador.value.toLowerCase();
+  buscador?.addEventListener("input", () => {
+    const texto = buscador.value.toLowerCase();
 
-      filas.forEach(fila => {
-        const contrato = fila.children[0].innerText.toLowerCase();
-        const cliente  = fila.children[1].innerText.toLowerCase();
-        const placa    = fila.children[2].innerText.toLowerCase();
+    filas.forEach(fila => {
+      const contrato = fila.children[0].innerText.toLowerCase();
+      const cliente  = fila.children[1].innerText.toLowerCase();
+      const placa    = fila.children[2].innerText.toLowerCase();
 
-        fila.style.display =
-          contrato.includes(texto) ||
-          cliente.includes(texto) ||
-          placa.includes(texto)
-            ? ""
-            : "none";
-      });
+      fila.style.display =
+        contrato.includes(texto) ||
+        cliente.includes(texto) ||
+        placa.includes(texto)
+          ? ""
+          : "none";
     });
   });
+});
 </script>
-
-<!-- ORDENAR CUOTAS VENCIDAS JS -->
-<script>
-  let ascCuotas = true;
-
-  document.getElementById("sort-cuotas").addEventListener("click", () => {
-    const tbody = document.getElementById("tabla-contratos");
-    const rows = Array.from(tbody.querySelectorAll("tr"));
-
-    rows.sort((a, b) => {
-      const A = parseFloat(a.querySelector("[data-cuotas]").dataset.cuotas);
-      const B = parseFloat(b.querySelector("[data-cuotas]").dataset.cuotas);
-      return ascCuotas ? A - B : B - A;
-    });
-
-    ascCuotas = !ascCuotas;
-    rows.forEach(row => tbody.appendChild(row));
-  });
-</script>
-
-<style>
-  th.sortable {
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .sort-indicator {
-    font-size: 0.75em;
-    margin-left: 4px;
-    color: #adb5bd;
-  }
-
-  .sort-indicator.asc::after {
-    content: "▲";
-    color: #0d6efd;
-  }
-
-  .sort-indicator.desc::after {
-    content: "▼";
-    color: #0d6efd;
-  }
-</style>
-
 
 {% endblock %}
