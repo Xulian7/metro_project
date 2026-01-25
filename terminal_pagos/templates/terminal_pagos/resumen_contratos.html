@@ -220,27 +220,30 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-<script>
+<!-- ORDENAMIENTO JS -->
+ <script>
 document.addEventListener("DOMContentLoaded", () => {
 
   const tbody = document.getElementById("tabla-contratos");
   let currentIndex = null;
   let asc = true;
 
-  document.querySelectorAll("th.sortable").forEach((th, index) => {
+  document.querySelectorAll("th.sortable").forEach(th => {
 
     th.addEventListener("click", () => {
+
+      const colIndex = th.cellIndex; // 🔥 ÍNDICE REAL
 
       // reset visual
       document.querySelectorAll("th.sortable")
         .forEach(h => h.classList.remove("asc", "desc"));
 
-      // alternar / resetear orden
-      if (currentIndex === index) {
+      // alternar / resetear
+      if (currentIndex === colIndex) {
         asc = !asc;
       } else {
         asc = true;
-        currentIndex = index;
+        currentIndex = colIndex;
       }
 
       const rows = Array.from(tbody.querySelectorAll("tr"));
@@ -250,15 +253,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 🗓️ INICIO
         if (type === "date") {
-          const A = new Date(a.children[index].dataset.fecha);
-          const B = new Date(b.children[index].dataset.fecha);
+          const A = new Date(a.children[colIndex].dataset.fecha);
+          const B = new Date(b.children[colIndex].dataset.fecha);
           return asc ? A - B : B - A;
         }
 
         // 🔢 CUOTAS VENCIDAS
         if (type === "number") {
-          const A = parseFloat(a.children[index].dataset.cuotas);
-          const B = parseFloat(b.children[index].dataset.cuotas);
+          const A = parseFloat(a.children[colIndex].dataset.cuotas);
+          const B = parseFloat(b.children[colIndex].dataset.cuotas);
           return asc ? A - B : B - A;
         }
 
@@ -273,7 +276,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 </script>
-
 
 
 <!-- ESTILOS PARA ORDENAMIENTO -->
