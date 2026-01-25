@@ -224,6 +224,8 @@ class PagoFactura(models.Model):
 
     referencia = models.CharField(
         max_length=100,
+        unique=True,
+        null=True,
         blank=True
     )
 

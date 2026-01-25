@@ -383,7 +383,6 @@
       </div>
     </div>
   </div>
-
   {% endif %}
 
   <!-- ================= SCRIPT MODAL FACTURA ================= -->
@@ -407,13 +406,44 @@
   <script>
     const form = document.getElementById("factura-form");
 
-    form.addEventListener("submit", function (e) {
+    form.addEventListener("submit", async function (e) {
 
-      // ⛔ Cortar submit nativo
+      // ⛔ cortar submit nativo
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
 
+      // ======================
+      // 1️⃣ VALIDAR REFERENCIAS
+      // ======================
+      const referencias = Array.from(
+        document.querySelectorAll(".pago-referencia")
+      )
+      .map(i => i.value.trim())
+      .filter(v => v.length > 0);
+
+      for (const ref of referencias) {
+        const res = await fetch(
+          `/terminal_pagos/validar-referencia/?referencia=${encodeURIComponent(ref)}`
+        );
+        const data = await res.json();
+
+        if (!data.ok) {
+          alert(
+            `❌ La referencia "${ref}" ya fue utilizada.\n\n` +
+            `Cliente: ${data.cliente}\n` +
+            `Vehículo: ${data.vehiculo}\n\n` +
+            `Contrato #${data.contrato_id}\n` +
+            `Factura #${data.factura_id}\n` +
+            `Pago #${data.pago_id}`
+          );
+          return false;
+        }
+      }
+
+      // ======================
+      // 2️⃣ VALIDAR TOTALES
+      // ======================
       const totalFactura = Array.from(document.querySelectorAll(".item-row"))
         .reduce((acc, r) => acc + parseFloat(r.dataset.subtotal || 0), 0);
 
@@ -423,29 +453,29 @@
       const tf = Number(totalFactura.toFixed(2));
       const tp = Number(totalPagado.toFixed(2));
 
-      // ❌ Validación de montos
       if (tp !== tf) {
-        if (tp < tf) {
-          alert("❌ El total pagado no cubre el total de la factura.");
-        } else {
-          alert("❌ El total pagado excede el total de la factura.");
-        }
+        alert(
+          tp < tf
+            ? "❌ El total pagado no cubre el total de la factura."
+            : "❌ El total pagado excede el total de la factura."
+        );
         return false;
       }
 
-      // ⚠️ CONFIRMACIÓN DEL USUARIO
+      // ======================
+      // 3️⃣ CONFIRMACIÓN
+      // ======================
       const ok = confirm(
         `¿Confirmas guardar la factura?\n\n` +
         `Total factura: $${tf.toLocaleString("es-CO")}\n` +
         `Total pagado:  $${tp.toLocaleString("es-CO")}`
       );
 
-      if (!ok) {
-        // 🛑 Usuario canceló → no se envía, no se borra nada
-        return false;
-      }
+      if (!ok) return false;
 
-      // 🔑 Sincronizar configuraciones de pago
+      // ======================
+      // 4️⃣ SINCRONIZAR CONFIG
+      // ======================
       document.querySelectorAll(".pago-row").forEach(row => {
         const cuentaSel = row.querySelector(".pago-cuenta");
         const configIdInput = row.querySelector(".pago-config-id");
@@ -454,10 +484,13 @@
         }
       });
 
-      // ✅ Submit real (controlado)
+      // ======================
+      // 5️⃣ SUBMIT REAL
+      // ======================
       form.submit();
     });
-  </script>
+ </script>
+
 
   <!-- ================= SCRIPT COPIAR FACTURA ================= -->
   <script>

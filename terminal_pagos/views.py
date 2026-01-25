@@ -620,9 +620,8 @@ def extracto_contrato(request, contrato_id):
     })
     
     
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from decimal import Decimal
+    
+
 
 def detalle_factura_pagos(request, factura_id):
 
@@ -655,3 +654,38 @@ def detalle_factura_pagos(request, factura_id):
         ]
     })
 
+
+from django.http import JsonResponse
+from terminal_pagos.models import PagoFactura
+
+def validar_referencia_pago(request):
+    ref = request.GET.get("referencia")
+
+    if not ref:
+        return JsonResponse({"ok": True})
+
+    pago = (
+        PagoFactura.objects
+        .select_related(
+            "factura",
+            "factura__contrato",
+            "factura__contrato__cliente",
+            "factura__contrato__vehiculo",
+        )
+        .filter(referencia=ref)
+        .first()
+    )
+
+    if pago:
+        contrato = pago.factura.contrato
+
+        return JsonResponse({
+            "ok": False,
+            "pago_id": pago.id, # type: ignore
+            "factura_id": pago.factura.id, # type: ignore
+            "contrato_id": contrato.id, # type: ignore
+            "cliente": contrato.cliente.nombre,
+            "vehiculo": contrato.vehiculo.placa,
+        })
+
+    return JsonResponse({"ok": True})
