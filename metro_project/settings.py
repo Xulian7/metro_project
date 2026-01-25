@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'widget_tweaks',
     'django.contrib.humanize',
-    "django.contrib.humanize",  # para formateo de números
     'core',
     'accounts',
     'clientes',
