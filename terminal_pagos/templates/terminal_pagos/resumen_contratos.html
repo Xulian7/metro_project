@@ -29,12 +29,12 @@
           <th>Contrato</th>
           <th>Cliente</th>
           <th>Vehículo</th>
-          <th data-sort="date">Antiguedad</th>
-          <th data-sort="number" class="text-end">Tarifa</th>
-          <th data-sort="string" class="text-center">Frecuencia</th>
-          <th data-sort="number" class="text-center">Cuotas vencidas</th>
-          <th data-sort="number" class="text-center">Pagos tarifa</th>
-          <th data-sort="number" class="text-center">Saldo</th>
+          <th data-sort="sortable date">Antiguedad</th>
+          <th data-sort="number" class="sortable text-end">Tarifa</th>
+          <th data-sort="string" class="sortable text-center">Frecuencia</th>
+          <th data-sort="number" class="sortabletext-center">Cuotas vencidas</th>
+          <th data-sort="number" class="sortable text-center">Pagos tarifa</th>
+          <th data-sort="number" class="sortable text-center">Saldo</th>
           <th class="text-end">Acciones</th>
 
         </tr>
@@ -220,42 +220,72 @@
 
 <!-- 📊 ORDENAR TABLA JS -->
 <script>
-  document.querySelectorAll("th[data-sort]").forEach((header, index) => {
-    let asc = true;
+document.querySelectorAll("th.sortable").forEach((header, index) => {
+  let asc = true;
 
-    header.style.cursor = "pointer";
+  header.addEventListener("click", () => {
+    const tbody = document.getElementById("tabla-contratos");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+    const type = header.dataset.sort;
 
-    header.addEventListener("click", () => {
-      const tbody = document.getElementById("tabla-contratos");
-      const rows = Array.from(tbody.querySelectorAll("tr"));
-      const type = header.dataset.sort;
-
-      rows.sort((a, b) => {
-        let A = a.children[index].innerText.trim();
-        let B = b.children[index].innerText.trim();
-
-        if (type === "number") {
-          A = parseFloat(A.replace(/[^\d.-]/g, "")) || 0;
-          B = parseFloat(B.replace(/[^\d.-]/g, "")) || 0;
-        }
-
-        if (type === "date") {
-          A = new Date(A.split("/").reverse().join("-"));
-          B = new Date(B.split("/").reverse().join("-"));
-        }
-
-        if (type === "string") {
-          return asc ? A.localeCompare(B) : B.localeCompare(A);
-        }
-
-        return asc ? A - B : B - A;
-      });
-
-      asc = !asc;
-      rows.forEach(row => tbody.appendChild(row));
+    // Reset visual state
+    document.querySelectorAll("th.sortable").forEach(th => {
+      th.classList.remove("asc", "desc");
     });
+
+    rows.sort((a, b) => {
+      let A = a.children[index].innerText.trim();
+      let B = b.children[index].innerText.trim();
+
+      if (type === "number") {
+        A = parseFloat(A.replace(/[^\d.-]/g, "")) || 0;
+        B = parseFloat(B.replace(/[^\d.-]/g, "")) || 0;
+      }
+
+      if (type === "date") {
+        A = new Date(A.split("/").reverse().join("-"));
+        B = new Date(B.split("/").reverse().join("-"));
+      }
+
+      if (type === "string") {
+        return asc ? A.localeCompare(B) : B.localeCompare(A);
+      }
+
+      return asc ? A - B : B - A;
+    });
+
+    header.classList.add(asc ? "asc" : "desc");
+    asc = !asc;
+
+    rows.forEach(row => tbody.appendChild(row));
   });
+});
 </script>
+
+
+
+<style>
+  th.sortable {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  th.sortable::after {
+    content: " ⇅";
+    font-size: 0.75em;
+    color: #adb5bd;
+  }
+
+  th.sortable.asc::after {
+    content: " ▲";
+    color: #0d6efd;
+  }
+
+  th.sortable.desc::after {
+    content: " ▼";
+    color: #0d6efd;
+  }
+</style>
 
 
 {% endblock %}
