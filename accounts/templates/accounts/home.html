@@ -106,35 +106,6 @@
             </div>
           </div>
 
-          <!-- Almacén -->
-          <div class="nav-item">
-            <a class="nav-link parent-link" data-parent="almacen">
-              <span class="icon"><i class="bi bi-box-seam"></i></span>
-              <span class="text-label">Almacén</span>
-            </a>
-            <div class="sublist" data-parent="almacen">
-              <a
-                href="{% url 'almacen_dashboard' %}"
-                class="nav-link child-link"
-                >Gestión</a
-              >
-            </div>
-          </div>
-
-          <!-- Taller -->
-          <div class="nav-item">
-            <a class="nav-link parent-link" data-parent="taller">
-              <span class="icon"><i class="bi bi-tools"></i></span>
-              <span class="text-label">Taller</span>
-            </a>
-            <div class="sublist" data-parent="taller">
-              <a href="{% url 'taller_panel' %}" class="nav-link child-link">
-                Servicios
-              </a>
-            </div>
-          </div>
-
-
           <!-- Arrendamientos -->
           <div class="nav-item">
             <a class="nav-link parent-link" data-parent="arrendamientos">
@@ -145,28 +116,7 @@
               <a href="{% url 'arrendamientos:contratos' %}" class="nav-link child-link">
                 Contratos
               </a>
-              <a href="{% url 'arrendamientos:lista_cobros' %}" class="nav-link child-link">
-                Lista de Cobros
-              </a>
-              <a href="{% url 'arrendamientos:reportes' %}" class="nav-link child-link">
-                Reportes
-              </a>
             </div>
-          </div>
-
-          <!-- Empeños -->
-          <div class="nav-item">
-              <a class="nav-link parent-link" data-parent="empeños">
-                  <span class="icon">
-                      <i class="bi bi-cash"></i>
-                  </span>
-                  <span class="text-label">Empeños</span>
-              </a>
-              <div class="sublist" data-parent="empeños">
-                  <a href="Terminal.html" class="nav-link child-link">
-                      Nuevo Empeño
-                  </a>
-              </div>
           </div>
 
           <!-- Terminal de pagos -->
@@ -195,7 +145,50 @@
               </div>
           </div>
 
+          <!-- Almacén -->
+          <div class="nav-item">
+            <a class="nav-link parent-link" data-parent="almacen">
+              <span class="icon"><i class="bi bi-box-seam"></i></span>
+              <span class="text-label">Almacén</span>
+            </a>
+            <div class="sublist" data-parent="almacen">
+              <a
+                href="{% url 'almacen_dashboard' %}"
+                class="nav-link child-link"
+                >Gestión</a
+              >
+            </div>
+          </div>
 
+          <!-- Taller -->
+          <div class="nav-item">
+            <a class="nav-link parent-link" data-parent="taller">
+              <span class="icon"><i class="bi bi-tools"></i></span>
+              <span class="text-label">Taller</span>
+            </a>
+            <div class="sublist" data-parent="taller">
+              <a href="{% url 'taller_panel' %}" class="nav-link child-link">
+                Servicios
+              </a>
+            </div>
+          </div>
+
+          <!-- Empeños -->
+          <div class="nav-item">
+              <a class="nav-link parent-link" data-parent="empeños">
+                  <span class="icon">
+                      <i class="bi bi-cash"></i>
+                  </span>
+                  <span class="text-label">Empeños</span>
+              </a>
+              <div class="sublist" data-parent="empeños">
+                  <a href="Terminal.html" class="nav-link child-link">
+                      Nuevo Empeño
+                  </a>
+              </div>
+          </div>
+
+          
         </div>
       </aside>
 
