@@ -29,13 +29,14 @@
           <th>Contrato</th>
           <th>Cliente</th>
           <th>Vehículo</th>
-          <th>Inicio</th>
-          <th class="text-end">Tarifa</th>
-          <th class="text-center">Frecuencia</th>
-          <th class="text-center">Cuotas vencidas</th>
-          <th class="text-center">Pagos tarifa</th>
-          <th class="text-center">Saldo</th>
+          <th data-sort="date">Antiguedad</th>
+          <th data-sort="number" class="text-end">Tarifa</th>
+          <th data-sort="string" class="text-center">Frecuencia</th>
+          <th data-sort="number" class="text-center">Cuotas vencidas</th>
+          <th data-sort="number" class="text-center">Pagos tarifa</th>
+          <th data-sort="number" class="text-center">Saldo</th>
           <th class="text-end">Acciones</th>
+
         </tr>
       </thead>
 
@@ -136,88 +137,125 @@
 
 <!-- EXTRACTO DE PAGOS JS -->
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
 
-  document.querySelectorAll(".btn-extracto").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const contratoId = btn.dataset.contratoId;
+    document.querySelectorAll(".btn-extracto").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const contratoId = btn.dataset.contratoId;
 
-      fetch(`/terminal_pagos/extracto/contrato/${contratoId}/`)
-        .then(res => res.json())
-        .then(data => {
-          const tbody = document.getElementById("extracto-body");
-          tbody.innerHTML = "";
+        fetch(`/terminal_pagos/extracto/contrato/${contratoId}/`)
+          .then(res => res.json())
+          .then(data => {
+            const tbody = document.getElementById("extracto-body");
+            tbody.innerHTML = "";
 
-          data.filas.forEach(f => {
-            const tr = document.createElement("tr");
+            data.filas.forEach(f => {
+              const tr = document.createElement("tr");
 
-            tr.innerHTML = `
-              <td>${f.fecha_pactada}</td>
+              tr.innerHTML = `
+                <td>${f.fecha_pactada}</td>
 
-              <td class="text-end">
-                $${Number(f.valor_pactado).toLocaleString("es-CO")}
-              </td>
+                <td class="text-end">
+                  $${Number(f.valor_pactado).toLocaleString("es-CO")}
+                </td>
 
-              <td class="text-end">
-                $${Number(f.valor_aplicado).toLocaleString("es-CO")}
-              </td>
+                <td class="text-end">
+                  $${Number(f.valor_aplicado).toLocaleString("es-CO")}
+                </td>
 
-              <td>
-                ${f.fecha_pago ?? "—"}
-              </td>
+                <td>
+                  ${f.fecha_pago ?? "—"}
+                </td>
 
-              <td>
-                ${
-                  f.factura_id
-                    ? `<span class="badge bg-primary factura-tag"
-                            data-factura-id="${f.factura_id}"
-                            role="button">
-                        #${f.factura_id}
-                      </span>`
-                    : "—"
-                }
-              </td>
-            `;
+                <td>
+                  ${
+                    f.factura_id
+                      ? `<span class="badge bg-primary factura-tag"
+                              data-factura-id="${f.factura_id}"
+                              role="button">
+                          #${f.factura_id}
+                        </span>`
+                      : "—"
+                  }
+                </td>
+              `;
 
-            tbody.appendChild(tr);
+              tbody.appendChild(tr);
+            });
+
+            const modal = new bootstrap.Modal(
+              document.getElementById("extractoModal")
+            );
+            modal.show();
           });
-
-          const modal = new bootstrap.Modal(
-            document.getElementById("extractoModal")
-          );
-          modal.show();
-        });
+      });
     });
-  });
-
 });
 </script>
-
-
 
 <!-- 🔎 BUSCADOR JS -->
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const buscador = document.getElementById("buscador-contratos");
-  const filas = document.querySelectorAll("#tabla-contratos tr");
+  document.addEventListener("DOMContentLoaded", () => {
+    const buscador = document.getElementById("buscador-contratos");
+    const filas = document.querySelectorAll("#tabla-contratos tr");
 
-  buscador?.addEventListener("input", () => {
-    const texto = buscador.value.toLowerCase();
+    buscador?.addEventListener("input", () => {
+      const texto = buscador.value.toLowerCase();
 
-    filas.forEach(fila => {
-      const contrato = fila.children[0].innerText.toLowerCase();
-      const cliente  = fila.children[1].innerText.toLowerCase();
-      const placa    = fila.children[2].innerText.toLowerCase();
+      filas.forEach(fila => {
+        const contrato = fila.children[0].innerText.toLowerCase();
+        const cliente  = fila.children[1].innerText.toLowerCase();
+        const placa    = fila.children[2].innerText.toLowerCase();
 
-      fila.style.display =
-        contrato.includes(texto) ||
-        cliente.includes(texto) ||
-        placa.includes(texto)
-          ? ""
-          : "none";
+        fila.style.display =
+          contrato.includes(texto) ||
+          cliente.includes(texto) ||
+          placa.includes(texto)
+            ? ""
+            : "none";
+      });
     });
   });
-});
 </script>
+
+<!-- 📊 ORDENAR TABLA JS -->
+<script>
+  document.querySelectorAll("th[data-sort]").forEach((header, index) => {
+    let asc = true;
+
+    header.style.cursor = "pointer";
+
+    header.addEventListener("click", () => {
+      const tbody = document.getElementById("tabla-contratos");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const type = header.dataset.sort;
+
+      rows.sort((a, b) => {
+        let A = a.children[index].innerText.trim();
+        let B = b.children[index].innerText.trim();
+
+        if (type === "number") {
+          A = parseFloat(A.replace(/[^\d.-]/g, "")) || 0;
+          B = parseFloat(B.replace(/[^\d.-]/g, "")) || 0;
+        }
+
+        if (type === "date") {
+          A = new Date(A.split("/").reverse().join("-"));
+          B = new Date(B.split("/").reverse().join("-"));
+        }
+
+        if (type === "string") {
+          return asc ? A.localeCompare(B) : B.localeCompare(A);
+        }
+
+        return asc ? A - B : B - A;
+      });
+
+      asc = !asc;
+      rows.forEach(row => tbody.appendChild(row));
+    });
+  });
+</script>
+
 
 {% endblock %}
