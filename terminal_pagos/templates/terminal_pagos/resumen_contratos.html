@@ -220,47 +220,59 @@
 
 <!-- 📊 ORDENAR TABLA JS -->
 <script>
-document.querySelectorAll("th.sortable").forEach((header, index) => {
-  let asc = true;
+  let currentSortIndex = null;
+  let currentAsc = true;
 
-  header.addEventListener("click", () => {
-    const tbody = document.getElementById("tabla-contratos");
-    const rows = Array.from(tbody.querySelectorAll("tr"));
-    const type = header.dataset.sort;
+  document.querySelectorAll("th.sortable").forEach((header, index) => {
 
-    // Reset visual state
-    document.querySelectorAll("th.sortable").forEach(th => {
-      th.classList.remove("asc", "desc");
+    header.addEventListener("click", () => {
+      const tbody = document.getElementById("tabla-contratos");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const type = header.dataset.sort;
+
+      // Si cambia de columna, reinicia a ascendente
+      if (currentSortIndex !== index) {
+        currentAsc = true;
+        currentSortIndex = index;
+      } else {
+        currentAsc = !currentAsc;
+      }
+
+      // Reset indicadores
+      document.querySelectorAll("th.sortable").forEach(th =>
+        th.classList.remove("asc", "desc")
+      );
+
+      rows.sort((a, b) => {
+        const cellA = a.children[index];
+        const cellB = b.children[index];
+
+        let A = cellA.dataset.value ?? cellA.innerText;
+        let B = cellB.dataset.value ?? cellB.innerText;
+
+        if (type === "number") {
+          A = parseFloat(String(A).replace(/[^\d.-]/g, "")) || 0;
+          B = parseFloat(String(B).replace(/[^\d.-]/g, "")) || 0;
+          return currentAsc ? A - B : B - A;
+        }
+
+        if (type === "date") {
+          A = new Date(A.split("/").reverse().join("-"));
+          B = new Date(B.split("/").reverse().join("-"));
+          return currentAsc ? A - B : B - A;
+        }
+
+        return currentAsc
+          ? String(A).localeCompare(String(B))
+          : String(B).localeCompare(String(A));
+      });
+
+      header.classList.add(currentAsc ? "asc" : "desc");
+      rows.forEach(row => tbody.appendChild(row));
     });
-
-    rows.sort((a, b) => {
-      let A = a.children[index].innerText.trim();
-      let B = b.children[index].innerText.trim();
-
-      if (type === "number") {
-        A = parseFloat(A.replace(/[^\d.-]/g, "")) || 0;
-        B = parseFloat(B.replace(/[^\d.-]/g, "")) || 0;
-      }
-
-      if (type === "date") {
-        A = new Date(A.split("/").reverse().join("-"));
-        B = new Date(B.split("/").reverse().join("-"));
-      }
-
-      if (type === "string") {
-        return asc ? A.localeCompare(B) : B.localeCompare(A);
-      }
-
-      return asc ? A - B : B - A;
-    });
-
-    header.classList.add(asc ? "asc" : "desc");
-    asc = !asc;
-
-    rows.forEach(row => tbody.appendChild(row));
   });
-});
 </script>
+
 
 
 
