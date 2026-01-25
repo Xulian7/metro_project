@@ -29,13 +29,14 @@
           <th>Contrato</th>
           <th>Cliente</th>
           <th>Vehículo</th>
-          <th>Inicio</th>
+          <th data-sort="date" class="sortable">Inicio</th>
           <th class="text-end">Tarifa</th>
           <th class="text-center">Frecuencia</th>
-          <th class="text-center">Cuotas vencidas</th>
+          <th data-sort="number" class="sortable text-center">Cuotas vencidas</th>
           <th class="text-center">Pagos tarifa</th>
           <th class="text-center">Saldo</th>
           <th class="text-end">Acciones</th>
+
         </tr>
       </thead>
 
@@ -194,7 +195,6 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 
-
 <!-- 🔎 BUSCADOR JS -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -219,5 +219,30 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 </script>
+
+<style>
+  th.sortable {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  th.sortable::after {
+    content: " ⇅";
+    font-size: 0.75em;
+    color: #adb5bd;
+  }
+
+  th.sortable.asc::after {
+    content: " ▲";
+    color: #0d6efd;
+  }
+
+  th.sortable.desc::after {
+    content: " ▼";
+    color: #0d6efd;
+  }
+</style>
+
+
 
 {% endblock %}
