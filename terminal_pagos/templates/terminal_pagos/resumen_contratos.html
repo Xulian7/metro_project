@@ -194,8 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-
-<!-- 🔎 BUSCADOR JS -->
+<!-- BUSCADOR JS -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const buscador = document.getElementById("buscador-contratos");
@@ -220,6 +219,74 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<!-- ORDENAMIENTO DE TABLA JS -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+
+    const tbody = document.getElementById("tabla-contratos");
+    let currentIndex = null;
+    let asc = true;
+
+    document.querySelectorAll("th.sortable").forEach((th, index) => {
+
+      th.addEventListener("click", () => {
+
+        // reset indicadores
+        document.querySelectorAll("th.sortable")
+          .forEach(h => h.classList.remove("asc", "desc"));
+
+        // alternar / resetear orden
+        if (currentIndex === index) {
+          asc = !asc;
+        } else {
+          asc = true;
+          currentIndex = index;
+        }
+
+        const type = th.dataset.sort;
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+
+        rows.sort((a, b) => {
+
+          // 🗓️ INICIO
+          if (type === "date") {
+            const A = a.children[index]
+              .childNodes[0].textContent.trim();
+            const B = b.children[index]
+              .childNodes[0].textContent.trim();
+
+            const dA = new Date(A.split("/").reverse().join("-"));
+            const dB = new Date(B.split("/").reverse().join("-"));
+
+            return asc ? dA - dB : dB - dA;
+          }
+
+          // 🔢 CUOTAS VENCIDAS
+          if (type === "number") {
+            const A = parseFloat(
+              a.children[index].innerText.replace(",", ".")
+            ) || 0;
+
+            const B = parseFloat(
+              b.children[index].innerText.replace(",", ".")
+            ) || 0;
+
+            return asc ? A - B : B - A;
+          }
+
+          return 0;
+        });
+
+        th.classList.add(asc ? "asc" : "desc");
+        rows.forEach(r => tbody.appendChild(r));
+      });
+
+    });
+
+  });
+</script>
+
+<!-- ESTILOS PARA ORDENAMIENTO -->
 <style>
   th.sortable {
     cursor: pointer;
