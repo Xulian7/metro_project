@@ -220,58 +220,60 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-<!-- ORDENAMIENTO DE TABLA JS -->
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-    const tbody = document.getElementById("tabla-contratos");
-    let currentIndex = null;
-    let asc = true;
+  const tbody = document.getElementById("tabla-contratos");
+  let currentIndex = null;
+  let asc = true;
 
-    document.querySelectorAll("th.sortable").forEach((th, index) => {
+  document.querySelectorAll("th.sortable").forEach((th, index) => {
 
-      th.addEventListener("click", () => {
+    th.addEventListener("click", () => {
 
-        // reset visual
-        document.querySelectorAll("th.sortable")
-          .forEach(h => h.classList.remove("asc", "desc"));
+      // reset visual
+      document.querySelectorAll("th.sortable")
+        .forEach(h => h.classList.remove("asc", "desc"));
 
-        // alternar / resetear
-        if (currentIndex === index) {
-          asc = !asc;
-        } else {
-          asc = true;
-          currentIndex = index;
+      // alternar / resetear orden
+      if (currentIndex === index) {
+        asc = !asc;
+      } else {
+        asc = true;
+        currentIndex = index;
+      }
+
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const type = th.dataset.sort;
+
+      rows.sort((a, b) => {
+
+        // 🗓️ INICIO
+        if (type === "date") {
+          const A = new Date(a.children[index].dataset.fecha);
+          const B = new Date(b.children[index].dataset.fecha);
+          return asc ? A - B : B - A;
         }
 
-        const rows = Array.from(tbody.querySelectorAll("tr"));
-        const type = th.dataset.sort;
+        // 🔢 CUOTAS VENCIDAS
+        if (type === "number") {
+          const A = parseFloat(a.children[index].dataset.cuotas);
+          const B = parseFloat(b.children[index].dataset.cuotas);
+          return asc ? A - B : B - A;
+        }
 
-        rows.sort((a, b) => {
-
-          if (type === "date") {
-            const A = new Date(a.children[index].dataset.fecha);
-            const B = new Date(b.children[index].dataset.fecha);
-            return asc ? A - B : B - A;
-          }
-
-          if (type === "number") {
-            const A = parseFloat(a.children[index].dataset.cuotas);
-            const B = parseFloat(b.children[index].dataset.cuotas);
-            return asc ? A - B : B - A;
-          }
-
-          return 0;
-        });
-
-        th.classList.add(asc ? "asc" : "desc");
-        rows.forEach(r => tbody.appendChild(r));
+        return 0;
       });
 
+      th.classList.add(asc ? "asc" : "desc");
+      rows.forEach(r => tbody.appendChild(r));
     });
 
   });
+
+});
 </script>
+
 
 
 <!-- ESTILOS PARA ORDENAMIENTO -->
