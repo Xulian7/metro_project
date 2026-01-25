@@ -168,9 +168,8 @@
 </div>
 
 
-
 {% include "terminal_pagos/partials/extracto_modal.html" %}
-
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.19.3/dist/xlsx.full.min.js"></script>
 
 <!-- EXTRACTO DE PAGOS JS -->
 <script>
@@ -315,39 +314,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <!-- EXPORTAR A EXCEL JS -->
 <script>
+  /* ===============================
+    Helpers
+  ================================ */
+  function cleanNumber(value) {
+    if (!value) return null;
+    return Number(
+      value
+        .replace(/\$/g, "")
+        .replace(/\./g, "")
+        .replace(/,/g, ".")
+        .replace(/[^\d.-]/g, "")
+    );
+  }
+
+  /* ===============================
+    Exportar a XLSX real
+  ================================ */
   document.getElementById("export-excel").addEventListener("click", () => {
 
     const table = document.querySelector("table");
-    let html = "<table border='1'><tr>";
+    const data = [];
 
-    // --- HEADERS (con split)
+    /* ---------- HEADERS ---------- */
+    const headers = [];
+
     table.querySelectorAll("thead th").forEach((th, index) => {
-
       const title = th.innerText.trim();
-
       if (title === "Acciones") return;
 
-      if (index === 3) { // Inicio
-        html += "<th>Inicio</th><th>Días</th>";
-      } 
-      else if (index === 7) { // Pagos tarifa
-        html += "<th>Pagos (cuotas)</th><th>Pagos ($)</th>";
+      if (index === 3) {
+        headers.push("Inicio", "Días transcurridos");
       }
-      else if (index === 8) { // Saldo
-        html += "<th>Saldo (cuotas)</th><th>Saldo ($)</th>";
+      else if (index === 7) {
+        headers.push("Pagos (cuotas)", "Pagos ($)");
+      }
+      else if (index === 8) {
+        headers.push("Saldo (cuotas)", "Saldo ($)");
       }
       else {
-        html += `<th>${title}</th>`;
+        headers.push(title);
       }
     });
 
-    html += "</tr>";
+    data.push(headers);
 
-    // --- FILAS
+    /* ---------- FILAS ---------- */
     table.querySelectorAll("tbody tr").forEach(tr => {
       if (tr.style.display === "none") return;
 
-      html += "<tr>";
+      const row = [];
 
       tr.querySelectorAll("td").forEach((td, index) => {
 
@@ -357,52 +373,52 @@ document.addEventListener("DOMContentLoaded", () => {
           .replace(/\n+/g, "\n")
           .trim();
 
-        // 🗓️ Inicio
+        // Inicio
         if (index === 3) {
           const [fecha, dias] = text.split("\n");
-          html += `<td>${fecha ?? ""}</td>`;
-          html += `<td>${(dias ?? "").replace("días", "").trim()}</td>`;
+          row.push(fecha ?? "");
+          row.push(Number((dias ?? "").replace("días", "").trim()) || 0);
           return;
         }
 
-        // 💰 Pagos tarifa
+        // Tarifa
+        if (index === 4) {
+          row.push(cleanNumber(text));
+          return;
+        }
+
+        // Pagos
         if (index === 7) {
           const [cuotas, dinero] = text.split("\n");
-          html += `<td>${(cuotas ?? "").replace("cuotas", "").trim()}</td>`;
-          html += `<td>${(dinero ?? "").replace("$", "").trim()}</td>`;
+          row.push(
+            Number((cuotas ?? "").replace("cuotas", "").trim()) || 0
+          );
+          row.push(cleanNumber(dinero ?? ""));
           return;
         }
 
-        // 📊 Saldo
+        // Saldo
         if (index === 8) {
           const [cuotas, dinero] = text.split("\n");
-          html += `<td>${cuotas ?? ""}</td>`;
-          html += `<td>${(dinero ?? "").replace("$", "").trim()}</td>`;
+          row.push(Number(cuotas ?? 0));
+          row.push(cleanNumber(dinero ?? ""));
           return;
         }
 
-        // normal
-        html += `<td>${text.replace(/\n/g, " ")}</td>`;
+        // Normal
+        row.push(text.replace(/\n/g, " "));
       });
 
-      html += "</tr>";
+      data.push(row);
     });
 
-    html += "</table>";
+    /* ---------- Crear XLSX ---------- */
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
 
-    const blob = new Blob(
-      ["\ufeff" + html],
-      { type: "application/vnd.ms-excel;charset=utf-8;" }
-    );
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Resumen contratos");
 
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-
-    a.href = url;
-    a.download = "resumen_contratos.xls";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    XLSX.writeFile(workbook, "resumen_contratos.xlsx");
   });
 </script>
 
@@ -430,7 +446,6 @@ document.addEventListener("DOMContentLoaded", () => {
     color: #0d6efd;
   }
 </style>
-
 
 
 {% endblock %}
