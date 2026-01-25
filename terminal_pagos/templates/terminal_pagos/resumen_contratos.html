@@ -22,6 +22,24 @@
     </div>
   </div>
 
+  <!-- EXPORTAR A EXCEL -->
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-4">
+      <input
+        type="text"
+        id="buscador-contratos"
+        class="form-control"
+        placeholder="Buscar por contrato, cliente o placa">
+    </div>
+
+    <div class="col-md-8 text-end">
+      <button id="export-excel"
+              class="btn btn-outline-success btn-sm">
+        📊 Exportar a Excel
+      </button>
+    </div>
+  </div>
+
   <!-- 📋 TABLA -->
   <div class="table-responsive">
     <table class="table table-sm table-striped align-middle">
@@ -251,59 +269,113 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <!-- ORDENAMIENTO JS -->
  <script>
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
 
-  const tbody = document.getElementById("tabla-contratos");
-  let currentIndex = null;
-  let asc = true;
+    const tbody = document.getElementById("tabla-contratos");
+    let currentIndex = null;
+    let asc = true;
 
-  document.querySelectorAll("th.sortable").forEach(th => {
+    document.querySelectorAll("th.sortable").forEach(th => {
 
-    th.addEventListener("click", () => {
+      th.addEventListener("click", () => {
 
-      const colIndex = th.cellIndex; // 🔥 ÍNDICE REAL
+        const colIndex = th.cellIndex; // 🔥 ÍNDICE REAL
 
-      // reset visual
-      document.querySelectorAll("th.sortable")
-        .forEach(h => h.classList.remove("asc", "desc"));
+        // reset visual
+        document.querySelectorAll("th.sortable")
+          .forEach(h => h.classList.remove("asc", "desc"));
 
-      // alternar / resetear
-      if (currentIndex === colIndex) {
-        asc = !asc;
-      } else {
-        asc = true;
-        currentIndex = colIndex;
-      }
-
-      const rows = Array.from(tbody.querySelectorAll("tr"));
-      const type = th.dataset.sort;
-
-      rows.sort((a, b) => {
-
-        // 🗓️ INICIO
-        if (type === "date") {
-          const A = new Date(a.children[colIndex].dataset.fecha);
-          const B = new Date(b.children[colIndex].dataset.fecha);
-          return asc ? A - B : B - A;
+        // alternar / resetear
+        if (currentIndex === colIndex) {
+          asc = !asc;
+        } else {
+          asc = true;
+          currentIndex = colIndex;
         }
 
-        // 🔢 CUOTAS VENCIDAS
-        if (type === "number") {
-          const A = parseFloat(a.children[colIndex].dataset.cuotas);
-          const B = parseFloat(b.children[colIndex].dataset.cuotas);
-          return asc ? A - B : B - A;
-        }
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+        const type = th.dataset.sort;
 
-        return 0;
+        rows.sort((a, b) => {
+
+          // 🗓️ INICIO
+          if (type === "date") {
+            const A = new Date(a.children[colIndex].dataset.fecha);
+            const B = new Date(b.children[colIndex].dataset.fecha);
+            return asc ? A - B : B - A;
+          }
+
+          // 🔢 CUOTAS VENCIDAS
+          if (type === "number") {
+            const A = parseFloat(a.children[colIndex].dataset.cuotas);
+            const B = parseFloat(b.children[colIndex].dataset.cuotas);
+            return asc ? A - B : B - A;
+          }
+
+          return 0;
+        });
+
+        th.classList.add(asc ? "asc" : "desc");
+        rows.forEach(r => tbody.appendChild(r));
       });
 
-      th.classList.add(asc ? "asc" : "desc");
-      rows.forEach(r => tbody.appendChild(r));
     });
 
   });
+</script>
 
-});
+<!-- EXPORTAR A EXCEL JS -->
+<script>
+  document.getElementById("export-excel").addEventListener("click", () => {
+
+    const table = document.querySelector("table");
+    let html = "<table border='1'><tr>";
+
+    // --- HEADERS (excluye Acciones)
+    table.querySelectorAll("thead th").forEach((th, index) => {
+      if (th.innerText.trim() !== "Acciones") {
+        html += `<th>${th.innerText}</th>`;
+      }
+    });
+    html += "</tr>";
+
+    // --- FILAS (solo visibles por el buscador)
+    table.querySelectorAll("tbody tr").forEach(tr => {
+      if (tr.style.display === "none") return;
+
+      html += "<tr>";
+      tr.querySelectorAll("td").forEach((td, index) => {
+        // ignora columna Acciones (última)
+        if (index === tr.children.length - 1) return;
+
+        // limpia saltos de línea y badges
+        let text = td.innerText
+          .replace(/\n+/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+
+        html += `<td>${text}</td>`;
+      });
+      html += "</tr>";
+    });
+
+    html += "</table>";
+
+    // --- Descargar
+    const blob = new Blob(
+      ["\ufeff" + html],
+      { type: "application/vnd.ms-excel;charset=utf-8;" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = "resumen_contratos.xls";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
 </script>
 
 
