@@ -188,10 +188,9 @@
           <input type="number"
                 step="1000"
                 min="0"
-                class="form-control form-control-sm pago-valor text-end"
+                class="form-control form-control-sm pago-valor text-end d-none"
                 name="valor_pago[]"
-                placeholder=""
-                disabled>
+                placeholder="">
         </div>
 
         <!-- ACCIÓN (ligeramente más chica pero estable) -->
@@ -202,7 +201,7 @@
           </button>
         </div>
 
-        <input type="text"
+        <input type="hidden"
               name="configuracion_pago_id[]"
               class="pago-config-id">
       </div>
@@ -866,7 +865,7 @@
     if (!medio || !canal || !cuenta || !fecha || !referencia || !valor) return;
 
     /* ===============================
-      1️⃣ Validaciones base
+      1️⃣ Campos base completos
     ================================ */
     const medioOk  = medio.value !== "";
     const canalOk  = canal.value !== "";
@@ -887,23 +886,24 @@
       !exigeReferencia || referencia.value.trim() !== "";
 
     /* ===============================
-      4️⃣ ¿Habilitar valor?
+      4️⃣ ¿Mostrar valor?
     ================================ */
-    const habilitarValor =
+    const mostrarValor =
       medioOk &&
       canalOk &&
       cuentaOk &&
       fechaOk &&
       referenciaOk;
 
-    valor.disabled = !habilitarValor;
+    valor.classList.toggle("d-none", !mostrarValor);
 
-    // defensivo: limpia si vuelve a bloquearse
-    if (!habilitarValor) {
+    // defensivo: si se oculta, limpiar valor
+    if (!mostrarValor) {
       valor.value = "";
     }
   });
 </script>
+
 
 
 {% endblock %}
