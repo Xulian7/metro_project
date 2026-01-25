@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'taller',
     'utils',
     'terminal_pagos',
+    'creditos',
     
 ]
 
