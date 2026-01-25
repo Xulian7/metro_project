@@ -76,7 +76,7 @@ def actualizar_contrato(request, contrato_id):
     # 🔹 Actualización normal
     contrato.fecha_inicio = request.POST.get("fecha_inicio")
     contrato.tarifa = request.POST.get("tarifa")
-    contrato.frecuencia_pago = request.POST.get("frecuencia_pago")  # 👈 NUEVO
+    contrato.frecuencia_pago = request.POST.get("frecuencia_pago")  
     contrato.dias_contrato = request.POST.get("dias_contrato")
     contrato.visitador = request.POST.get("visitador")
     contrato.estado = nuevo_estado

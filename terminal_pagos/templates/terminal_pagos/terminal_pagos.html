@@ -236,29 +236,61 @@
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
 
-        <!-- HEADER -->
-        <div class="modal-header">
-          <h5 class="modal-title">
-            Factura #{{ factura.id }}
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <!-- ================= HEADER ================= -->
+        <div class="modal-header align-items-start">
+          <div class="d-flex gap-3 align-items-center">
+            <img src="{% static 'img/empresa-2.png' %}"
+                alt="Empresa"
+                style="height:50px;">
+            <div>
+              <h5 class="modal-title mb-0">
+                Factura #{{ factura.id }}
+              </h5>
+              <small class="text-muted">
+                {{ factura.fecha|date:"d/m/Y H:i" }}
+              </small>
+            </div>
+          </div>
+
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"></button>
         </div>
 
-        <!-- BODY -->
+        <!-- ================= BODY ================= -->
         <div class="modal-body">
 
           <!-- DATOS GENERALES -->
-          <div class="mb-3">
-            <strong>Contrato:</strong> {{ factura.contrato }}<br>
-            <strong>Fecha:</strong> {{ factura.fecha|date:"d/m/Y H:i" }}
+          <div class="card card-body mb-3 py-2">
+            <div class="row small align-items-center">
+              <div class="col-md-6">
+                <strong>Contrato:</strong><br>
+                {{ factura.contrato }}
+              </div>
+              <div class="col-md-6 text-md-end">
+                <strong>Estado:</strong><br>
+                <span class="badge
+                  {% if factura.estado_pago == 'Pagada' %}
+                    bg-success
+                  {% elif factura.estado_pago == 'Parcial' %}
+                    bg-warning text-dark
+                  {% else %}
+                    bg-danger
+                  {% endif %}
+                ">
+                  {{ factura.get_estado_pago_display }}
+                </span>
+              </div>
+            </div>
           </div>
 
-          <hr>
+          <!-- ================= DETALLE ================= -->
+          <h6 class="fw-bold text-uppercase small mb-2">
+            Detalle
+          </h6>
 
-          <!-- ÍTEMS -->
-          <h6 class="fw-bold">Detalle</h6>
-          <table class="table table-sm">
-            <thead>
+          <table class="table table-sm align-middle">
+            <thead class="table-light">
               <tr>
                 <th>Descripción</th>
                 <th class="text-end">Subtotal</th>
@@ -276,14 +308,14 @@
             </tbody>
           </table>
 
-          <hr>
-
-          <!-- MEDIOS DE PAGO -->
-          <h6 class="fw-bold">Pagos recibidos</h6>
+          <!-- ================= PAGOS ================= -->
+          <h6 class="fw-bold text-uppercase small mt-4 mb-2">
+            Pagos recibidos
+          </h6>
 
           {% if factura.pagos.all %}
-          <table class="table table-sm">
-            <thead>
+          <table class="table table-sm align-middle">
+            <thead class="table-light">
               <tr>
                 <th>Medio</th>
                 <th>Canal</th>
@@ -312,27 +344,29 @@
             </p>
           {% endif %}
 
-          <hr>
-
-          <!-- TOTALES -->
-          <div class="text-end">
-            <p class="mb-1">
-              <strong>Total:</strong>
-              ${{ factura.total|floatformat:0 }}
-            </p>
-            <p class="mb-1">
-              <strong>Pagado:</strong>
-              ${{ factura.total_pagado|floatformat:0 }}
-            </p>
-            <p class="mb-0">
-              <strong>Estado:</strong>
-              {{ factura.get_estado_pago_display }}
-            </p>
+          <!-- ================= TOTALES ================= -->
+          <div class="border-top pt-3 mt-4">
+            <div class="row justify-content-end">
+              <div class="col-md-6">
+                <div class="d-flex justify-content-between">
+                  <span>Total</span>
+                  <strong>
+                    ${{ factura.total|floatformat:0 }}
+                  </strong>
+                </div>
+                <div class="d-flex justify-content-between text-muted">
+                  <span>Pagado</span>
+                  <span>
+                    ${{ factura.total_pagado|floatformat:0 }}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
         </div>
 
-        <!-- FOOTER -->
+        <!-- ================= FOOTER ================= -->
         <div class="modal-footer">
           <button type="button"
                   class="btn btn-outline-secondary"
@@ -340,16 +374,16 @@
             Cerrar
           </button>
           <button type="button"
-                  class="btn btn-outline-primary"
+                  class="btn btn-primary"
                   id="btn-imprimir-factura">
-            🖨️ Copiar factura
+            🖨️ Imprimir / Copiar
           </button>
-
         </div>
 
       </div>
     </div>
   </div>
+
   {% endif %}
 
   <!-- ================= SCRIPT MODAL FACTURA ================= -->
