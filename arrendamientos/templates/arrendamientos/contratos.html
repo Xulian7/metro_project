@@ -157,6 +157,7 @@
             data-fecha="{{ c.fecha_inicio|date:'Y-m-d' }}"
             data-cuota="{{ c.cuota_inicial }}"
             data-tarifa="{{ c.tarifa }}"
+            data-frecuencia="{{ c.frecuencia_pago }}"
             data-dias="{{ c.dias_contrato }}"
             data-visitador="{{ c.visitador }}"
             data-tipo="{{ c.tipo_contrato }}"
@@ -275,113 +276,116 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+
+<!-- Estilos personalizados para Select2 -->
 <style>
-/* 🎨 Ajustes visuales para que Select2 combine con Bootstrap 5 */
-.select2-container--default .select2-selection--single {
-  height: calc(2.25rem + 2px);
-  padding: 0.375rem 0.75rem;
-  border: 1px solid #ced4da;
-  border-radius: 0.375rem;
-  background-color: #fff;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
+  /* 🎨 Ajustes visuales para que Select2 combine con Bootstrap 5 */
+  .select2-container--default .select2-selection--single {
+    height: calc(2.25rem + 2px);
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    background-color: #fff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
 
-.select2-container--default .select2-selection--single:focus,
-.select2-container--default .select2-selection--single:hover {
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-}
+  .select2-container--default .select2-selection--single:focus,
+  .select2-container--default .select2-selection--single:hover {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
 
-.select2-selection__rendered {
-  color: #212529 !important;
-  line-height: 1.5 !important;
-}
+  .select2-selection__rendered {
+    color: #212529 !important;
+    line-height: 1.5 !important;
+  }
 
-.select2-selection__arrow {
-  height: 100% !important;
-}
+  .select2-selection__arrow {
+    height: 100% !important;
+  }
 </style>
 
+<!--  Script de inicialización y funcionalidades -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Inicializar Select2 con búsqueda activa
-  $('.select2').select2({
-    width: '100%',
-    placeholder: 'Buscar...',
-    allowClear: true,
-    language: {
-      noResults: function() {
-        return "Sin resultados";
-      }
-    }
-  });
-
-  // 🔍 Filtro dinámico nativo para la tabla
-  const input = document.getElementById("filtroTabla");
-  const tabla = document.getElementById("tablaContratos").getElementsByTagName("tbody")[0];
-
-  input.addEventListener("keyup", () => {
-    const filtro = input.value.toLowerCase().trim();
-    const filas = tabla.getElementsByTagName("tr");
-
-    for (let fila of filas) {
-      const textoFila = fila.textContent.toLowerCase();
-      fila.style.display = textoFila.includes(filtro) ? "" : "none";
-    }
-  });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const estadoSelect = document.getElementById("modal-estado");
-    const motivoSelect = document.getElementById("modal-motivo");
-    const formEditar = document.getElementById("formEditarContrato");
-
-    if (formEditar) {
-      formEditar.addEventListener("submit", function (e) {
-        // ⚠️ SOLO el modal, nadie más
-      });
-    }
-
-
-    function actualizarMotivos() {
-        const estado = estadoSelect.value;
-
-        if (estado === "Inactivo") {
-            motivoSelect.disabled = false;
-            motivoSelect.innerHTML = `
-                <option value="">Seleccione...</option>
-                <option value="Finalizado">Finalizado</option>
-                <option value="Cancelado">Cancelado</option>
-            `;
-        } else {
-            motivoSelect.disabled = true;
-            motivoSelect.innerHTML = `<option value="">N/A</option>`;
+  document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar Select2 con búsqueda activa
+    $('.select2').select2({
+      width: '100%',
+      placeholder: 'Buscar...',
+      allowClear: true,
+      language: {
+        noResults: function() {
+          return "Sin resultados";
         }
-    }
-
-    // Cambio dentro del modal
-    estadoSelect.addEventListener("change", actualizarMotivos);
-    // Cuando abres el modal con botón "Editar"
-    document.querySelectorAll('.editar-contrato-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.getElementById('modal-id').value = btn.dataset.id;
-        document.getElementById('modal-cliente').value = btn.dataset.clienteNombre;
-        document.getElementById('modal-vehiculo').value = btn.dataset.vehiculoPlaca;
-        document.getElementById('modal-fecha').value = btn.dataset.fecha;
-        document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
-        document.getElementById('modal-frecuencia').value = btn.dataset.frecuencia;
-        document.getElementById('modal-dias').value = btn.dataset.dias;
-        document.getElementById('modal-visitador').value = btn.dataset.visitador;
-        document.getElementById('modal-tipo').value = btn.dataset.tipo;
-        estadoSelect.value = btn.dataset.estado;
-        actualizarMotivos();
-        motivoSelect.value = btn.dataset.motivo || "";
-        formEditar.action = `/arrendamientos/contratos/update/${btn.dataset.id}/`;
-        
-      });
+      }
     });
-});
+
+    // 🔍 Filtro dinámico nativo para la tabla
+    const input = document.getElementById("filtroTabla");
+    const tabla = document.getElementById("tablaContratos").getElementsByTagName("tbody")[0];
+
+    input.addEventListener("keyup", () => {
+      const filtro = input.value.toLowerCase().trim();
+      const filas = tabla.getElementsByTagName("tr");
+
+      for (let fila of filas) {
+        const textoFila = fila.textContent.toLowerCase();
+        fila.style.display = textoFila.includes(filtro) ? "" : "none";
+      }
+    });
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+
+      const estadoSelect = document.getElementById("modal-estado");
+      const motivoSelect = document.getElementById("modal-motivo");
+      const formEditar = document.getElementById("formEditarContrato");
+
+      if (formEditar) {
+        formEditar.addEventListener("submit", function (e) {
+          // ⚠️ SOLO el modal, nadie más
+        });
+      }
+
+
+      function actualizarMotivos() {
+          const estado = estadoSelect.value;
+
+          if (estado === "Inactivo") {
+              motivoSelect.disabled = false;
+              motivoSelect.innerHTML = `
+                  <option value="">Seleccione...</option>
+                  <option value="Finalizado">Finalizado</option>
+                  <option value="Cancelado">Cancelado</option>
+              `;
+          } else {
+              motivoSelect.disabled = true;
+              motivoSelect.innerHTML = `<option value="">N/A</option>`;
+          }
+      }
+
+      // Cambio dentro del modal
+      estadoSelect.addEventListener("change", actualizarMotivos);
+      // Cuando abres el modal con botón "Editar"
+      document.querySelectorAll('.editar-contrato-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.getElementById('modal-id').value = btn.dataset.id;
+          document.getElementById('modal-cliente').value = btn.dataset.clienteNombre;
+          document.getElementById('modal-vehiculo').value = btn.dataset.vehiculoPlaca;
+          document.getElementById('modal-fecha').value = btn.dataset.fecha;
+          document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
+          document.getElementById('modal-frecuencia').value = btn.dataset.frecuencia;
+          document.getElementById('modal-dias').value = btn.dataset.dias;
+          document.getElementById('modal-visitador').value = btn.dataset.visitador;
+          document.getElementById('modal-tipo').value = btn.dataset.tipo;
+          estadoSelect.value = btn.dataset.estado;
+          actualizarMotivos();
+          motivoSelect.value = btn.dataset.motivo || "";
+          formEditar.action = `/arrendamientos/contratos/update/${btn.dataset.id}/`;
+          
+        });
+      });
+  });
 </script>
 
 <!-- Sugerido Cédula automática -->
