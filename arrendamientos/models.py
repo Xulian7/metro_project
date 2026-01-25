@@ -10,10 +10,10 @@ class Contrato(models.Model):
     ]
 
     FRECUENCIA_PAGO_CHOICES = [
-        ('diario', 'Diario'),
-        ('semanal', 'Semanal'),
-        ('quincenal', 'Quincenal'),
-        ('mensual', 'Mensual'),
+        ('Diario', 'Diario'),
+        ('Semanal', 'Semanal'),
+        ('Quincenal', 'Quincenal'),
+        ('Mensual', 'Mensual'),
     ]
 
     MOTIVO_INACTIVO_CHOICES = [
@@ -42,7 +42,7 @@ class Contrato(models.Model):
     frecuencia_pago = models.CharField(
         max_length=20,
         choices=FRECUENCIA_PAGO_CHOICES,
-        default='mensual',
+        default='Diario',
         help_text="Frecuencia con la que se generan cobros"
     )
 
