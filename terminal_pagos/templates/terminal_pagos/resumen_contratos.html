@@ -69,7 +69,7 @@
 
           <!-- Tarifa -->
           <td class="text-end">
-            ${{ row.tarifa|floatformat:0 }}
+            ${{ row.tarifa|intcomma }}
           </td>
 
           <!-- Frecuencia de pago -->
@@ -106,7 +106,7 @@
               {{ row.cuotas_pagadas|floatformat:1 }} cuotas
             </div>
             <small class="text-muted">
-              ${{ row.total_pagado|floatformat:0 }}
+              ${{ row.total_pagado|intcomma }}
             </small>
           </td>
 
@@ -123,11 +123,11 @@
             {{ row.saldo_cuotas|floatformat:1 }}
             <br>
             <small>
-              ${{ row.saldo_dinero|floatformat:0 }}
+              ${{ row.saldo_dinero|intcomma }}
             </small>
           </td>
 
-          <!-- 🔘 ACCIONES -->
+          <!--  ACCIONES -->
           <td class="text-end">
             <div class="btn-group btn-group-sm" role="group">
               <button
