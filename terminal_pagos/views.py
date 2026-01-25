@@ -470,10 +470,10 @@ def resumen_contratos(request):
         # CUOTAS VENCIDAS
         # -------------------------
         dias_por_cuota = {
-            "diario": 1,
-            "semanal": 7,
-            "quincenal": 15,
-            "mensual": 30,
+            "Diario": 1,
+            "Semanal": 7,
+            "Quincenal": 15,
+            "Mensual": 30,
         }.get(contrato.frecuencia_pago, 30)
 
         cuotas_vencidas = Decimal(
@@ -545,10 +545,10 @@ def extracto_contrato(request, contrato_id):
     actual = inicio
 
     delta = {
-        "diario": 1,
-        "semanal": 7,
-        "quincenal": 15,
-        "mensual": 30,
+        "Diario": 1,
+        "Semanal": 7,
+        "Quincenal": 15,
+        "Mensual": 30,
     }.get(contrato.frecuencia_pago, 30)
 
     while actual <= hoy:
