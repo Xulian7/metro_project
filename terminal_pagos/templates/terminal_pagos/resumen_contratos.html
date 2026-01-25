@@ -10,7 +10,7 @@
     </h5>
   </div>
 
-  <!-- 🔍 BUSCADOR -->
+  <!--  BUSCADOR -->
   <div class="row mb-3">
     <div class="col-md-4">
       <input
@@ -21,7 +21,7 @@
     </div>
   </div>
 
-  <!-- 📋 TABLA -->
+  <!--  TABLA -->
   <div class="table-responsive">
     <table class="table table-sm table-striped align-middle">
       <thead class="table-light">
@@ -29,14 +29,15 @@
           <th>Contrato</th>
           <th>Cliente</th>
           <th>Vehículo</th>
-          <th data-sort="sortable date">Antiguedad</th>
-          <th data-sort="number" class="sortable text-end">Tarifa</th>
-          <th data-sort="string" class="sortable text-center">Frecuencia</th>
-          <th data-sort="number" class="sortable text-center">Cuotas vencidas</th>
-          <th data-sort="number" class="sortable text-center">Pagos tarifa</th>
-          <th data-sort="number" class="sortable text-center">Saldo</th>
-          <th class="text-end">Acciones</th>
+          <th>Inicio</th>
+          <th class="text-end">Tarifa</th>
+          <th class="text-center">Frecuencia</th>
+          <th class="text-center">Cuotas vencidas</th>
+          <th id="sort-cuotas" class="text-center" style="cursor:pointer">Cuotas vencidas <span class="sort-indicator"></span></th>
 
+          <th class="text-center">Pagos tarifa</th>
+          <th class="text-center">Saldo</th>
+          <th class="text-end">Acciones</th>
         </tr>
       </thead>
 
@@ -46,8 +47,7 @@
           <td>#{{ row.contrato.id }}</td>
           <td>{{ row.contrato.cliente.nombre }}</td>
           <td>{{ row.contrato.vehiculo.placa }}</td>
-
-          <!-- Inicio + antigüedad -->
+          <!-- Fecha de inicio -->
           <td>
             {{ row.fecha_inicio|date:"d/m/Y" }}
             <br>
@@ -55,19 +55,16 @@
               {{ row.dias_transcurridos }} días
             </small>
           </td>
-
           <!-- Tarifa -->
           <td class="text-end">
             ${{ row.tarifa|floatformat:0 }}
           </td>
-
           <!-- Frecuencia -->
           <td class="text-center">
             {{ row.contrato.get_frecuencia_pago_display }}
           </td>
-
           <!-- Cuotas vencidas -->
-          <td class="text-center fw-semibold">
+          <td class="text-center fw-semibold" data-cuotas="{{ row.cuotas_vencidas }}">
             {{ row.cuotas_vencidas|floatformat:1 }}
           </td>
 
@@ -80,7 +77,6 @@
               ${{ row.total_pagado|floatformat:0 }}
             </small>
           </td>
-
           <!-- Saldo -->
           <td class="text-center fw-semibold
             {% if row.saldo_cuotas > 0 %}
@@ -97,8 +93,7 @@
               ${{ row.saldo_dinero|floatformat:0 }}
             </small>
           </td>
-
-          <!-- 🔘 ACCIONES -->
+          <!-- ACCIONES -->
           <td class="text-end">
             <div class="btn-group btn-group-sm" role="group">
               <button
@@ -127,7 +122,6 @@
       </tbody>
     </table>
   </div>
-
 </div>
 
 
@@ -190,10 +184,11 @@
           });
       });
     });
-});
+
+  });
 </script>
 
-<!-- 🔎 BUSCADOR JS -->
+<!-- BUSCADOR JS -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const buscador = document.getElementById("buscador-contratos");
@@ -218,63 +213,24 @@
   });
 </script>
 
-<!-- 📊 ORDENAR TABLA JS -->
+<!-- ORDENAR CUOTAS VENCIDAS JS -->
 <script>
-  let currentSortIndex = null;
-  let currentAsc = true;
+  let ascCuotas = true;
 
-  document.querySelectorAll("th.sortable").forEach((header, index) => {
+  document.getElementById("sort-cuotas").addEventListener("click", () => {
+    const tbody = document.getElementById("tabla-contratos");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
 
-    header.addEventListener("click", () => {
-      const tbody = document.getElementById("tabla-contratos");
-      const rows = Array.from(tbody.querySelectorAll("tr"));
-      const type = header.dataset.sort;
-
-      // Si cambia de columna, reinicia a ascendente
-      if (currentSortIndex !== index) {
-        currentAsc = true;
-        currentSortIndex = index;
-      } else {
-        currentAsc = !currentAsc;
-      }
-
-      // Reset indicadores
-      document.querySelectorAll("th.sortable").forEach(th =>
-        th.classList.remove("asc", "desc")
-      );
-
-      rows.sort((a, b) => {
-        const cellA = a.children[index];
-        const cellB = b.children[index];
-
-        let A = cellA.dataset.value ?? cellA.innerText;
-        let B = cellB.dataset.value ?? cellB.innerText;
-
-        if (type === "number") {
-          A = parseFloat(String(A).replace(/[^\d.-]/g, "")) || 0;
-          B = parseFloat(String(B).replace(/[^\d.-]/g, "")) || 0;
-          return currentAsc ? A - B : B - A;
-        }
-
-        if (type === "date") {
-          A = new Date(A.split("/").reverse().join("-"));
-          B = new Date(B.split("/").reverse().join("-"));
-          return currentAsc ? A - B : B - A;
-        }
-
-        return currentAsc
-          ? String(A).localeCompare(String(B))
-          : String(B).localeCompare(String(A));
-      });
-
-      header.classList.add(currentAsc ? "asc" : "desc");
-      rows.forEach(row => tbody.appendChild(row));
+    rows.sort((a, b) => {
+      const A = parseFloat(a.querySelector("[data-cuotas]").dataset.cuotas);
+      const B = parseFloat(b.querySelector("[data-cuotas]").dataset.cuotas);
+      return ascCuotas ? A - B : B - A;
     });
+
+    ascCuotas = !ascCuotas;
+    rows.forEach(row => tbody.appendChild(row));
   });
 </script>
-
-
-
 
 <style>
   th.sortable {
@@ -282,19 +238,19 @@
     user-select: none;
   }
 
-  th.sortable::after {
-    content: " ⇅";
+  .sort-indicator {
     font-size: 0.75em;
+    margin-left: 4px;
     color: #adb5bd;
   }
 
-  th.sortable.asc::after {
-    content: " ▲";
+  .sort-indicator.asc::after {
+    content: "▲";
     color: #0d6efd;
   }
 
-  th.sortable.desc::after {
-    content: " ▼";
+  .sort-indicator.desc::after {
+    content: "▼";
     color: #0d6efd;
   }
 </style>
