@@ -200,30 +200,35 @@
       const cant = row.querySelector(".item-cant");
       const valor = row.querySelector(".item-valor");
 
-      // limpiar contenedor
+      // limpiar contenedor del item
       descBox.innerHTML = "";
 
       // reset base
+      cant.disabled = false;
+      cant.value = "";
       valor.value = "";
       valor.placeholder = "$";
-      cant.disabled = false;
+      valor.readOnly = false;
 
       /* ================= ALMACÉN ================= */
       if (tipo === "almacen") {
         const sel = buildSelect(productos);
         descBox.appendChild(sel);
 
-        // activar buscador
+        // buscador
         $(sel).select2({
           width: "100%",
           placeholder: "Buscar producto…",
           allowClear: true
         });
 
+        // precio automático
         sel.addEventListener("change", () => {
           valor.value = sel.selectedOptions[0]?.dataset.precio || "";
           updateSubtotal(row);
         });
+
+        valor.readOnly = true;
       }
 
       /* ================= TALLER ================= */
@@ -231,17 +236,20 @@
         const sel = buildSelect(servicios);
         descBox.appendChild(sel);
 
-        // activar buscador
+        // buscador
         $(sel).select2({
           width: "100%",
           placeholder: "Buscar servicio…",
           allowClear: true
         });
 
+        // precio automático
         sel.addEventListener("change", () => {
           valor.value = sel.selectedOptions[0]?.dataset.precio || "";
           updateSubtotal(row);
         });
+
+        valor.readOnly = true;
       }
 
       /* ================= EFECTIVO ================= */
@@ -253,13 +261,15 @@
         inp.className = "form-control form-control-sm";
         descBox.appendChild(inp);
 
-        cant.value = "";
         cant.disabled = true;
+        cant.value = "";
+        valor.readOnly = false;
         valor.placeholder = "Valor del préstamo";
       }
 
       updateSubtotal(row);
     }
+
 
     /* -------- agregar nueva fila -------- */
     function addRow() {
