@@ -6,7 +6,7 @@ from arrendamientos.models import Contrato
 class CreditoForm(forms.ModelForm):
     """
     Formulario de cabecera del crédito.
-    Un crédito puede tener múltiples items de distintos tipos.
+    La descripción es un comentario general (opcional).
     """
 
     contrato = forms.ModelChoiceField(

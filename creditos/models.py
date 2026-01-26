@@ -22,11 +22,6 @@ class Credito(models.Model):
         help_text="Contrato al que se asocia el crédito"
     )
 
-    tipo = models.CharField(
-        max_length=20,
-        choices=TIPO_CHOICES,
-        help_text="Tipo de crédito"
-    )
 
     descripcion = models.TextField(
         blank=True,
