@@ -66,7 +66,7 @@ def crear_credito(request):
     )
 
     servicios = Servicio.objects.all().values(
-        "nombre", "valor"
+        "nombre_servicio", "valor"
     )
 
     return render(

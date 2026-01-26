@@ -9,7 +9,7 @@ class Credito(models.Model):
     """
 
     TIPO_CHOICES = [
-        ("almacen", "Artículo de almacén"),
+        ("1", "Artículo de almacén"),
         ("taller", "Servicio de taller"),
         ("efectivo", "Préstamo de efectivo"),
     ]
