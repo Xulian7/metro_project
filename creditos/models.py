@@ -3,13 +3,9 @@ from arrendamientos.models import Contrato
 
 
 class Credito(models.Model):
-    """
-    Representa una deuda adicional asociada a un contrato.
-    NO es un pago, NO es una factura.
-    """
 
     TIPO_CHOICES = [
-        ("1", "Artículo de almacén"),
+        ("almacen", "Artículo de almacén"),
         ("taller", "Servicio de taller"),
         ("efectivo", "Préstamo de efectivo"),
     ]
