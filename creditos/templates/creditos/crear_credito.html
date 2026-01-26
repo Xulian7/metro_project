@@ -54,10 +54,11 @@
   </form>
 </div>
 
-<!-- TEMPLATE OCULTO DE FILA -->
+<!-- ================= TEMPLATE FILA ================= -->
 <div id="item-template" class="d-none">
   <div class="row g-2 align-items-center mb-2 credito-item-row">
 
+    <!-- TIPO -->
     <div class="col-2">
       <select class="form-select form-select-sm item-tipo"
               name="item_tipo[]">
@@ -68,13 +69,10 @@
       </select>
     </div>
 
-    <div class="col-3">
-      <input type="text"
-             class="form-control form-control-sm item-desc"
-             name="item_descripcion[]"
-             placeholder="Ítem / Servicio">
-    </div>
+    <!-- ITEM / SERVICIO -->
+    <div class="col-3 item-desc-container"></div>
 
+    <!-- OBS -->
     <div class="col-2">
       <input type="text"
              class="form-control form-control-sm item-obs"
@@ -82,6 +80,7 @@
              placeholder="Observación">
     </div>
 
+    <!-- CANT -->
     <div class="col-1">
       <input type="number"
              class="form-control form-control-sm item-cant"
@@ -90,6 +89,7 @@
              placeholder="Cant">
     </div>
 
+    <!-- VALOR -->
     <div class="col-2">
       <input type="number"
              class="form-control form-control-sm item-valor text-end"
@@ -98,15 +98,16 @@
              placeholder="$">
     </div>
 
+    <!-- SUBTOTAL -->
     <div class="col-2">
       <input type="number"
              class="form-control form-control-sm item-subtotal text-end"
              name="item_subtotal[]"
              step="0.01"
-             placeholder="$"
              readonly>
     </div>
 
+    <!-- REMOVE -->
     <div class="col-auto">
       <button type="button"
               class="btn btn-sm btn-outline-danger btn-remove-item">
@@ -117,8 +118,13 @@
   </div>
 </div>
 
+<!-- ================= DATOS BACKEND ================= -->
+<script>
+  const ALMACEN_ITEMS = {{ productos|safe }};
+  const TALLER_ITEMS  = {{ servicios|safe }};
+</script>
 
-<!-- SCRIPT -->
+<!-- ================= JS ================= -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
 
@@ -127,93 +133,117 @@
     const template = document.getElementById("item-template");
     const totalLabel = document.getElementById("total-credito");
 
-    // ---------------------------
-    // Utilidades
-    // ---------------------------
-    function toNumber(v) {
-      const n = parseFloat(v);
-      return isNaN(n) ? 0 : n;
-    }
+    // ---------- Utils ----------
+    const num = v => isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 
-    function updateTotal() {
-      let total = 0;
-      document.querySelectorAll(".item-subtotal").forEach(input => {
-        total += toNumber(input.value);
+    const updateTotal = () => {
+      let t = 0;
+      document.querySelectorAll(".item-subtotal").forEach(i => {
+        t += num(i.value);
       });
-      totalLabel.textContent = `$${total.toLocaleString("es-CO")}`;
-    }
+      totalLabel.textContent = `$${t.toLocaleString("es-CO")}`;
+    };
 
-    function updateRowSubtotal(row) {
+    const updateSubtotal = row => {
       const tipo = row.querySelector(".item-tipo").value;
-      const cant = toNumber(row.querySelector(".item-cant").value);
-      const valor = toNumber(row.querySelector(".item-valor").value);
-      const subtotalInput = row.querySelector(".item-subtotal");
+      const cant = num(row.querySelector(".item-cant").value);
+      const val  = num(row.querySelector(".item-valor").value);
+      let sub = 0;
 
-      let subtotal = 0;
+      if (tipo === "almacen" || tipo === "taller") sub = cant * val;
+      if (tipo === "efectivo") sub = val;
 
-      if (tipo === "almacen" || tipo === "taller") {
-        subtotal = cant * valor;
-      }
-
-      if (tipo === "efectivo") {
-        subtotal = valor;
-      }
-
-      subtotalInput.value = subtotal ? subtotal.toFixed(2) : "";
+      row.querySelector(".item-subtotal").value = sub ? sub.toFixed(2) : "";
       updateTotal();
-    }
+    };
 
-    function applyTipoRules(row) {
+    // ---------- Builders ----------
+    const buildSelect = (items) => {
+      const s = document.createElement("select");
+      s.name = "item_descripcion[]";
+      s.className = "form-select form-select-sm item-desc";
+
+      s.innerHTML = `<option value="">Seleccione...</option>`;
+
+      items.forEach(i => {
+        const o = document.createElement("option");
+        o.value = i.nombre;
+        o.textContent = i.nombre;
+        o.dataset.precio = i.precio;
+        s.appendChild(o);
+      });
+
+      return s;
+    };
+
+    const buildInput = () => {
+      const i = document.createElement("input");
+      i.type = "text";
+      i.name = "item_descripcion[]";
+      i.className = "form-control form-control-sm item-desc";
+      i.placeholder = "Detalle del préstamo";
+      return i;
+    };
+
+    // ---------- Tipo Rules ----------
+    const applyTipo = row => {
       const tipo = row.querySelector(".item-tipo").value;
+      const cont = row.querySelector(".item-desc-container");
       const cant = row.querySelector(".item-cant");
-      const valor = row.querySelector(".item-valor");
+      const val  = row.querySelector(".item-valor");
+
+      cont.innerHTML = "";
+
+      if (tipo === "almacen") {
+        const sel = buildSelect(
+          ALMACEN_ITEMS.map(p => ({ nombre: p.nombre, precio: p.precio_venta }))
+        );
+        sel.addEventListener("change", () => {
+          val.value = sel.selectedOptions[0]?.dataset.precio || "";
+          updateSubtotal(row);
+        });
+        cont.appendChild(sel);
+        cant.disabled = false;
+      }
+
+      if (tipo === "taller") {
+        const sel = buildSelect(
+          TALLER_ITEMS.map(s => ({ nombre: s.nombre, precio: s.valor }))
+        );
+        sel.addEventListener("change", () => {
+          val.value = sel.selectedOptions[0]?.dataset.precio || "";
+          updateSubtotal(row);
+        });
+        cont.appendChild(sel);
+        cant.disabled = false;
+      }
 
       if (tipo === "efectivo") {
+        cont.appendChild(buildInput());
         cant.value = "";
         cant.disabled = true;
-        valor.placeholder = "Valor";
-      } else {
-        cant.disabled = false;
-        valor.placeholder = "$";
       }
 
-      updateRowSubtotal(row);
-    }
+      updateSubtotal(row);
+    };
 
-    // ---------------------------
-    // Crear fila
-    // ---------------------------
-    function addItemRow() {
-      const clone = template.firstElementChild.cloneNode(true);
+    // ---------- Row ----------
+    const addRow = () => {
+      const r = template.firstElementChild.cloneNode(true);
 
-      // listeners
-      clone.querySelector(".item-tipo").addEventListener("change", () => {
-        applyTipoRules(clone);
-      });
-
-      clone.querySelector(".item-cant").addEventListener("input", () => {
-        updateRowSubtotal(clone);
-      });
-
-      clone.querySelector(".item-valor").addEventListener("input", () => {
-        updateRowSubtotal(clone);
-      });
-
-      clone.querySelector(".btn-remove-item").addEventListener("click", () => {
-        clone.remove();
+      r.querySelector(".item-tipo").addEventListener("change", () => applyTipo(r));
+      r.querySelector(".item-cant").addEventListener("input", () => updateSubtotal(r));
+      r.querySelector(".item-valor").addEventListener("input", () => updateSubtotal(r));
+      r.querySelector(".btn-remove-item").addEventListener("click", () => {
+        r.remove();
         updateTotal();
       });
 
-      container.appendChild(clone);
-    }
+      container.appendChild(r);
+    };
 
-    // ---------------------------
-    // Eventos globales
-    // ---------------------------
-    btnAdd.addEventListener("click", addItemRow);
-
+    btnAdd.addEventListener("click", addRow);
   });
 </script>
-
 
 {% endblock %}

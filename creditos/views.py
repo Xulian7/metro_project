@@ -3,6 +3,9 @@ from django.db import transaction
 from .models import Credito, CreditoItem
 from .forms import CreditoForm
 
+from almacen.models import Producto
+from taller.models import Servicio
+
 
 def crear_credito(request):
     """
@@ -22,18 +25,25 @@ def crear_credito(request):
 
                 total = 0
 
-                # Items vienen como listas paralelas
+                # 🔑 listas paralelas
+                tipos = request.POST.getlist("item_tipo[]")
                 descripciones = request.POST.getlist("item_descripcion[]")
+                observaciones = request.POST.getlist("item_observacion[]")
                 cantidades = request.POST.getlist("item_cantidad[]")
                 valores = request.POST.getlist("item_valor[]")
                 subtotales = request.POST.getlist("item_subtotal[]")
 
                 for i in range(len(descripciones)):
+                    if not descripciones[i] or not subtotales[i]:
+                        continue  # seguridad extra
+
                     subtotal = float(subtotales[i])
 
                     CreditoItem.objects.create(
                         credito=credito,
+                        tipo=tipos[i],
                         descripcion=descripciones[i],
+                        observacion=observaciones[i],
                         cantidad=cantidades[i] or None,
                         valor_unitario=valores[i] or None,
                         subtotal=subtotal
@@ -50,10 +60,21 @@ def crear_credito(request):
     else:
         form = CreditoForm()
 
+    # 📦 Datos para selects
+    productos = Producto.objects.all().values(
+        "nombre", "precio_venta"
+    )
+
+    servicios = Servicio.objects.all().values(
+        "nombre", "valor"
+    )
+
     return render(
         request,
         "creditos/crear_credito.html",
         {
-            "form": form
+            "form": form,
+            "productos": list(productos),
+            "servicios": list(servicios),
         }
     )
