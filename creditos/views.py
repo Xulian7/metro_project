@@ -9,9 +9,7 @@ from django.db.models import F
 
 
 def crear_credito(request):
-    """
-    Crear un crédito con sus items.
-    """
+    
 
     if request.method == "POST":
         form = CreditoForm(request.POST)
@@ -19,6 +17,7 @@ def crear_credito(request):
         if form.is_valid():
             with transaction.atomic():
 
+                # ====== CABECERA ======
                 credito = form.save(commit=False)
                 credito.monto_total = 0
                 credito.saldo = 0
@@ -26,31 +25,36 @@ def crear_credito(request):
 
                 total = 0
 
+                # ====== LISTAS PARALELAS ======
                 tipos = request.POST.getlist("item_tipo[]")
                 descripciones = request.POST.getlist("item_descripcion[]")
-                observaciones = request.POST.getlist("item_observacion[]")
                 cantidades = request.POST.getlist("item_cantidad[]")
                 valores = request.POST.getlist("item_valor[]")
                 subtotales = request.POST.getlist("item_subtotal[]")
 
-                for i in range(len(descripciones)):
-                    if not descripciones[i] or not subtotales[i]:
+                # ====== ITERACIÓN SEGURA ======
+                for tipo, desc, cant, val, sub in zip(
+                    tipos, descripciones, cantidades, valores, subtotales
+                ):
+                    if not desc or not sub:
                         continue
 
-                    subtotal = float(subtotales[i])
+                    cantidad = int(cant) if cant else None
+                    valor_unitario = float(val) if val else None
+                    subtotal = float(sub)
 
                     CreditoItem.objects.create(
                         credito=credito,
-                        tipo=tipos[i],
-                        descripcion=descripciones[i],
-                        observacion=observaciones[i],
-                        cantidad=cantidades[i] or None,
-                        valor_unitario=valores[i] or None,
+                        tipo=tipo,
+                        descripcion=desc,
+                        cantidad=cantidad,
+                        valor_unitario=valor_unitario,
                         subtotal=subtotal
                     )
 
                     total += subtotal
 
+                # ====== TOTALES ======
                 credito.monto_total = total
                 credito.saldo = total
                 credito.save()
@@ -60,7 +64,7 @@ def crear_credito(request):
     else:
         form = CreditoForm()
 
-    # 📦 Normalizados para el frontend
+    # ====== DATA PARA EL FRONT ======
     productos = Producto.objects.values(
         "id",
         label=F("nombre"),
