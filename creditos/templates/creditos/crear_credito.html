@@ -118,3 +118,100 @@
 </div>
 
 {% endblock %}
+
+<!-- SCRIPT -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+
+    const btnAdd = document.getElementById("btn-add-item");
+    const container = document.getElementById("items-container");
+    const template = document.getElementById("item-template");
+    const totalLabel = document.getElementById("total-credito");
+
+    // ---------------------------
+    // Utilidades
+    // ---------------------------
+    function toNumber(v) {
+      const n = parseFloat(v);
+      return isNaN(n) ? 0 : n;
+    }
+
+    function updateTotal() {
+      let total = 0;
+      document.querySelectorAll(".item-subtotal").forEach(input => {
+        total += toNumber(input.value);
+      });
+      totalLabel.textContent = `$${total.toLocaleString("es-CO")}`;
+    }
+
+    function updateRowSubtotal(row) {
+      const tipo = row.querySelector(".item-tipo").value;
+      const cant = toNumber(row.querySelector(".item-cant").value);
+      const valor = toNumber(row.querySelector(".item-valor").value);
+      const subtotalInput = row.querySelector(".item-subtotal");
+
+      let subtotal = 0;
+
+      if (tipo === "almacen" || tipo === "taller") {
+        subtotal = cant * valor;
+      }
+
+      if (tipo === "efectivo") {
+        subtotal = valor;
+      }
+
+      subtotalInput.value = subtotal ? subtotal.toFixed(2) : "";
+      updateTotal();
+    }
+
+    function applyTipoRules(row) {
+      const tipo = row.querySelector(".item-tipo").value;
+      const cant = row.querySelector(".item-cant");
+      const valor = row.querySelector(".item-valor");
+
+      if (tipo === "efectivo") {
+        cant.value = "";
+        cant.disabled = true;
+        valor.placeholder = "Valor";
+      } else {
+        cant.disabled = false;
+        valor.placeholder = "$";
+      }
+
+      updateRowSubtotal(row);
+    }
+
+    // ---------------------------
+    // Crear fila
+    // ---------------------------
+    function addItemRow() {
+      const clone = template.firstElementChild.cloneNode(true);
+
+      // listeners
+      clone.querySelector(".item-tipo").addEventListener("change", () => {
+        applyTipoRules(clone);
+      });
+
+      clone.querySelector(".item-cant").addEventListener("input", () => {
+        updateRowSubtotal(clone);
+      });
+
+      clone.querySelector(".item-valor").addEventListener("input", () => {
+        updateRowSubtotal(clone);
+      });
+
+      clone.querySelector(".btn-remove-item").addEventListener("click", () => {
+        clone.remove();
+        updateTotal();
+      });
+
+      container.appendChild(clone);
+    }
+
+    // ---------------------------
+    // Eventos globales
+    // ---------------------------
+    btnAdd.addEventListener("click", addItemRow);
+
+  });
+</script>
