@@ -59,7 +59,8 @@ def crear_credito(request):
                 credito.saldo = total
                 credito.save()
 
-            return redirect("creditos:listar_creditos")
+            return redirect("creditos:crear_credito")
+
 
     else:
         form = CreditoForm()
