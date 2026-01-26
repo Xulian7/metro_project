@@ -117,6 +117,10 @@
   </div>
 </div>
 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
 {{ productos|json_script:"productos-data" }}
 {{ servicios|json_script:"servicios-data" }}
 
@@ -170,7 +174,7 @@
 
     function buildSelect(items) {
       const sel = document.createElement("select");
-      sel.className = "form-select form-select-sm item-desc";
+      sel.className = "form-select form-select-sm item-desc item-select2";
       sel.name = "item_descripcion[]";
       sel.innerHTML = `<option value="">Seleccione…</option>`;
 
@@ -191,31 +195,52 @@
       const cant = row.querySelector(".item-cant");
       const valor = row.querySelector(".item-valor");
 
+      // limpiar contenedor
       descBox.innerHTML = "";
 
+      // reset base
+      valor.value = "";
+      valor.placeholder = "$";
+      cant.disabled = false;
+
+      /* ================= ALMACÉN ================= */
       if (tipo === "almacen") {
         const sel = buildSelect(productos);
         descBox.appendChild(sel);
-        cant.disabled = false;
-        valor.value = "";
+
+        // activar buscador
+        $(sel).select2({
+          width: "100%",
+          placeholder: "Buscar producto…",
+          allowClear: true
+        });
 
         sel.addEventListener("change", () => {
           valor.value = sel.selectedOptions[0]?.dataset.precio || "";
           updateSubtotal(row);
         });
+      }
 
-      } else if (tipo === "taller") {
+      /* ================= TALLER ================= */
+      else if (tipo === "taller") {
         const sel = buildSelect(servicios);
         descBox.appendChild(sel);
-        cant.disabled = false;
-        valor.value = "";
+
+        // activar buscador
+        $(sel).select2({
+          width: "100%",
+          placeholder: "Buscar servicio…",
+          allowClear: true
+        });
 
         sel.addEventListener("change", () => {
           valor.value = sel.selectedOptions[0]?.dataset.precio || "";
           updateSubtotal(row);
         });
+      }
 
-      } else if (tipo === "efectivo") {
+      /* ================= EFECTIVO ================= */
+      else if (tipo === "efectivo") {
         const inp = document.createElement("input");
         inp.type = "text";
         inp.name = "item_descripcion[]";
@@ -225,7 +250,6 @@
 
         cant.value = "";
         cant.disabled = true;
-        valor.value = "";
         valor.placeholder = "Valor del préstamo";
       }
 
