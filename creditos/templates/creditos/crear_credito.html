@@ -68,20 +68,17 @@
     </div>
 
     <!-- ITEM / SERVICIO -->
-    <div class="col-3 item-desc-container">
-      <!-- placeholder para mantener alineación -->
+    <div class="col-4 item-desc-container">
       <input type="hidden" name="item_descripcion[]" value="">
     </div>
-
 
     <!-- CANTIDAD -->
     <div class="col-1">
       <input type="number"
-             class="form-control form-control-sm item-cant"
+             class="form-control form-control-sm item-cant text-center"
              name="item_cantidad[]"
              min="1"
-             value="1"
-             placeholder="Cant">
+             value="1">
     </div>
 
     <!-- VALOR -->
@@ -98,13 +95,14 @@
       <input type="number"
              class="form-control form-control-sm item-subtotal text-end"
              name="item_subtotal[]"
-             step="0.01"
              readonly>
     </div>
 
-    <div class="col-auto">
+    <!-- ACCIÓN -->
+    <div class="col-1 text-center">
       <button type="button"
-              class="btn btn-sm btn-outline-danger btn-remove-item">
+              class="btn btn-sm btn-outline-danger btn-remove-item"
+              title="Eliminar ítem">
         ✖
       </button>
     </div>
@@ -112,6 +110,8 @@
   </div>
 </div>
 
+
+<!-- ================= LIBRERÍAS ================= -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
