@@ -228,22 +228,20 @@
         valor.readOnly = true;
       }
 
-
       /* ================= TALLER ================= */
       else if (tipo === "taller") {
         const sel = buildSelect(servicios);
         descBox.appendChild(sel);
 
-        // buscador
         $(sel).select2({
           width: "100%",
           placeholder: "Buscar servicio…",
           allowClear: true
         });
 
-        // precio automático
-        sel.addEventListener("change", () => {
-          valor.value = sel.selectedOptions[0]?.dataset.precio || "";
+        $(sel).on("select2:select", function (e) {
+          const opt = e.params.data.element;
+          valor.value = opt.dataset.precio || "";
           updateSubtotal(row);
         });
 
