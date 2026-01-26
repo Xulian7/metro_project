@@ -78,13 +78,12 @@ class Credito(models.Model):
 
 
 class CreditoItem(models.Model):
-    """
-    Detalle de un crédito.
-    Puede representar:
-    - un artículo de almacén
-    - un servicio de taller
-    - un préstamo en efectivo (1 solo item)
-    """
+
+    TIPO_CHOICES = [
+        ("almacen", "Artículo de almacén"),
+        ("taller", "Servicio de taller"),
+        ("efectivo", "Préstamo de efectivo"),
+    ]
 
     credito = models.ForeignKey(
         Credito,
@@ -92,34 +91,31 @@ class CreditoItem(models.Model):
         related_name="items"
     )
 
-    descripcion = models.CharField(
+    tipo = models.CharField(
+        max_length=20,
+        choices=TIPO_CHOICES
+    )
+
+    descripcion = models.CharField(max_length=255)
+
+    observacion = models.CharField(
         max_length=255,
-        help_text="Descripción del item"
+        blank=True
     )
 
     cantidad = models.PositiveIntegerField(
         null=True,
-        blank=True,
-        help_text="Cantidad (solo aplica para almacén o taller)"
+        blank=True
     )
 
     valor_unitario = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         null=True,
-        blank=True,
-        help_text="Valor unitario (solo aplica para almacén o taller)"
+        blank=True
     )
 
     subtotal = models.DecimalField(
         max_digits=12,
-        decimal_places=2,
-        help_text="Subtotal del item"
+        decimal_places=2
     )
-
-    class Meta:
-        verbose_name = "Ítem de crédito"
-        verbose_name_plural = "Ítems de crédito"
-
-    def __str__(self):
-        return f"{self.descripcion} - ${self.subtotal}"
