@@ -117,12 +117,21 @@
   </div>
 </div>
 
+{{ productos|json_script:"productos-data" }}
+{{ servicios|json_script:"servicios-data" }}
+
+
 <!-- ================= SCRIPT ================= -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
 
-    const productos = {{ productos|safe }};
-    const servicios = {{ servicios|safe }};
+
+    const productos = JSON.parse(
+      document.getElementById("productos-data").textContent
+    );
+    const servicios = JSON.parse(
+      document.getElementById("servicios-data").textContent
+    );
 
     const btnAdd = document.getElementById("btn-add-item");
     const container = document.getElementById("items-container");
@@ -223,8 +232,11 @@
       updateSubtotal(row);
     }
 
+    /* -------- agregar nueva fila -------- */
     function addRow() {
-      const row = template.firstElementChild.cloneNode(true);
+      const row = template
+        .querySelector(".credito-item-row")
+        .cloneNode(true);
 
       row.querySelector(".item-tipo")
         .addEventListener("change", () => applyTipo(row));
@@ -243,6 +255,7 @@
 
       container.appendChild(row);
     }
+
 
     /* -------- validación mínima -------- */
     form.addEventListener("submit", e => {
