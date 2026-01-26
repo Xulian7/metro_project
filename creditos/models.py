@@ -94,10 +94,6 @@ class CreditoItem(models.Model):
 
     descripcion = models.CharField(max_length=255)
 
-    observacion = models.CharField(
-        max_length=255,
-        blank=True
-    )
 
     cantidad = models.PositiveIntegerField(
         null=True,
