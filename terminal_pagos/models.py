@@ -228,6 +228,11 @@ class PagoFactura(models.Model):
         null=True,
         blank=True
     )
+    
+    def save(self, *args, **kwargs):
+        if not self.referencia:
+            self.referencia = None
+        super().save(*args, **kwargs)
 
     fecha_pago = models.DateField(default=timezone.now)
     

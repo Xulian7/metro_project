@@ -15,6 +15,8 @@ from datetime import date, timedelta
 from arrendamientos.models import Contrato
 from terminal_pagos.models import Factura, ItemFactura
 from django.http import JsonResponse
+from decimal import Decimal, ROUND_HALF_UP
+from django.db.models import Sum
 
 
 from .models import (
@@ -119,6 +121,7 @@ def nueva_transaccion(request):
         }
     )
     
+
 # =========================
 # CREAR FACTURA + ÍTEMS + PAGOS
 # =========================
@@ -436,13 +439,6 @@ def validar_pago(request, pago_id):
     return HttpResponse(status=204)
 
 
-
-from datetime import date
-from decimal import Decimal, ROUND_HALF_UP
-from django.db.models import Sum
-from django.shortcuts import render
-from arrendamientos.models import Contrato
-from terminal_pagos.models import ItemFactura
 
 
 def resumen_contratos(request):
