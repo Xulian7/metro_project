@@ -111,6 +111,94 @@
 </div>
 
 
+<hr class="my-4">
+
+<div class="card p-3 shadow-sm">
+  <h5 class="fw-bold mb-3">Créditos registrados</h5>
+
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Contrato</th>
+          <th>Fecha</th>
+          <th>Total</th>
+          <th>Saldo</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for credito in creditos %}
+        <tr>
+          <td>
+            <span class="fw-semibold"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#items-{{ credito.id }}"
+                  style="cursor:pointer">
+              {{ credito.id }}
+            </span>
+          </td>
+          <td>{{ credito.contrato }}</td>
+          <td>{{ credito.fecha }}</td>
+          <td class="text-end">${{ credito.monto_total|floatformat:0 }}</td>
+          <td class="text-end">${{ credito.saldo|floatformat:0 }}</td>
+          <td>{{ credito.estado }}</td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-success" disabled>
+              Abonar
+            </button>
+            {% if credito.puede_eliminarse %}
+              <button class="btn btn-sm btn-outline-danger">
+                Eliminar
+              </button>
+            {% endif %}
+          </td>
+        </tr>
+
+        <!-- DETALLE DE ÍTEMS -->
+        <tr class="collapse bg-light" id="items-{{ credito.id }}">
+          <td colspan="7">
+            <table class="table table-sm mb-0">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Descripción</th>
+                  <th>Cant</th>
+                  <th>Valor</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in credito.items.all %}
+                <tr>
+                  <td>{{ item.get_tipo_display }}</td>
+                  <td>{{ item.descripcion }}</td>
+                  <td class="text-center">{{ item.cantidad }}</td>
+                  <td class="text-end">${{ item.valor_unitario|floatformat:0 }}</td>
+                  <td class="text-end">${{ item.subtotal|floatformat:0 }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="text-center text-muted">
+            No hay créditos registrados
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
 <!-- ================= LIBRERÍAS ================= -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -197,7 +285,7 @@
 
       // reset base
       cant.disabled = false;
-      cant.value = "";
+      cant.value = "1";
       valor.value = "";
       valor.placeholder = "$";
       valor.readOnly = false;
