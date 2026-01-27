@@ -67,33 +67,34 @@ def crear_credito(request):
     # =========================
     # GET → formulario + listado
     # =========================
-    form = CreditoForm()
+    else:
+        form = CreditoForm()
 
-    creditos = (
-        Credito.objects
-        .select_related("contrato")
-        .order_by("-fecha", "-id")
-    )
+        creditos = (
+            Credito.objects
+            .select_related("contrato")
+            .order_by("-fecha", "-id")
+        )
 
-    productos = Producto.objects.values(
-        "id",
-        label=F("nombre"),
-        precio=F("precio_venta")
-    )
+        productos = Producto.objects.values(
+            "id",
+            label=F("nombre"),
+            precio=F("precio_venta")
+        )
 
-    servicios = Servicio.objects.values(
-        "id",
-        label=F("nombre_servicio"),
-        precio=F("valor")
-    )
+        servicios = Servicio.objects.values(
+            "id",
+            label=F("nombre_servicio"),
+            precio=F("valor")
+        )
 
-    return render(
-        request,
-        "creditos/crear_credito.html",
-        {
-            "form": form,
-            "creditos": creditos,
-            "productos": list(productos),
-            "servicios": list(servicios),
-        }
-    )
+        return render(
+            request,
+            "creditos/crear_credito.html",
+            {
+                "form": form,
+                "creditos": creditos,
+                "productos": list(productos),
+                "servicios": list(servicios),
+            }
+        )

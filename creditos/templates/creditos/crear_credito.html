@@ -110,93 +110,73 @@
   </div>
 </div>
 
-
+<!-- ================= CRÉDITOS REGISTRADOS ================= -->
 <hr class="my-4">
+<h5 class="fw-bold mb-3">Créditos registrados</h5>
 
-<div class="card p-3 shadow-sm">
-  <h5 class="fw-bold mb-3">Créditos registrados</h5>
+<div class="table-responsive">
+  <table class="table table-sm table-striped align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Contrato</th>
+        <th>Descripción</th>
+        <th>Fecha</th>
+        <th class="text-end">Monto</th>
+        <th class="text-end">Saldo</th>
+        <th class="text-center">Estado</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </thead>
 
-  <div class="table-responsive">
-    <table class="table table-sm align-middle">
-      <thead class="table-light">
+    <tbody>
+      {% for credito in creditos %}
         <tr>
-          <th>#</th>
-          <th>Contrato</th>
-          <th>Fecha</th>
-          <th>Total</th>
-          <th>Saldo</th>
-          <th>Estado</th>
-          <th></th>
-        </tr>
-      </thead>
+          <td>{{ credito.id }}</td>
 
-      <tbody>
-        {% for credito in creditos %}
-        <tr>
-          <td>
-            <span class="fw-semibold"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#items-{{ credito.id }}"
-                  style="cursor:pointer">
-              {{ credito.id }}
+          <td>{{ credito.contrato }}</td>
+
+          <td style="max-width: 300px;">
+            {{ credito.descripcion|default:"—" }}
+          </td>
+
+          <td>{{ credito.fecha|date:"d/m/Y" }}</td>
+
+          <td class="text-end">
+            ${{ credito.monto_total|floatformat:0 }}
+          </td>
+
+          <td class="text-end">
+            ${{ credito.saldo|floatformat:0 }}
+          </td>
+
+          <td class="text-center">
+            <span class="badge {% if credito.estado == 'Activo' %}bg-success{% else %}bg-secondary{% endif %}">
+              {{ credito.estado }}
             </span>
           </td>
-          <td>{{ credito.contrato }}</td>
-          <td>{{ credito.fecha }}</td>
-          <td class="text-end">${{ credito.monto_total|floatformat:0 }}</td>
-          <td class="text-end">${{ credito.saldo|floatformat:0 }}</td>
-          <td>{{ credito.estado }}</td>
-          <td class="text-end">
-            <button class="btn btn-sm btn-outline-success" disabled>
-              Abonar
-            </button>
-            {% if credito.puede_eliminarse %}
-              <button class="btn btn-sm btn-outline-danger">
-                Eliminar
-              </button>
-            {% endif %}
-          </td>
-        </tr>
 
-        <!-- DETALLE DE ÍTEMS -->
-        <tr class="collapse bg-light" id="items-{{ credito.id }}">
-          <td colspan="7">
-            <table class="table table-sm mb-0">
-              <thead>
-                <tr>
-                  <th>Tipo</th>
-                  <th>Descripción</th>
-                  <th>Cant</th>
-                  <th>Valor</th>
-                  <th>Subtotal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for item in credito.items.all %}
-                <tr>
-                  <td>{{ item.get_tipo_display }}</td>
-                  <td>{{ item.descripcion }}</td>
-                  <td class="text-center">{{ item.cantidad }}</td>
-                  <td class="text-end">${{ item.valor_unitario|floatformat:0 }}</td>
-                  <td class="text-end">${{ item.subtotal|floatformat:0 }}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+          <td class="text-center">
+            <!-- Visual por ahora -->
+            <button class="btn btn-sm btn-outline-secondary" disabled>
+              Abonos
+            </button>
+
+            <button class="btn btn-sm btn-outline-danger" disabled>
+              Eliminar
+            </button>
           </td>
         </tr>
-        {% empty %}
+      {% empty %}
         <tr>
-          <td colspan="7" class="text-center text-muted">
+          <td colspan="8" class="text-center text-muted">
             No hay créditos registrados
           </td>
         </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
-
 
 
 <!-- ================= LIBRERÍAS ================= -->
