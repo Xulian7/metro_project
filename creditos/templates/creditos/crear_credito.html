@@ -422,83 +422,78 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-  let activePopover = null;
+  let popoverActivo = null;
 
+  // ===============================
+  // Inicializar popovers de crédito
+  // ===============================
   document.querySelectorAll(".credito-popover").forEach(el => {
 
+    const creditoId = el.dataset.creditoId;
+
     const pop = new bootstrap.Popover(el, {
-      trigger: "manual",
+      trigger: "manual",        // 🔑 CLAVE
+      placement: "right",
       html: true,
-      placement: "right"
+      sanitize: false,
+      container: "body",
+      content: `
+        <div class="text-muted small d-flex align-items-center gap-2">
+          <span class="spinner-border spinner-border-sm"></span>
+          Cargando…
+        </div>
+      `
     });
 
-    el.addEventListener("click", async e => {
+    el.addEventListener("click", async (e) => {
       e.preventDefault();
+      e.stopPropagation(); // 🔑 evita autocierre
 
       // cerrar otro popover abierto
-      if (activePopover && activePopover !== pop) {
-        activePopover.hide();
+      if (popoverActivo && popoverActivo !== pop) {
+        popoverActivo.hide();
       }
 
-      // toggle mismo popover
-      if (el.classList.contains("popover-open")) {
-        pop.hide();
-        el.classList.remove("popover-open");
-        activePopover = null;
-        return;
-      }
-
-      el.classList.add("popover-open");
-      activePopover = pop;
-
-      pop.setContent({ ".popover-body": "Cargando…" });
       pop.show();
+      popoverActivo = pop;
 
-      const creditoId = el.dataset.creditoId;
-      const res = await fetch(`/creditos/items/${creditoId}/`);
-      const data = await res.json();
+      try {
+        const res = await fetch(`/creditos/items/${creditoId}/`);
+        const html = await res.text();
 
-      let html = `<div style="min-width:260px">`;
+        pop.setContent({
+          ".popover-body": html
+        });
 
-      if (!data.items.length) {
-        html += `<div class="text-muted">Sin ítems</div>`;
-      } else {
-        data.items.forEach(i => {
-          html += `
-            <div class="mb-2">
-              <strong>${i.tipo.toUpperCase()}</strong><br>
-              ${i.descripcion}<br>
-              ${
-                i.cantidad
-                  ? `<small>${i.cantidad} × $${i.valor_unitario.toLocaleString("es-CO")}</small><br>`
-                  : ""
-              }
-              <span class="fw-bold">$${i.subtotal.toLocaleString("es-CO")}</span>
+      } catch (err) {
+        pop.setContent({
+          ".popover-body": `
+            <div class="text-danger small">
+              Error al cargar el detalle
             </div>
-          `;
+          `
         });
       }
-
-      html += `</div>`;
-
-      pop.setContent({ ".popover-body": html });
     });
   });
 
-  // cerrar al click fuera
-  document.addEventListener("click", e => {
-    if (!e.target.closest(".popover") &&
-        !e.target.closest(".credito-popover")) {
-      document.querySelectorAll(".credito-popover").forEach(el => {
-        el.classList.remove("popover-open");
-      });
-      if (activePopover) activePopover.hide();
-      activePopover = null;
+  // ===============================
+  // Cerrar popover al click fuera
+  // ===============================
+  document.addEventListener("click", (e) => {
+    if (
+      popoverActivo &&
+      !e.target.closest(".popover") &&
+      !e.target.closest(".credito-popover")
+    ) {
+      popoverActivo.hide();
+      popoverActivo = null;
     }
   });
 
 });
 </script>
+
 
 
 
