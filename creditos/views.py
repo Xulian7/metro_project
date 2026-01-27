@@ -6,6 +6,9 @@ from .models import Credito, CreditoItem
 from .forms import CreditoForm
 from almacen.models import Producto
 from taller.models import Servicio
+from django.shortcuts import get_object_or_404, render
+from .models import Credito
+
 
 
 def crear_credito(request):
@@ -98,25 +101,8 @@ def crear_credito(request):
             }
         )
         
-        
-def credito_items(request, credito_id):
-    items = CreditoItem.objects.filter(credito_id=credito_id)
 
-    data = [
-        {
-            "tipo": item.tipo,
-            "descripcion": item.descripcion,
-            "cantidad": item.cantidad,
-            "valor_unitario": float(item.valor_unitario or 0),
-            "subtotal": float(item.subtotal),
-        }
-        for item in items
-    ]
 
-    return JsonResponse({"items": data})
-
-from django.shortcuts import get_object_or_404, render
-from .models import Credito
 
 def popover_items_credito(request, credito_id):
     credito = get_object_or_404(Credito, id=credito_id)
