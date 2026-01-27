@@ -414,91 +414,91 @@
   });
 </script>
 
-<!-- ================= SCRIPT POPOVERS ================= -->
+<!-- ================= SCRIPT POPOVERS CRÉDITOS ================= -->
 <script>
-let popover = null;
-let hideTimer = null;
-let activo = false;
+  let popover = null;
+  let hideTimer = null;
+  let activo = false;
 
-document.addEventListener("mouseover", function (e) {
-  const tag = e.target.closest(".credito-tag");
-  if (!tag) return;
+  document.addEventListener("mouseover", function (e) {
+    const tag = e.target.closest(".credito-tag");
+    if (!tag) return;
 
-  if (hideTimer) clearTimeout(hideTimer);
+    if (hideTimer) clearTimeout(hideTimer);
 
-  // ya activo sobre este mismo tag → no recrear
-  if (activo && popover?._element === tag) return;
+    // Ya activo sobre este mismo tag → no recrear
+    if (activo && popover && popover._element === tag) return;
 
-  // cerrar otros popovers
-  document.querySelectorAll(".credito-tag").forEach(t => {
-    bootstrap.Popover.getInstance(t)?.dispose();
-  });
-
-  const creditoId = tag.dataset.creditoId;
-
-  popover = new bootstrap.Popover(tag, {
-    html: true,
-    trigger: "manual",
-    placement: "right",
-    container: "body",
-    sanitize: false,
-    content: `
-      <div id="popover-credito-content">
-        <em class="text-muted">Cargando ítems…</em>
-      </div>
-    `,
-  });
-
-  popover.show();
-  activo = true;
-
-  // 🔁 fetch SOLO modifica contenido interno
-  fetch(`/creditos/items/${creditoId}/`)
-    .then(res => res.text())
-    .then(html => {
-      const cont = document.getElementById("popover-credito-content");
-      if (!cont) return;
-
-      cont.innerHTML = html;
-
-      // mantener hover sobre el popover
-      const popEl = cont.closest(".popover");
-      if (popEl) {
-        popEl.addEventListener("mouseenter", () => {
-          if (hideTimer) clearTimeout(hideTimer);
-        });
-        popEl.addEventListener("mouseleave", scheduleHide);
-      }
-    })
-    .catch(() => {
-      const cont = document.getElementById("popover-credito-content");
-      if (cont) {
-        cont.innerHTML = `<span class="text-danger">Error al cargar detalle</span>`;
-      }
-    });
-});
-
-document.addEventListener("mouseout", function (e) {
-  const tag = e.target.closest(".credito-tag");
-  if (!tag) return;
-  scheduleHide();
-});
-
-function scheduleHide() {
-  hideTimer = setTimeout(() => {
+    // Cerrar otros popovers
     document.querySelectorAll(".credito-tag").forEach(t => {
       bootstrap.Popover.getInstance(t)?.dispose();
     });
-    popover = null;
-    activo = false;
-  }, 300);
-}
+
+    const creditoId = tag.dataset.creditoId;
+
+    popover = new bootstrap.Popover(tag, {
+      html: true,
+      trigger: "manual",
+      placement: "right",
+      container: "body",
+      sanitize: false,
+      content: `
+        <div id="popover-credito-content" style="min-width:260px">
+          <em class="text-muted">Cargando ítems…</em>
+        </div>
+      `,
+    });
+
+    popover.show();
+    activo = true;
+
+    // 🔁 Fetch SOLO actualiza el contenido interno
+    fetch(`/creditos/items/${creditoId}/`)
+      .then(res => res.text())
+      .then(html => {
+        const cont = document.getElementById("popover-credito-content");
+        if (!cont) return;
+
+        cont.innerHTML = html;
+
+        // Mantener abierto al pasar el mouse al popover
+        const popEl = cont.closest(".popover");
+        if (popEl) {
+          popEl.addEventListener("mouseenter", () => {
+            if (hideTimer) clearTimeout(hideTimer);
+          });
+          popEl.addEventListener("mouseleave", scheduleHide);
+        }
+      })
+      .catch(() => {
+        const cont = document.getElementById("popover-credito-content");
+        if (cont) {
+          cont.innerHTML = `
+            <span class="text-danger">
+              Error al cargar el detalle del crédito
+            </span>
+          `;
+        }
+      });
+  });
+
+  document.addEventListener("mouseout", function (e) {
+    const tag = e.target.closest(".credito-tag");
+    if (!tag || tag.contains(e.relatedTarget)) return;
+    scheduleHide();
+  });
+
+  function scheduleHide() {
+    hideTimer = setTimeout(() => {
+      document.querySelectorAll(".credito-tag").forEach(t => {
+        bootstrap.Popover.getInstance(t)?.dispose();
+      });
+      popover = null;
+      activo = false;
+    }, 300);
+  }
 </script>
-
-
-
-
-
+<!-- ================= END SCRIPT ================= -->
 
 
 {% endblock %}
