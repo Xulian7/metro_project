@@ -114,6 +114,15 @@
 <hr class="my-4">
 <h5 class="fw-bold mb-3">Créditos registrados</h5>
 
+<div class="row mb-2">
+  <div class="col-md-4">
+    <input type="text"
+           id="credito-search"
+           class="form-control form-control-sm"
+           placeholder="Buscar por contrato, descripción o ID…">
+  </div>
+</div>
+
 <div class="table-responsive">
   <table class="table table-sm table-striped align-middle">
     <thead class="table-light">
@@ -131,8 +140,23 @@
 
     <tbody>
       {% for credito in creditos %}
-        <tr>
-          <td>{{ credito.id }}</td>
+        <tr class="credito-row"
+            data-id="{{ credito.id }}"
+            data-contrato="{{ credito.contrato }}"
+            data-descripcion="{{ credito.descripcion }}">
+
+          <!-- ID clickeable (detalle en el siguiente paso) -->
+          <td class="text-center">
+            <a href="#"
+              class="credito-popover fw-bold text-decoration-none"
+              data-credito-id="{{ credito.id }}"
+              data-bs-toggle="popover"
+              data-bs-placement="right"
+              data-bs-html="true"
+              data-bs-content="Cargando…">
+              {{ credito.id }}
+            </a>
+          </td>
 
           <td>{{ credito.contrato }}</td>
 
@@ -179,6 +203,7 @@
 </div>
 
 
+
 <!-- ================= LIBRERÍAS ================= -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -189,6 +214,32 @@
 {{ productos|json_script:"productos-data" }}
 {{ servicios|json_script:"servicios-data" }}
 
+<!-- ================= SCRIPT BÚSQUEDA ================= -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      const searchInput = document.getElementById("credito-search");
+      const rows = document.querySelectorAll(".credito-row");
+
+      searchInput.addEventListener("input", () => {
+        const q = searchInput.value.toLowerCase().trim();
+
+        rows.forEach(row => {
+          const id = row.dataset.id?.toLowerCase() || "";
+          const contrato = row.dataset.contrato?.toLowerCase() || "";
+          const descripcion = row.dataset.descripcion?.toLowerCase() || "";
+
+          const match =
+            id.includes(q) ||
+            contrato.includes(q) ||
+            descripcion.includes(q);
+
+          row.style.display = match ? "" : "none";
+        });
+      });
+
+    });
+</script>
 
 <!-- ================= SCRIPT ================= -->
 <script>
@@ -366,6 +417,90 @@
     btnAdd.addEventListener("click", addRow);
   });
 </script>
+
+<!-- ================= SCRIPT POPOVERS ================= -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  let activePopover = null;
+
+  document.querySelectorAll(".credito-popover").forEach(el => {
+
+    const pop = new bootstrap.Popover(el, {
+      trigger: "manual",
+      html: true,
+      placement: "right"
+    });
+
+    el.addEventListener("click", async e => {
+      e.preventDefault();
+
+      // cerrar otro popover abierto
+      if (activePopover && activePopover !== pop) {
+        activePopover.hide();
+      }
+
+      // toggle mismo popover
+      if (el.classList.contains("popover-open")) {
+        pop.hide();
+        el.classList.remove("popover-open");
+        activePopover = null;
+        return;
+      }
+
+      el.classList.add("popover-open");
+      activePopover = pop;
+
+      pop.setContent({ ".popover-body": "Cargando…" });
+      pop.show();
+
+      const creditoId = el.dataset.creditoId;
+      const res = await fetch(`/creditos/items/${creditoId}/`);
+      const data = await res.json();
+
+      let html = `<div style="min-width:260px">`;
+
+      if (!data.items.length) {
+        html += `<div class="text-muted">Sin ítems</div>`;
+      } else {
+        data.items.forEach(i => {
+          html += `
+            <div class="mb-2">
+              <strong>${i.tipo.toUpperCase()}</strong><br>
+              ${i.descripcion}<br>
+              ${
+                i.cantidad
+                  ? `<small>${i.cantidad} × $${i.valor_unitario.toLocaleString("es-CO")}</small><br>`
+                  : ""
+              }
+              <span class="fw-bold">$${i.subtotal.toLocaleString("es-CO")}</span>
+            </div>
+          `;
+        });
+      }
+
+      html += `</div>`;
+
+      pop.setContent({ ".popover-body": html });
+    });
+  });
+
+  // cerrar al click fuera
+  document.addEventListener("click", e => {
+    if (!e.target.closest(".popover") &&
+        !e.target.closest(".credito-popover")) {
+      document.querySelectorAll(".credito-popover").forEach(el => {
+        el.classList.remove("popover-open");
+      });
+      if (activePopover) activePopover.hide();
+      activePopover = null;
+    }
+  });
+
+});
+</script>
+
+
 
 
 {% endblock %}

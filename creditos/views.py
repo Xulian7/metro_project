@@ -1,10 +1,9 @@
 from django.shortcuts import render, redirect
 from django.db import transaction
 from django.db.models import F
-
+from django.http import JsonResponse
 from .models import Credito, CreditoItem
 from .forms import CreditoForm
-
 from almacen.models import Producto
 from taller.models import Servicio
 
@@ -98,3 +97,20 @@ def crear_credito(request):
                 "servicios": list(servicios),
             }
         )
+        
+        
+def credito_items(request, credito_id):
+    items = CreditoItem.objects.filter(credito_id=credito_id)
+
+    data = [
+        {
+            "tipo": item.tipo,
+            "descripcion": item.descripcion,
+            "cantidad": item.cantidad,
+            "valor_unitario": float(item.valor_unitario or 0),
+            "subtotal": float(item.subtotal),
+        }
+        for item in items
+    ]
+
+    return JsonResponse({"items": data})
