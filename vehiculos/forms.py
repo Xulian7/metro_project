@@ -11,7 +11,10 @@ class VehiculoForm(SmartCleanMixin, forms.ModelForm):
         ]
 
         widgets = {
-            'placa': forms.TextInput(attrs={'class': 'form-control'}),
+            'placa': forms.TextInput(attrs={
+                'class': 'form-control',
+                'style': 'text-transform: uppercase;'
+            }),
             'marca': forms.TextInput(attrs={'class': 'form-control'}),
             'modelo': forms.TextInput(attrs={'class': 'form-control'}),
             'serie': forms.TextInput(attrs={'class': 'form-control'}),
