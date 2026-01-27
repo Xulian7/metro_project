@@ -54,8 +54,8 @@
 
 <!-- ================= TEMPLATE FILA ================= -->
 <div id="item-template" class="d-none">
-  <div class="row g-3 align-items-center mb-3 credito-item-row
-              border rounded-2 py-2 px-1">
+  <div class="row align-items-center mb-2 credito-item-row
+              border rounded-2 py-2">
 
     <!-- TIPO -->
     <div class="col-2">
@@ -69,12 +69,14 @@
     </div>
 
     <!-- ITEM / SERVICIO -->
-    <div class="col-4 item-desc-container">
-      <input type="hidden" name="item_descripcion[]" value="">
+    <div class="col">
+      <div class="item-desc-container w-100">
+        <input type="hidden" name="item_descripcion[]" value="">
+      </div>
     </div>
 
     <!-- CANTIDAD -->
-    <div class="col-1 px-1">
+    <div class="col-auto" style="width:70px">
       <input type="number"
              class="form-control form-control-sm item-cant text-center"
              name="item_cantidad[]"
@@ -83,7 +85,7 @@
     </div>
 
     <!-- VALOR -->
-    <div class="col-2 px-1">
+    <div class="col-auto" style="width:120px">
       <input type="number"
              class="form-control form-control-sm item-valor text-end"
              name="item_valor[]"
@@ -92,7 +94,7 @@
     </div>
 
     <!-- SUBTOTAL -->
-    <div class="col-2 px-1">
+    <div class="col-auto" style="width:130px">
       <input type="number"
              class="form-control form-control-sm item-subtotal text-end"
              name="item_subtotal[]"
@@ -100,7 +102,7 @@
     </div>
 
     <!-- ACCIÓN -->
-    <div class="col-1 text-center px-1">
+    <div class="col-auto text-center">
       <button type="button"
               class="btn btn-sm btn-outline-danger btn-remove-item"
               title="Eliminar ítem">
@@ -110,6 +112,7 @@
 
   </div>
 </div>
+
 
 
 <!-- ================= CRÉDITOS REGISTRADOS ================= -->

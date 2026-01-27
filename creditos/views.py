@@ -10,7 +10,6 @@ from django.shortcuts import get_object_or_404, render
 from .models import Credito
 
 
-
 def crear_credito(request):
 
     # =========================
@@ -30,21 +29,42 @@ def crear_credito(request):
 
                 total = 0
 
-                # ===== LISTAS PARALELAS (SEGURAS) =====
+                # ===== LISTAS PARALELAS =====
                 tipos = request.POST.getlist("item_tipo[]")
                 descripciones = request.POST.getlist("item_descripcion[]")
                 cantidades = request.POST.getlist("item_cantidad[]")
                 valores = request.POST.getlist("item_valor[]")
                 subtotales = request.POST.getlist("item_subtotal[]")
 
+                # ===== ITERACIÓN SEGURA =====
                 for tipo, desc, cant, val, sub in zip(
                     tipos, descripciones, cantidades, valores, subtotales
                 ):
+                    # 🔴 EFECTIVO
+                    if tipo == "efectivo":
+                        if not val:
+                            continue
+
+                        subtotal = float(val)
+
+                        CreditoItem.objects.create(
+                            credito=credito,
+                            tipo="efectivo",
+                            descripcion="Préstamo en efectivo",
+                            cantidad=1,
+                            valor_unitario=subtotal,
+                            subtotal=subtotal
+                        )
+
+                        total += subtotal
+                        continue
+
+                    # 🔵 ALMACÉN / TALLER
                     if not desc or not sub:
                         continue
 
-                    cantidad = int(cant) if cant else None
-                    valor_unitario = float(val) if val else None
+                    cantidad = int(cant) if cant else 1
+                    valor_unitario = float(val) if val else 0
                     subtotal = float(sub)
 
                     CreditoItem.objects.create(
@@ -67,39 +87,36 @@ def crear_credito(request):
             return redirect("creditos:crear_credito")
 
     # =========================
-    # GET → formulario + listado
+    # GET → formulario + tabla
     # =========================
     else:
         form = CreditoForm()
 
-        creditos = (
-            Credito.objects
-            .select_related("contrato")
-            .order_by("-fecha", "-id")
-        )
+    creditos = Credito.objects.select_related("contrato").all()
 
-        productos = Producto.objects.values(
-            "id",
-            label=F("nombre"),
-            precio=F("precio_venta")
-        )
+    productos = Producto.objects.values(
+        "id",
+        label=F("nombre"),
+        precio=F("precio_venta")
+    )
 
-        servicios = Servicio.objects.values(
-            "id",
-            label=F("nombre_servicio"),
-            precio=F("valor")
-        )
+    servicios = Servicio.objects.values(
+        "id",
+        label=F("nombre_servicio"),
+        precio=F("valor")
+    )
 
-        return render(
-            request,
-            "creditos/crear_credito.html",
-            {
-                "form": form,
-                "creditos": creditos,
-                "productos": list(productos),
-                "servicios": list(servicios),
-            }
-        )
+    return render(
+        request,
+        "creditos/crear_credito.html",
+        {
+            "form": form,
+            "creditos": creditos,
+            "productos": list(productos),
+            "servicios": list(servicios),
+        }
+    )
+
         
 
 
