@@ -40,7 +40,7 @@ def crear_credito(request):
                 for tipo, desc, cant, val, sub in zip(
                     tipos, descripciones, cantidades, valores, subtotales
                 ):
-                    # 🔴 EFECTIVO
+                    #  EFECTIVO
                     if tipo == "efectivo":
                         if not val:
                             continue
@@ -51,7 +51,7 @@ def crear_credito(request):
                             credito=credito,
                             tipo="efectivo",
                             descripcion="Préstamo en efectivo",
-                            cantidad=1,
+                            cantidad=1,  # ← FORZADO, no dependemos del POST
                             valor_unitario=subtotal,
                             subtotal=subtotal
                         )
@@ -59,7 +59,8 @@ def crear_credito(request):
                         total += subtotal
                         continue
 
-                    # 🔵 ALMACÉN / TALLER
+
+                    #  ALMACÉN / TALLER
                     if not desc or not sub:
                         continue
 
