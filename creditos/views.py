@@ -118,8 +118,6 @@ def crear_credito(request):
         }
     )
 
-        
-
 
 
 def popover_items_credito(request, credito_id):

@@ -600,9 +600,13 @@ def extracto_contrato(request, contrato_id):
                 break  # ← última fila parcial
 
     # -------------------------
-    # 4. Respuesta JSON
+    # 4. Respuesta JSON enriquecida
     # -------------------------
     return JsonResponse({
+        "contrato": {
+            "id": contrato.id, # type: ignore
+            "label": str(contrato),
+        },
         "filas": [
             {
                 "fecha_pactada": f["fecha_pactada"].isoformat(),
