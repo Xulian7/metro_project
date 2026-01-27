@@ -16,7 +16,7 @@ class SmartCleanMixin(forms.ModelForm):
             if value in (None, ''):
                 continue  # Ignorar campos vacíos
 
-            model_field = model._meta.get_field(field_name)
+            model_field = model._meta.get_field(field_name) # type: ignore
             internal_type = model_field.get_internal_type()
 
             # 🔢 Validar campos numéricos

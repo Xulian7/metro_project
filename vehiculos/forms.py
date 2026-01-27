@@ -55,6 +55,11 @@ class VehiculoForm(SmartCleanMixin, forms.ModelForm):
                     )
 
         return cleaned_data
+    
+    def save(self, *args, **kwargs):
+        if self.placa:
+            self.placa = self.placa.strip().upper()
+        super().save(*args, **kwargs)
 
 
 class MarcaForm(SmartCleanMixin, forms.ModelForm):
@@ -70,5 +75,5 @@ class MarcaForm(SmartCleanMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         # Mostrar solo marcas como posibles padres (no series)
-        self.fields["parent"].queryset = Marca.objects.filter(parent__isnull=True)
+        self.fields["parent"].queryset = Marca.objects.filter(parent__isnull=True) # type: ignore
         self.fields["parent"].required = False
