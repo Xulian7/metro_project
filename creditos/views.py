@@ -50,7 +50,7 @@ def crear_credito(request):
                         CreditoItem.objects.create(
                             credito=credito,
                             tipo="efectivo",
-                            descripcion="Préstamo en efectivo",
+                            descripcion=desc,
                             cantidad=1,  # ← FORZADO, no dependemos del POST
                             valor_unitario=subtotal,
                             subtotal=subtotal
