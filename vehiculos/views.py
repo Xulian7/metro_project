@@ -95,7 +95,7 @@ def vehiculo_update(request):
         return JsonResponse({
             'status': 'ok',
             'vehiculo': {
-                'id': vehiculo.id,
+                'id': vehiculo.id, # type: ignore
                 'placa': vehiculo.placa,
                 'marca': vehiculo.marca,
                 'modelo': vehiculo.modelo,
@@ -148,6 +148,6 @@ def cargar_series(request):
 
     series = Marca.objects.filter(parent_id=marca_id).order_by("nombre")
 
-    data = [{"id": s.id, "nombre": s.nombre} for s in series]
+    data = [{"id": s.id, "nombre": s.nombre} for s in series] # type: ignore
 
     return JsonResponse({"series": data})

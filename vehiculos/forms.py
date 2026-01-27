@@ -11,10 +11,7 @@ class VehiculoForm(SmartCleanMixin, forms.ModelForm):
         ]
 
         widgets = {
-            'placa': forms.TextInput(attrs={
-                'class': 'form-control',
-                'style': 'text-transform: uppercase;'
-            }),
+            'placa': forms.TextInput(attrs={'class': 'form-control', 'style': 'text-transform: uppercase;'}),
             'marca': forms.TextInput(attrs={'class': 'form-control'}),
             'modelo': forms.TextInput(attrs={'class': 'form-control'}),
             'serie': forms.TextInput(attrs={'class': 'form-control'}),
@@ -58,11 +55,6 @@ class VehiculoForm(SmartCleanMixin, forms.ModelForm):
                     )
 
         return cleaned_data
-    
-    def save(self, *args, **kwargs):
-        if self.placa:
-            self.placa = self.placa.strip().upper()
-        super().save(*args, **kwargs)
 
 
 class MarcaForm(SmartCleanMixin, forms.ModelForm):
