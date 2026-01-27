@@ -54,7 +54,8 @@
 
 <!-- ================= TEMPLATE FILA ================= -->
 <div id="item-template" class="d-none">
-  <div class="row g-2 align-items-center mb-2 credito-item-row">
+  <div class="row g-3 align-items-center mb-3 credito-item-row
+              border rounded-2 py-2 px-1">
 
     <!-- TIPO -->
     <div class="col-2">
@@ -73,7 +74,7 @@
     </div>
 
     <!-- CANTIDAD -->
-    <div class="col-1">
+    <div class="col-1 px-1">
       <input type="number"
              class="form-control form-control-sm item-cant text-center"
              name="item_cantidad[]"
@@ -82,7 +83,7 @@
     </div>
 
     <!-- VALOR -->
-    <div class="col-2">
+    <div class="col-2 px-1">
       <input type="number"
              class="form-control form-control-sm item-valor text-end"
              name="item_valor[]"
@@ -91,7 +92,7 @@
     </div>
 
     <!-- SUBTOTAL -->
-    <div class="col-2">
+    <div class="col-2 px-1">
       <input type="number"
              class="form-control form-control-sm item-subtotal text-end"
              name="item_subtotal[]"
@@ -99,7 +100,7 @@
     </div>
 
     <!-- ACCIÓN -->
-    <div class="col-1 text-center">
+    <div class="col-1 text-center px-1">
       <button type="button"
               class="btn btn-sm btn-outline-danger btn-remove-item"
               title="Eliminar ítem">
@@ -109,6 +110,7 @@
 
   </div>
 </div>
+
 
 <!-- ================= CRÉDITOS REGISTRADOS ================= -->
 <hr class="my-4">
