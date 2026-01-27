@@ -1,37 +1,118 @@
+<!-- ================= MODAL EXTRACTO DE PAGOS ================= -->
 <div class="modal fade" id="extractoModal" tabindex="-1">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
 
+      <!-- HEADER -->
       <div class="modal-header">
-        <h5 class="modal-title">Extracto de pagos</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title fw-bold">
+          Extracto financiero
+        </h5>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"></button>
       </div>
 
+      <!-- BODY -->
       <div class="modal-body">
 
-        <table class="table table-sm table-striped">
-          <thead>
-            <tr>
-              <th>Fecha pactada</th>
-              <th>Fecha pago</th>
-              <th class="text-end">Valor aplicado</th>
-              <th>Factura</th>
-            </tr>
-          </thead>
-          <tbody id="extracto-body">
-            <tr>
-              <td colspan="4" class="text-center text-muted py-4">
-                Cargando extracto…
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- ================= RESUMEN FINANCIERO ================= -->
+        <div class="row g-3 mb-4">
+
+          <!-- CONTRATO -->
+          <div class="col-md">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body py-3">
+                <small class="text-muted">Contrato</small>
+                <div class="fw-semibold fs-6">
+                  —
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ANTIGÜEDAD -->
+          <div class="col-md">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body py-3">
+                <small class="text-muted">Antigüedad</small>
+                <div class="fw-bold fs-5">
+                  0 <small class="text-muted">días</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TARIFAS PAGADAS -->
+          <div class="col-md">
+            <div class="card border-0 shadow-sm h-100 bg-light">
+              <div class="card-body py-3">
+                <small class="text-muted">Tarifas pagadas</small>
+                <div class="fw-bold fs-5 text-success">
+                  $0
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TARIFAS VENCIDAS -->
+          <div class="col-md">
+            <div class="card border-0 shadow-sm h-100 bg-light">
+              <div class="card-body py-3">
+                <small class="text-muted">Tarifas vencidas</small>
+                <div class="fw-bold fs-5 text-danger">
+                  $0
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DÍAS DE ATRASO -->
+          <div class="col-md">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body py-3">
+                <small class="text-muted">Días de atraso</small>
+                <div class="fw-bold fs-5">
+                  0
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!-- ================= FIN RESUMEN ================= -->
+
+        <!-- ================= TABLA EXTRACTO ================= -->
+        <div class="table-responsive">
+          <table class="table table-sm table-striped align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Fecha pactada</th>
+                <th>Fecha pago</th>
+                <th class="text-end">Valor aplicado</th>
+                <th>Factura</th>
+              </tr>
+            </thead>
+
+            <tbody id="extracto-body">
+              <tr>
+                <td colspan="4"
+                    class="text-center text-muted py-4">
+                  Selecciona una factura para ver el extracto
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- ================= FIN TABLA ================= -->
 
       </div>
 
     </div>
   </div>
 </div>
+<!-- ================= FIN MODAL ================= -->
+
 
 <script>
   let popover = null;
