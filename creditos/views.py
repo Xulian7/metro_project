@@ -114,3 +114,20 @@ def credito_items(request, credito_id):
     ]
 
     return JsonResponse({"items": data})
+
+from django.shortcuts import get_object_or_404, render
+from .models import Credito
+
+def popover_items_credito(request, credito_id):
+    credito = get_object_or_404(Credito, id=credito_id)
+
+    items = credito.items.all() # type: ignore
+
+    return render(
+        request,
+        "creditos/_popover_items.html",
+        {
+            "credito": credito,
+            "items": items,
+        }
+    )

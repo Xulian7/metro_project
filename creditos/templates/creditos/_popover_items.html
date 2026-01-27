@@ -1,0 +1,43 @@
+<div>
+  <strong>Crédito #{{ credito.id }}</strong><br>
+  <small class="text-muted">
+    {{ credito.contrato }}
+  </small>
+
+  <hr class="my-2">
+
+  {% if items %}
+    {% for item in items %}
+      <div class="mb-2">
+        <span class="badge 
+          {% if item.tipo == 'almacen' %}bg-primary
+          {% elif item.tipo == 'taller' %}bg-warning text-dark
+          {% else %}bg-secondary{% endif %}
+        ">
+          {{ item.get_tipo_display }}
+        </span>
+
+        <div class="fw-semibold">
+          {{ item.descripcion }}
+        </div>
+
+        {% if item.cantidad %}
+          <small class="text-muted">
+            {{ item.cantidad }} × ${{ item.valor_unitario|floatformat:0 }}
+          </small><br>
+        {% endif %}
+
+        <strong>
+          ${{ item.subtotal|floatformat:0 }}
+        </strong>
+      </div>
+    {% endfor %}
+
+    <hr class="my-2">
+    <div class="text-end fw-bold">
+      Total: ${{ credito.monto_total|floatformat:0 }}
+    </div>
+  {% else %}
+    <em class="text-muted">Sin ítems</em>
+  {% endif %}
+</div>

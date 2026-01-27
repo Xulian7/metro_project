@@ -34,94 +34,94 @@
 </div>
 
 <script>
-let popover = null;
-let hideTimer = null;
-let activo = false;
+  let popover = null;
+  let hideTimer = null;
+  let activo = false;
 
-document.addEventListener("mouseover", function (e) {
-  const tag = e.target.closest(".factura-tag");
-  if (!tag) return;
+  document.addEventListener("mouseover", function (e) {
+    const tag = e.target.closest(".factura-tag");
+    if (!tag) return;
 
-  if (hideTimer) clearTimeout(hideTimer);
+    if (hideTimer) clearTimeout(hideTimer);
 
-  // ya activo sobre este tag → no recrear
-  if (activo && popover?._element === tag) return;
+    // ya activo sobre este tag → no recrear
+    if (activo && popover?._element === tag) return;
 
-  // cerrar otros
-  document.querySelectorAll(".factura-tag").forEach(t => {
-    bootstrap.Popover.getInstance(t)?.dispose();
-  });
-
-  const facturaId = tag.dataset.facturaId;
-
-  popover = new bootstrap.Popover(tag, {
-    html: true,
-    trigger: "manual",
-    placement: "right",
-    container: "body",
-    content: `
-      <div id="popover-content">
-        <em class="text-muted">Cargando pagos…</em>
-      </div>
-    `,
-  });
-
-  popover.show();
-  activo = true;
-
-  // 🔁 fetch SOLO actualiza contenido interno
-  fetch(`/terminal_pagos/extracto/factura/${facturaId}/`)
-    .then(res => res.json())
-    .then(data => {
-      const cont = document.getElementById("popover-content");
-      if (!cont) return;
-
-      let html = `
-        <strong>Factura #${data.factura.id}</strong>
-        <hr class="my-1">
-      `;
-
-      if (!data.pagos.length) {
-        html += `<em class="text-muted">Sin pagos</em>`;
-      } else {
-        data.pagos.forEach(p => {
-          html += `
-            <div class="mb-2">
-              <strong>${p.medio}</strong><br>
-              <small class="text-muted">${p.canal}</small><br>
-              $${Number(p.valor).toLocaleString("es-CO")}
-              ${p.referencia ? `<br><small>Ref: ${p.referencia}</small>` : ""}
-            </div>
-          `;
-        });
-      }
-
-      cont.innerHTML = html;
-
-      // mantener hover sobre el popover
-      const popEl = cont.closest(".popover");
-      if (popEl) {
-        popEl.addEventListener("mouseenter", () => {
-          if (hideTimer) clearTimeout(hideTimer);
-        });
-        popEl.addEventListener("mouseleave", scheduleHide);
-      }
-    });
-});
-
-document.addEventListener("mouseout", function (e) {
-  const tag = e.target.closest(".factura-tag");
-  if (!tag) return;
-  scheduleHide();
-});
-
-function scheduleHide() {
-  hideTimer = setTimeout(() => {
+    // cerrar otros
     document.querySelectorAll(".factura-tag").forEach(t => {
       bootstrap.Popover.getInstance(t)?.dispose();
     });
-    popover = null;
-    activo = false;
-  }, 300);
-}
+
+    const facturaId = tag.dataset.facturaId;
+
+    popover = new bootstrap.Popover(tag, {
+      html: true,
+      trigger: "manual",
+      placement: "right",
+      container: "body",
+      content: `
+        <div id="popover-content">
+          <em class="text-muted">Cargando pagos…</em>
+        </div>
+      `,
+    });
+
+    popover.show();
+    activo = true;
+
+    // 🔁 fetch SOLO actualiza contenido interno
+    fetch(`/terminal_pagos/extracto/factura/${facturaId}/`)
+      .then(res => res.json())
+      .then(data => {
+        const cont = document.getElementById("popover-content");
+        if (!cont) return;
+
+        let html = `
+          <strong>Factura #${data.factura.id}</strong>
+          <hr class="my-1">
+        `;
+
+        if (!data.pagos.length) {
+          html += `<em class="text-muted">Sin pagos</em>`;
+        } else {
+          data.pagos.forEach(p => {
+            html += `
+              <div class="mb-2">
+                <strong>${p.medio}</strong><br>
+                <small class="text-muted">${p.canal}</small><br>
+                $${Number(p.valor).toLocaleString("es-CO")}
+                ${p.referencia ? `<br><small>Ref: ${p.referencia}</small>` : ""}
+              </div>
+            `;
+          });
+        }
+
+        cont.innerHTML = html;
+
+        // mantener hover sobre el popover
+        const popEl = cont.closest(".popover");
+        if (popEl) {
+          popEl.addEventListener("mouseenter", () => {
+            if (hideTimer) clearTimeout(hideTimer);
+          });
+          popEl.addEventListener("mouseleave", scheduleHide);
+        }
+      });
+  });
+
+  document.addEventListener("mouseout", function (e) {
+    const tag = e.target.closest(".factura-tag");
+    if (!tag) return;
+    scheduleHide();
+  });
+
+  function scheduleHide() {
+    hideTimer = setTimeout(() => {
+      document.querySelectorAll(".factura-tag").forEach(t => {
+        bootstrap.Popover.getInstance(t)?.dispose();
+      });
+      popover = null;
+      activo = false;
+    }, 300);
+  }
 </script>
