@@ -19,60 +19,53 @@
         <!-- ================= RESUMEN FINANCIERO ================= -->
         <div class="row g-3 mb-4">
 
-          <!-- CONTRATO -->
           <div class="col-md">
             <div class="card border-0 shadow-sm h-100">
               <div class="card-body py-3">
                 <small class="text-muted">Contrato</small>
-                <div class="fw-semibold fs-6">
-                  —
-                </div>
+                <div class="fw-semibold fs-6" id="extracto-contrato">—</div>
               </div>
             </div>
           </div>
 
-          <!-- ANTIGÜEDAD -->
           <div class="col-md">
             <div class="card border-0 shadow-sm h-100">
               <div class="card-body py-3">
                 <small class="text-muted">Antigüedad</small>
-                <div class="fw-bold fs-5">
-                  0 <small class="text-muted">días</small>
+                <div class="fw-bold fs-5" id="extracto-antiguedad">
+                  — <small class="text-muted">días</small>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- TARIFAS PAGADAS -->
           <div class="col-md">
             <div class="card border-0 shadow-sm h-100 bg-light">
               <div class="card-body py-3">
                 <small class="text-muted">Tarifas pagadas</small>
-                <div class="fw-bold fs-5 text-success">
+                <div class="fw-bold fs-5 text-success" id="extracto-pagadas">
                   $0
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- TARIFAS VENCIDAS -->
           <div class="col-md">
             <div class="card border-0 shadow-sm h-100 bg-light">
               <div class="card-body py-3">
                 <small class="text-muted">Tarifas vencidas</small>
-                <div class="fw-bold fs-5 text-danger">
+                <div class="fw-bold fs-5 text-danger" id="extracto-vencidas">
                   $0
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- DÍAS DE ATRASO -->
           <div class="col-md">
             <div class="card border-0 shadow-sm h-100">
               <div class="card-body py-3">
                 <small class="text-muted">Días de atraso</small>
-                <div class="fw-bold fs-5">
+                <div class="fw-bold fs-5" id="extracto-atraso">
                   0
                 </div>
               </div>
@@ -96,9 +89,8 @@
 
             <tbody id="extracto-body">
               <tr>
-                <td colspan="4"
-                    class="text-center text-muted py-4">
-                  Selecciona una factura para ver el extracto
+                <td colspan="4" class="text-center text-muted py-4">
+                  Cargando extracto…
                 </td>
               </tr>
             </tbody>
@@ -107,102 +99,83 @@
         <!-- ================= FIN TABLA ================= -->
 
       </div>
-
     </div>
   </div>
 </div>
 <!-- ================= FIN MODAL ================= -->
 
 
+<!-- ================= SCRIPT EXTRACTO ================= -->
 <script>
-  let popover = null;
-  let hideTimer = null;
-  let activo = false;
+function abrirExtractoContrato(contratoId) {
 
-  document.addEventListener("mouseover", function (e) {
-    const tag = e.target.closest(".factura-tag");
-    if (!tag) return;
+  const modal = new bootstrap.Modal(
+    document.getElementById("extractoModal")
+  );
+  modal.show();
 
-    if (hideTimer) clearTimeout(hideTimer);
+  // placeholders
+  document.getElementById("extracto-contrato").textContent = "—";
+  document.getElementById("extracto-antiguedad").innerHTML =
+    `— <small class="text-muted">días</small>`;
+  document.getElementById("extracto-pagadas").textContent = "$0";
+  document.getElementById("extracto-vencidas").textContent = "$0";
+  document.getElementById("extracto-atraso").textContent = "0";
 
-    // ya activo sobre este tag → no recrear
-    if (activo && popover?._element === tag) return;
+  const tbody = document.getElementById("extracto-body");
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="4" class="text-center text-muted py-4">
+        Cargando extracto…
+      </td>
+    </tr>
+  `;
 
-    // cerrar otros
-    document.querySelectorAll(".factura-tag").forEach(t => {
-      bootstrap.Popover.getInstance(t)?.dispose();
-    });
+  fetch(`/terminal_pagos/extracto/contrato/${contratoId}/`)
+    .then(res => res.json())
+    .then(data => {
 
-    const facturaId = tag.dataset.facturaId;
+      // ================= HEADER =================
+      document.getElementById("extracto-contrato").textContent =
+        data.contrato.label;
 
-    popover = new bootstrap.Popover(tag, {
-      html: true,
-      trigger: "manual",
-      placement: "right",
-      container: "body",
-      content: `
-        <div id="popover-content">
-          <em class="text-muted">Cargando pagos…</em>
-        </div>
-      `,
-    });
+      // ================= TABLA =================
+      tbody.innerHTML = "";
 
-    popover.show();
-    activo = true;
+      if (!data.filas.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="text-center text-muted py-4">
+              Sin movimientos
+            </td>
+          </tr>`;
+        return;
+      }
 
-    // 🔁 fetch SOLO actualiza contenido interno
-    fetch(`/terminal_pagos/extracto/factura/${facturaId}/`)
-      .then(res => res.json())
-      .then(data => {
-        const cont = document.getElementById("popover-content");
-        if (!cont) return;
-
-        let html = `
-          <strong>Factura #${data.factura.id}</strong>
-          <hr class="my-1">
+      data.filas.forEach(f => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${f.fecha_pactada}</td>
+            <td>${f.fecha_pago || "—"}</td>
+            <td class="text-end">
+              $${Number(f.valor_aplicado).toLocaleString("es-CO")}
+            </td>
+            <td>
+              ${f.factura_id ? `#${f.factura_id}` : "—"}
+            </td>
+          </tr>
         `;
-
-        if (!data.pagos.length) {
-          html += `<em class="text-muted">Sin pagos</em>`;
-        } else {
-          data.pagos.forEach(p => {
-            html += `
-              <div class="mb-2">
-                <strong>${p.medio}</strong><br>
-                <small class="text-muted">${p.canal}</small><br>
-                $${Number(p.valor).toLocaleString("es-CO")}
-                ${p.referencia ? `<br><small>Ref: ${p.referencia}</small>` : ""}
-              </div>
-            `;
-          });
-        }
-
-        cont.innerHTML = html;
-
-        // mantener hover sobre el popover
-        const popEl = cont.closest(".popover");
-        if (popEl) {
-          popEl.addEventListener("mouseenter", () => {
-            if (hideTimer) clearTimeout(hideTimer);
-          });
-          popEl.addEventListener("mouseleave", scheduleHide);
-        }
       });
-  });
-
-  document.addEventListener("mouseout", function (e) {
-    const tag = e.target.closest(".factura-tag");
-    if (!tag) return;
-    scheduleHide();
-  });
-
-  function scheduleHide() {
-    hideTimer = setTimeout(() => {
-      document.querySelectorAll(".factura-tag").forEach(t => {
-        bootstrap.Popover.getInstance(t)?.dispose();
-      });
-      popover = null;
-      activo = false;
-    }, 300);
-  }
+    })
+    .catch(() => {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="4" class="text-center text-danger py-4">
+            Error al cargar el extracto
+          </td>
+        </tr>
+      `;
+    });
+}
 </script>
+<!-- ================= END SCRIPT ================= -->
