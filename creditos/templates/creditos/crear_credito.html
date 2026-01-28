@@ -52,12 +52,12 @@
   </form>
 </div>
 
-<!-- ================= TEMPLATE FILA ================= -->
+<!-- ================= TEMPLATE ÍTEM CRÉDITO (UX GUIADO) ================= -->
 <div id="item-template" class="d-none">
-  <div class="row g-2 align-items-center mb-2 credito-item-row">
+  <div class="row align-items-center g-2 border rounded-3 px-2 py-2 mb-2 credito-item-row bg-light">
 
     <!-- TIPO -->
-    <div class="col-2">
+    <div class="col">
       <select class="form-select form-select-sm item-tipo"
               name="item_tipo[]">
         <option value="">Tipo</option>
@@ -67,13 +67,24 @@
       </select>
     </div>
 
-    <!-- ITEM / SERVICIO -->
-    <div class="col-4 item-desc-container">
-      <input type="hidden" name="item_descripcion[]" value="">
+    <!-- DESCRIPCIÓN (SELECT) -->
+    <div class="col item-desc-select d-none">
+      <select class="form-select form-select-sm item-desc-select-input"
+              name="item_descripcion[]">
+        <option value="">Seleccione…</option>
+      </select>
+    </div>
+
+    <!-- DESCRIPCIÓN (INPUT LIBRE) -->
+    <div class="col item-desc-input d-none">
+      <input type="text"
+             class="form-control form-control-sm item-desc-text"
+             name="item_descripcion[]"
+             placeholder="Detalle del préstamo">
     </div>
 
     <!-- CANTIDAD -->
-    <div class="col-1">
+    <div class="col-auto" style="width:90px">
       <input type="number"
              class="form-control form-control-sm item-cant text-center"
              name="item_cantidad[]"
@@ -82,7 +93,7 @@
     </div>
 
     <!-- VALOR -->
-    <div class="col-2">
+    <div class="col-auto" style="width:130px">
       <input type="number"
              class="form-control form-control-sm item-valor text-end"
              name="item_valor[]"
@@ -91,7 +102,7 @@
     </div>
 
     <!-- SUBTOTAL -->
-    <div class="col-2">
+    <div class="col-auto" style="width:130px">
       <input type="number"
              class="form-control form-control-sm item-subtotal text-end"
              name="item_subtotal[]"
@@ -99,16 +110,16 @@
     </div>
 
     <!-- ACCIÓN -->
-    <div class="col-1 text-center">
+    <div class="col-auto">
       <button type="button"
-              class="btn btn-sm btn-outline-danger btn-remove-item"
-              title="Eliminar ítem">
+              class="btn btn-outline-danger btn-sm btn-remove-item">
         ✖
       </button>
     </div>
 
   </div>
 </div>
+
 
 <!-- ================= CRÉDITOS REGISTRADOS ================= -->
 <hr class="my-4">
