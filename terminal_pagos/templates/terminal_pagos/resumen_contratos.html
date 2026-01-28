@@ -76,6 +76,7 @@
           <th data-sort="number" class="sortable text-center">Cuotas vencidas</th>
           <th class="text-center">Pagos tarifa</th>
           <th class="text-center">Saldo</th>
+          <th class="text-center">Riesgo</th>
           <th class="text-end">Acciones</th>
 
         </tr>
@@ -169,6 +170,7 @@
             </small>
           </td>
 
+          <td class="text-center riesgo-cell"></td>
 
           <!--  ACCIONES -->
           <td class="text-end">
@@ -552,6 +554,71 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 </script>
 
+<script>
+  function calcularScore(data) {
+    let score = 0;
 
+    // 1️⃣ ATRASO (40)
+    if (data.saldoCuotas <= 0) score += 40;
+    else if (data.saldoCuotas <= 1) score += 25;
+    else if (data.saldoCuotas <= 3) score += 10;
+
+    // 2️⃣ ANTIGÜEDAD (20)
+    if (data.dias >= 180) score += 20;
+    else if (data.dias >= 90) score += 15;
+    else if (data.dias >= 30) score += 10;
+    else score += 5;
+
+    // 3️⃣ FRECUENCIA (20)
+    const freq = {
+      "Diario": 5,
+      "Semanal": 10,
+      "Quincenal": 15,
+      "Mensual": 20
+    };
+    score += freq[data.frecuencia] || 10;
+
+    // 4️⃣ DENSIDAD (20)
+    const densidad = data.cuotasPagadas / Math.max(1, data.dias / 30);
+    if (densidad >= 1) score += 20;
+    else if (densidad >= 0.7) score += 15;
+    else if (densidad >= 0.4) score += 8;
+
+    return Math.round(score);
+  }
+
+  function badge(score) {
+    if (score >= 80) return { text: "Excelente", cls: "bg-success" };
+    if (score >= 60) return { text: "Bueno", cls: "bg-primary" };
+    if (score >= 40) return { text: "Observación", cls: "bg-warning text-dark" };
+    return { text: "Alto riesgo", cls: "bg-danger" };
+  }
+
+  document.querySelectorAll("#tabla-contratos tr").forEach(row => {
+    const saldoCuotas = parseFloat(row.querySelector("[data-cuotas-saldo]")?.dataset.cuotasSaldo || 0);
+    const cuotasPagadas = parseFloat(row.querySelector("[data-cuotas]")?.dataset.cuotas || 0);
+    const dias = parseInt(row.querySelector("[data-fecha]")?.nextElementSibling?.innerText || 0);
+
+    const frecuencia = row.querySelector("td:nth-child(6) span")?.innerText || "";
+
+    const score = calcularScore({
+      saldoCuotas,
+      cuotasPagadas,
+      dias,
+      frecuencia
+    });
+
+    const b = badge(score);
+    const cell = row.querySelector(".riesgo-cell");
+
+    if (cell) {
+      cell.innerHTML = `
+        <span class="badge ${b.cls}" title="Score ${score}">
+          ${b.text}
+        </span>
+      `;
+    }
+  });
+</script>
 
 {% endblock %}
