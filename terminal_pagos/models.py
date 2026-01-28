@@ -108,6 +108,15 @@ class ItemFactura(models.Model):
         blank=True,
     )
 
+    credito = models.ForeignKey(
+        "creditos.Credito",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="items_factura"
+    )
+    
+    
     def __str__(self):
         return f"{self.get_tipo_item_display()} - {self.subtotal}" # type: ignore
 

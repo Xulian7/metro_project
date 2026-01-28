@@ -17,8 +17,13 @@ from terminal_pagos.models import Factura, ItemFactura
 from django.http import JsonResponse
 from decimal import Decimal, ROUND_HALF_UP
 from django.db.models import Sum
-
-
+from terminal_pagos.models import PagoFactura
+from django.shortcuts import render
+from .models import Factura
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import Factura
+from creditos.models import Credito
 from .models import (
     Factura,
     Cuenta,
@@ -73,6 +78,20 @@ def nueva_transaccion(request):
         "nombre_servicio",
         "valor"
     )
+    
+    creditos = Credito.objects.filter(
+            estado="Activo",
+            saldo__gt=0
+        ).select_related(
+            "contrato"
+        ).values(
+            "id",
+            "saldo",
+            "contrato__id",
+        )
+
+    
+    
 
     configuraciones = ConfiguracionPago.objects.select_related(
         "medio",
@@ -114,6 +133,7 @@ def nueva_transaccion(request):
             "item_formset": item_formset,
             "productos_json": list(productos),
             "servicios_json": list(servicios),
+            "creditos_json": list(creditos),
             "configuraciones_json": list(configuraciones),
             "canales_json": list(canales),
             "today": now().date().isoformat(),
@@ -309,8 +329,6 @@ def crear_factura(request):
     
     return redirect(f"{reverse('terminal_pagos:nueva_transaccion')}?factura={factura.id}")
     
-
-
 # =========================
 # CATÁLOGOS DE MEDIOS DE PAGO (ADMIN)
 # =========================
@@ -429,7 +447,9 @@ def medios_pago(request):
         context
     )
 
-
+# =========================
+# VALIDAR PAGO (MARK AS VALIDATED)
+# =========================
 @require_POST
 def validar_pago(request, pago_id):
     pago = get_object_or_404(PagoFactura, id=pago_id)
@@ -438,9 +458,9 @@ def validar_pago(request, pago_id):
     print("✅ Pago validado")
     return HttpResponse(status=204)
 
-
-
-
+# =========================
+# RESUMEN DE CONTRATOS
+# =========================
 def resumen_contratos(request):
     hoy = date.today()
     filas = []
@@ -526,7 +546,9 @@ def resumen_contratos(request):
         }
     )
 
-
+# =========================
+# EXTRACTO DE CONTRATO
+# =========================
 def extracto_contrato(request, contrato_id):
     contrato = get_object_or_404(Contrato, id=contrato_id)
 
@@ -619,10 +641,9 @@ def extracto_contrato(request, contrato_id):
         ]
     })
     
-    
-    
-
-
+# =========================
+# DETALLE DE FACTURA Y PAGOS (JSON)
+# =========================
 def detalle_factura_pagos(request, factura_id):
 
     factura = get_object_or_404(
@@ -654,10 +675,9 @@ def detalle_factura_pagos(request, factura_id):
         ]
     })
 
-
-from django.http import JsonResponse
-from terminal_pagos.models import PagoFactura
-
+# =========================
+# VALIDAR REFERENCIA DE PAGO (AJAX)
+# =========================
 def validar_referencia_pago(request):
     ref = request.GET.get("referencia")
 
@@ -690,10 +710,9 @@ def validar_referencia_pago(request):
 
     return JsonResponse({"ok": True})
 
-
-from django.shortcuts import render
-from .models import Factura
-
+# =========================
+# VISOR DE FACTURAS
+# =========================
 def visor_facturas(request):
     facturas = (
         Factura.objects
@@ -709,11 +728,9 @@ def visor_facturas(request):
         }
     )
 
-
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from .models import Factura
-
+# =========================
+# DETALLE DE FACTURA (JSON)
+#========================
 def detalle_factura_json(request, factura_id):
     factura = get_object_or_404(
         Factura.objects
@@ -748,7 +765,7 @@ def detalle_factura_json(request, factura_id):
                 "cantidad": i.cantidad,
                 "subtotal": str(i.subtotal),
             }
-            for i in factura.items.all()
+            for i in factura.items.all() # type: ignore
         ],
         "pagos": [
             {
@@ -759,6 +776,6 @@ def detalle_factura_json(request, factura_id):
                 "fecha": p.fecha_pago.strftime("%d/%m/%Y"),
                 "referencia": p.referencia or "",
             }
-            for p in factura.pagos.all()
+            for p in factura.pagos.all() # type: ignore
         ]
     })

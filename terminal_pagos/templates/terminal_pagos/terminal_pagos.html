@@ -552,6 +552,7 @@
 <!-- ================= DATOS JSON ================= -->
 {{ productos_json|json_script:"productos-almacen" }}
 {{ servicios_json|json_script:"servicios-taller" }}
+{{ creditos_json|json_script:"creditos-activos" }}
 {{ configuraciones_json|json_script:"configuraciones-json" }}
 {{ canales_json|json_script:"canales-json" }}
 
@@ -583,7 +584,9 @@
   const datosDescripcion = {
     tarifa: [{id:'tarifa', text:'Pago de tarifa', valor:0}],
     almacen: productosAlmacen.map(p => ({id:p.id, text:p.nombre, valor:p.precio_venta})),
-    taller: serviciosTaller.map(s => ({id:s.id, text:s.nombre_servicio, valor:s.valor}))
+    taller: serviciosTaller.map(s => ({id:s.id, text:s.nombre_servicio, valor:s.valor})),
+    abono_credito: creditosActivos.map(c => ({id: c.id, text: `Crédito #${c.id} - ${c.contrato}`, valor: c.saldo}))
+
   };
 
   function getTarifaContrato() {
