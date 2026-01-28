@@ -8,110 +8,125 @@
         <h5 class="modal-title fw-bold">
           Extracto financiero
         </h5>
-        <button type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"></button>
+
+        <div class="d-flex gap-2">
+          <!-- 📸 BOTÓN CAPTURA -->
+          <button type="button"
+                  id="btn-captura-extracto"
+                  class="btn btn-outline-secondary btn-sm"
+                  title="Copiar extracto como imagen">
+            📸 Copiar
+          </button>
+
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"></button>
+        </div>
       </div>
 
       <!-- BODY -->
       <div class="modal-body">
 
-        <!-- ================= RESUMEN FINANCIERO ================= -->
-        <div class="row g-3 mb-4">
+        <!-- 🎯 ZONA CAPTURABLE -->
+        <div id="extracto-capturable">
 
-          <!-- CONTRATO -->
-          <div class="col-md">
-            <div class="card border-0 shadow-sm h-100">
-              <div class="card-body py-3">
-                <small class="text-muted text-uppercase">Contrato</small>
-                <div id="resumen-contrato"
-                    class="fw-semibold fs-6 text-primary mt-1">
-                  —
+          <!-- ================= RESUMEN FINANCIERO ================= -->
+          <div class="row g-3 mb-4">
+
+            <!-- CONTRATO -->
+            <div class="col-md">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-body py-3">
+                  <small class="text-muted text-uppercase">Contrato</small>
+                  <div id="resumen-contrato"
+                       class="fw-semibold fs-6 text-primary mt-1">
+                    —
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- ANTIGÜEDAD -->
-          <div class="col-md">
-            <div class="card border-0 shadow-sm h-100">
-              <div class="card-body py-3">
-                <small class="text-muted text-uppercase">Antigüedad</small>
-                <div id="resumen-antiguedad"
-                    class="fw-bold fs-5 mt-1">
-                  0 <small class="text-muted fs-6">días</small>
+            <!-- ANTIGÜEDAD -->
+            <div class="col-md">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-body py-3">
+                  <small class="text-muted text-uppercase">Antigüedad</small>
+                  <div id="resumen-antiguedad"
+                       class="fw-bold fs-5 mt-1">
+                    0 <small class="text-muted fs-6">días</small>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- TARIFAS PAGADAS -->
-          <div class="col-md">
-            <div class="card border-0 shadow-sm h-100 bg-success bg-opacity-10">
-              <div class="card-body py-3">
-                <small class="text-muted text-uppercase">Tarifas pagadas</small>
-                <div id="resumen-pagadas"
-                    class="fw-bold fs-5 text-success mt-1">
-                  0 cuotas
+            <!-- TARIFAS PAGADAS -->
+            <div class="col-md">
+              <div class="card border-0 shadow-sm h-100 bg-success bg-opacity-10">
+                <div class="card-body py-3">
+                  <small class="text-muted text-uppercase">Tarifas pagadas</small>
+                  <div id="resumen-pagadas"
+                       class="fw-bold fs-5 text-success mt-1">
+                    0 cuotas
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- TARIFAS VENCIDAS -->
-          <div class="col-md">
-            <div class="card border-0 shadow-sm h-100 bg-danger bg-opacity-10">
-              <div class="card-body py-3">
-                <small class="text-muted text-uppercase">Tarifas vencidas</small>
-                <div id="resumen-vencidas"
-                    class="fw-bold fs-5 text-danger mt-1">
-                  0 cuotas
+            <!-- TARIFAS VENCIDAS -->
+            <div class="col-md">
+              <div class="card border-0 shadow-sm h-100 bg-danger bg-opacity-10">
+                <div class="card-body py-3">
+                  <small class="text-muted text-uppercase">Tarifas vencidas</small>
+                  <div id="resumen-vencidas"
+                       class="fw-bold fs-5 text-danger mt-1">
+                    0 cuotas
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- DÍAS DE ATRASO -->
-          <div class="col-md">
-            <div class="card border-0 shadow-sm h-100">
-              <div class="card-body py-3">
-                <small class="text-muted text-uppercase">Días de atraso</small>
-                <div id="resumen-atraso"
-                    class="fw-bold fs-5 mt-1">
-                  0
+            <!-- DÍAS DE ATRASO -->
+            <div class="col-md">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-body py-3">
+                  <small class="text-muted text-uppercase">Días de atraso</small>
+                  <div id="resumen-atraso"
+                       class="fw-bold fs-5 mt-1">
+                    0
+                  </div>
                 </div>
               </div>
             </div>
+
           </div>
+          <!-- ================= FIN RESUMEN ================= -->
+
+          <!-- ================= TABLA EXTRACTO ================= -->
+          <div class="table-responsive">
+            <table class="table table-sm table-striped align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Fecha pactada</th>
+                  <th>Fecha pago</th>
+                  <th class="text-end">Valor aplicado</th>
+                  <th>Factura</th>
+                </tr>
+              </thead>
+
+              <tbody id="extracto-body">
+                <tr>
+                  <td colspan="4"
+                      class="text-center text-muted py-4">
+                    Selecciona un contrato para ver el extracto
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- ================= FIN TABLA ================= -->
 
         </div>
-<!-- ================= FIN RESUMEN ================= -->
-
-        <!-- ================= FIN RESUMEN ================= -->
-
-        <!-- ================= TABLA EXTRACTO ================= -->
-        <div class="table-responsive">
-          <table class="table table-sm table-striped align-middle">
-            <thead class="table-light">
-              <tr>
-                <th>Fecha pactada</th>
-                <th>Fecha pago</th>
-                <th class="text-end">Valor aplicado</th>
-                <th>Factura</th>
-              </tr>
-            </thead>
-
-            <tbody id="extracto-body">
-              <tr>
-                <td colspan="4"
-                    class="text-center text-muted py-4">
-                  Selecciona una factura para ver el extracto
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <!-- ================= FIN TABLA ================= -->
+        <!-- 🎯 FIN CAPTURABLE -->
 
       </div>
 
@@ -119,6 +134,7 @@
   </div>
 </div>
 <!-- ================= FIN MODAL ================= -->
+
 
 <!-- ================= POPOVER FACTURAS ================= -->
 <script>
@@ -246,4 +262,49 @@
     document.getElementById("resumen-atraso").textContent =
       saldoCuotas > 0 ? saldoCuotas : 0;
   });
+</script>
+
+<!-- ================= CAPTURA DE EXTRACTO COMO IMAGEN ================= -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+  document.getElementById("btn-captura-extracto")
+    ?.addEventListener("click", async () => {
+
+      const target = document.getElementById("extracto-capturable");
+      if (!target) return;
+
+      try {
+        const canvas = await html2canvas(target, {
+          backgroundColor: "#ffffff",
+          scale: 2,              // más nitidez
+          useCORS: true
+        });
+
+        canvas.toBlob(async blob => {
+          if (!blob) return;
+
+          await navigator.clipboard.write([
+            new ClipboardItem({ "image/png": blob })
+          ]);
+
+          // feedback visual rápido
+          const btn = document.getElementById("btn-captura-extracto");
+          const original = btn.innerHTML;
+
+          btn.innerHTML = "✅ Copiado";
+          btn.classList.remove("btn-outline-secondary");
+          btn.classList.add("btn-outline-success");
+
+          setTimeout(() => {
+            btn.innerHTML = original;
+            btn.classList.remove("btn-outline-success");
+            btn.classList.add("btn-outline-secondary");
+          }, 1500);
+        });
+
+      } catch (err) {
+        alert("No se pudo copiar el extracto.");
+        console.error(err);
+      }
+    });
 </script>
