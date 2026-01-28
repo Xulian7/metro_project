@@ -689,3 +689,76 @@ def validar_referencia_pago(request):
         })
 
     return JsonResponse({"ok": True})
+
+
+from django.shortcuts import render
+from .models import Factura
+
+def visor_facturas(request):
+    facturas = (
+        Factura.objects
+        .select_related("contrato", "contrato__cliente", "contrato__vehiculo")
+        .order_by("-id")
+    )
+
+    return render(
+        request,
+        "terminal_pagos/visor_facturas.html",
+        {
+            "facturas": facturas,
+        }
+    )
+
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import Factura
+
+def detalle_factura_json(request, factura_id):
+    factura = get_object_or_404(
+        Factura.objects
+        .select_related("contrato", "contrato__cliente", "contrato__vehiculo")
+        .prefetch_related(
+            "items",
+            "pagos__configuracion__medio",
+            "pagos__canal",
+            "pagos__configuracion__cuenta_destino",
+        ),
+        id=factura_id
+    )
+
+    return JsonResponse({
+        "factura": {
+            "id": factura.id, # type: ignore
+            "fecha": factura.fecha.strftime("%d/%m/%Y %H:%M"),
+            "estado": factura.get_estado_display(), # type: ignore
+            "estado_pago": factura.get_estado_pago_display(), # type: ignore
+            "total": str(factura.total),
+            "total_pagado": str(factura.total_pagado),
+        },
+        "contrato": {
+            "id": factura.contrato.id, # type: ignore
+            "cliente": factura.contrato.cliente.nombre,
+            "vehiculo": factura.contrato.vehiculo.placa,
+        },
+        "items": [
+            {
+                "tipo": i.get_tipo_item_display(),
+                "descripcion": i.descripcion,
+                "cantidad": i.cantidad,
+                "subtotal": str(i.subtotal),
+            }
+            for i in factura.items.all()
+        ],
+        "pagos": [
+            {
+                "medio": p.configuracion.medio.nombre,
+                "canal": p.canal.nombre,
+                "cuenta": p.configuracion.cuenta_destino.nombre,
+                "valor": str(p.valor),
+                "fecha": p.fecha_pago.strftime("%d/%m/%Y"),
+                "referencia": p.referencia or "",
+            }
+            for p in factura.pagos.all()
+        ]
+    })

@@ -47,10 +47,22 @@
       {{ factura_form.contrato|add_class:"form-select select-buscable" }}
     </div>
 
-    <div class="col-md-4 d-flex align-items-end">
-      <button type="submit" class="btn btn-primary w-100">
+    <!-- BOTONES ACCIÓN -->
+    <div class="col-md-4 d-flex align-items-end gap-2">
+  
+      <!-- Guardar -->
+      <button type="submit"
+              class="btn btn-primary flex-fill">
         Guardar Factura
       </button>
+
+      <!-- Visor -->
+      <a href="{% url 'terminal_pagos:visor_facturas' %}"
+        class="btn btn-outline-secondary flex-fill"
+        title="Ir al visor de facturas">
+        📄 Ver facturas
+      </a>
+
     </div>
 
     <!-- ÍTEMS -->

@@ -13,5 +13,8 @@ urlpatterns = [
     path("extracto/contrato/<int:contrato_id>/", views.extracto_contrato, name="extracto_contrato"),
     path("extracto/factura/<int:factura_id>/", views.detalle_factura_pagos, name="detalle_factura_pagos"),
     path("validar-referencia/",views.validar_referencia_pago, name="validar_referencia_pago"),
+    path("visor-facturas/", views.visor_facturas, name="visor_facturas"),
+    path("visor-facturas/detalle/<int:factura_id>/", views.detalle_factura_json, name="detalle_factura_json"),
+
     
 ]
