@@ -63,6 +63,7 @@ class ItemFactura(models.Model):
         ("tarifa", "Tarifa"),
         ("otro", "Otro pago"),
         ("almacen", "Ítem de almacén"),
+        ("abono_credito", "Abono a crédito"),
         ("taller", "Servicio de taller"),
     )
 
