@@ -34,18 +34,6 @@
       </button>
     </div>
 
-    <!-- ================= ENCABEZADOS ÍTEMS ================= -->
-    <div class="row g-2 mb-1 text-muted small fw-semibold align-items-center">
-
-      <div style="width:140px">Tipo</div>
-      <div class="flex-grow-1">Ítem / Servicio</div>
-      <div style="width:70px" class="text-center">Cant.</div>
-      <div style="width:120px" class="text-end">Valor</div>
-      <div style="width:120px" class="text-end">Subtotal</div>
-      <div style="width:40px"></div>
-
-    </div>
-
     <div id="items-container"></div>
 
     <hr>
@@ -61,15 +49,15 @@
         Guardar crédito
       </button>
     </div>
-
   </form>
 </div>
 
+<!-- ================= TEMPLATE FILA ================= -->
 <div id="item-template" class="d-none">
   <div class="row g-2 align-items-center mb-2 credito-item-row">
 
     <!-- TIPO -->
-    <div style="width:140px">
+    <div class="col-2">
       <select class="form-select form-select-sm item-tipo"
               name="item_tipo[]">
         <option value="">Tipo</option>
@@ -79,13 +67,13 @@
       </select>
     </div>
 
-    <!-- ITEM / SERVICIO (flexible) -->
-    <div class="flex-grow-1 item-desc-container">
+    <!-- ITEM / SERVICIO -->
+    <div class="col-4 item-desc-container">
       <input type="hidden" name="item_descripcion[]" value="">
     </div>
 
     <!-- CANTIDAD -->
-    <div style="width:70px">
+    <div class="col-1">
       <input type="number"
              class="form-control form-control-sm item-cant text-center"
              name="item_cantidad[]"
@@ -94,7 +82,7 @@
     </div>
 
     <!-- VALOR -->
-    <div style="width:120px">
+    <div class="col-2">
       <input type="number"
              class="form-control form-control-sm item-valor text-end"
              name="item_valor[]"
@@ -103,7 +91,7 @@
     </div>
 
     <!-- SUBTOTAL -->
-    <div style="width:120px">
+    <div class="col-2">
       <input type="number"
              class="form-control form-control-sm item-subtotal text-end"
              name="item_subtotal[]"
@@ -111,7 +99,7 @@
     </div>
 
     <!-- ACCIÓN -->
-    <div style="width:40px" class="text-center">
+    <div class="col-1 text-center">
       <button type="button"
               class="btn btn-sm btn-outline-danger btn-remove-item"
               title="Eliminar ítem">
@@ -121,8 +109,6 @@
 
   </div>
 </div>
-
-
 
 <!-- ================= CRÉDITOS REGISTRADOS ================= -->
 <hr class="my-4">
