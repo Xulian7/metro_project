@@ -586,7 +586,7 @@
     tarifa: [{id:'tarifa', text:'Pago de tarifa', valor:0}],
     almacen: productosAlmacen.map(p => ({id:p.id, text:p.nombre, valor:p.precio_venta})),
     taller: serviciosTaller.map(s => ({id:s.id, text:s.nombre_servicio, valor:s.valor})),
-    abono_credito: creditosActivos.map(c => ({id: c.id, text: `Crédito #${c.id} - ${c.contrato}`, valor: c.saldo}))
+    abono_credito: creditosActivos.map(c => ({id: c.id, text: `Crédito #${c.id} - ${c.contrato__id}`, valor: c.saldo}))
 
   };
 

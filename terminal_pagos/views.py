@@ -91,8 +91,6 @@ def nueva_transaccion(request):
         )
 
     
-    
-
     configuraciones = ConfiguracionPago.objects.select_related(
         "medio",
         "cuenta_destino"
