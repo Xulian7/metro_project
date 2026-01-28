@@ -28,6 +28,40 @@
       </button>
   </div>
 
+  <!-- FILTRO SALDO -->
+  <div class="row mb-3 align-items-end">
+    <div class="col-md-4">
+      <input
+        type="text"
+        id="buscador-contratos"
+        class="form-control"
+        placeholder="Buscar por contrato, cliente o placa">
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label small mb-1">Saldo mínimo ($)</label>
+      <input type="number"
+            id="saldo-min"
+            class="form-control form-control-sm"
+            placeholder="Desde">
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label small mb-1">Saldo máximo ($)</label>
+      <input type="number"
+            id="saldo-max"
+            class="form-control form-control-sm"
+            placeholder="Hasta">
+    </div>
+
+    <div class="col-md-2 text-end">
+      <button class="btn btn-sm btn-outline-secondary"
+              id="reset-saldo">
+        Limpiar
+      </button>
+    </div>
+  </div>
+
 
   <!-- 📋 TABLA -->
   <div class="table-responsive">
@@ -120,20 +154,22 @@
 
           <!-- Saldo -->
           <td class="text-center fw-semibold
-            {% if row.saldo_cuotas > 0 %}
-              text-danger
-            {% elif row.saldo_cuotas < 0 %}
-              text-primary
-            {% else %}
-              text-success
-            {% endif %}
-          ">
+              {% if row.saldo_cuotas > 0 %}
+                text-danger
+              {% elif row.saldo_cuotas < 0 %}
+                text-primary
+              {% else %}
+                text-success
+              {% endif %}
+          "
+          data-saldo="{{ row.saldo_dinero }}">
             {{ row.saldo_cuotas|floatformat:1 }}
             <br>
             <small>
               ${{ row.saldo_dinero|intcomma }}
             </small>
           </td>
+
 
           <!--  ACCIONES -->
           <td class="text-end">
@@ -452,6 +488,57 @@ document.addEventListener("DOMContentLoaded", () => {
     color: #0d6efd;
   }
 </style>
+
+<!-- FILTRO SALDO JS -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+
+    const rows = document.querySelectorAll("#tabla-contratos tr");
+    const inputBuscar = document.getElementById("buscador-contratos");
+    const inputMin = document.getElementById("saldo-min");
+    const inputMax = document.getElementById("saldo-max");
+    const btnReset = document.getElementById("reset-saldo");
+
+    // 🔍 detectar min / max reales
+    let saldos = Array.from(rows)
+      .map(r => Number(r.querySelector("[data-saldo]")?.dataset.saldo))
+      .filter(v => !isNaN(v));
+
+    const minSaldo = Math.min(...saldos);
+    const maxSaldo = Math.max(...saldos);
+
+    inputMin.value = minSaldo;
+    inputMax.value = maxSaldo;
+
+    function aplicarFiltros() {
+      const q = inputBuscar.value.toLowerCase();
+      const min = Number(inputMin.value);
+      const max = Number(inputMax.value);
+
+      rows.forEach(row => {
+        const texto = row.innerText.toLowerCase();
+        const saldo = Number(row.querySelector("[data-saldo]")?.dataset.saldo);
+
+        const matchTexto = texto.includes(q);
+        const matchSaldo = saldo >= min && saldo <= max;
+
+        row.style.display = (matchTexto && matchSaldo) ? "" : "none";
+      });
+    }
+
+    inputBuscar.addEventListener("input", aplicarFiltros);
+    inputMin.addEventListener("input", aplicarFiltros);
+    inputMax.addEventListener("input", aplicarFiltros);
+
+    btnReset.addEventListener("click", () => {
+      inputMin.value = minSaldo;
+      inputMax.value = maxSaldo;
+      inputBuscar.value = "";
+      aplicarFiltros();
+    });
+
+  });
+</script>
 
 
 {% endblock %}
