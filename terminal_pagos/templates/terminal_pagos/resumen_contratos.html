@@ -181,10 +181,21 @@
 
               <button
                 class="btn btn-outline-primary btn-extracto"
+                data-bs-toggle="modal"
+                data-bs-target="#extractoModal"
+
                 data-contrato-id="{{ row.contrato.id }}"
+                data-contrato-label="#{{ row.contrato.id }} · {{ row.contrato.vehiculo.placa }} · {{ row.contrato.cliente.nombre }}"
+                data-dias="{{ row.dias_transcurridos }}"
+                data-cuotas-pagadas="{{ row.cuotas_pagadas }}"
+                data-cuotas-vencidas="{{ row.cuotas_vencidas }}"
+                data-saldo-cuotas="{{ row.saldo_cuotas }}"
+                data-saldo-dinero="{{ row.saldo_dinero }}"
+
                 title="Ver extracto de pagos">
                 📄
               </button>
+
             </div>
           </td>
         </tr>

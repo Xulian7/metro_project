@@ -23,8 +23,9 @@
           <div class="col-md">
             <div class="card border-0 shadow-sm h-100">
               <div class="card-body py-3">
-                <small class="text-muted">Contrato</small>
-                <div class="fw-semibold fs-6">
+                <small class="text-muted text-uppercase">Contrato</small>
+                <div id="resumen-contrato"
+                    class="fw-semibold fs-6 text-primary mt-1">
                   —
                 </div>
               </div>
@@ -35,9 +36,10 @@
           <div class="col-md">
             <div class="card border-0 shadow-sm h-100">
               <div class="card-body py-3">
-                <small class="text-muted">Antigüedad</small>
-                <div class="fw-bold fs-5">
-                  0 <small class="text-muted">días</small>
+                <small class="text-muted text-uppercase">Antigüedad</small>
+                <div id="resumen-antiguedad"
+                    class="fw-bold fs-5 mt-1">
+                  0 <small class="text-muted fs-6">días</small>
                 </div>
               </div>
             </div>
@@ -45,11 +47,12 @@
 
           <!-- TARIFAS PAGADAS -->
           <div class="col-md">
-            <div class="card border-0 shadow-sm h-100 bg-light">
+            <div class="card border-0 shadow-sm h-100 bg-success bg-opacity-10">
               <div class="card-body py-3">
-                <small class="text-muted">Tarifas pagadas</small>
-                <div class="fw-bold fs-5 text-success">
-                  $0
+                <small class="text-muted text-uppercase">Tarifas pagadas</small>
+                <div id="resumen-pagadas"
+                    class="fw-bold fs-5 text-success mt-1">
+                  0 cuotas
                 </div>
               </div>
             </div>
@@ -57,11 +60,12 @@
 
           <!-- TARIFAS VENCIDAS -->
           <div class="col-md">
-            <div class="card border-0 shadow-sm h-100 bg-light">
+            <div class="card border-0 shadow-sm h-100 bg-danger bg-opacity-10">
               <div class="card-body py-3">
-                <small class="text-muted">Tarifas vencidas</small>
-                <div class="fw-bold fs-5 text-danger">
-                  $0
+                <small class="text-muted text-uppercase">Tarifas vencidas</small>
+                <div id="resumen-vencidas"
+                    class="fw-bold fs-5 text-danger mt-1">
+                  0 cuotas
                 </div>
               </div>
             </div>
@@ -71,8 +75,9 @@
           <div class="col-md">
             <div class="card border-0 shadow-sm h-100">
               <div class="card-body py-3">
-                <small class="text-muted">Días de atraso</small>
-                <div class="fw-bold fs-5">
+                <small class="text-muted text-uppercase">Días de atraso</small>
+                <div id="resumen-atraso"
+                    class="fw-bold fs-5 mt-1">
                   0
                 </div>
               </div>
@@ -80,6 +85,8 @@
           </div>
 
         </div>
+<!-- ================= FIN RESUMEN ================= -->
+
         <!-- ================= FIN RESUMEN ================= -->
 
         <!-- ================= TABLA EXTRACTO ================= -->
@@ -113,7 +120,7 @@
 </div>
 <!-- ================= FIN MODAL ================= -->
 
-
+<!-- ================= POPOVER FACTURAS ================= -->
 <script>
   let popover = null;
   let hideTimer = null;
@@ -205,4 +212,38 @@
       activo = false;
     }, 300);
   }
+</script>
+
+<!-- ================= ACTUALIZAR RESUMEN MODAL ================= -->
+<script>
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest(".btn-extracto");
+    if (!btn) return;
+
+    // ===== leer datos del botón =====
+    const contrato = btn.dataset.contratoLabel;
+    const dias = btn.dataset.dias;
+    const pagadas = btn.dataset.cuotasPagadas;
+    const vencidas = btn.dataset.cuotasVencidas;
+    const saldoCuotas = parseFloat(btn.dataset.saldoCuotas || 0);
+
+    // ===== pintar contrato =====
+    document.getElementById("resumen-contrato").textContent = contrato;
+
+    // ===== antigüedad =====
+    document.getElementById("resumen-antiguedad").innerHTML =
+      `${dias} <small class="text-muted">días</small>`;
+
+    // ===== tarifas pagadas =====
+    document.getElementById("resumen-pagadas").textContent =
+      `${pagadas} cuotas`;
+
+    // ===== tarifas vencidas =====
+    document.getElementById("resumen-vencidas").textContent =
+      `${vencidas} cuotas`;
+
+    // ===== días de atraso (regla simple) =====
+    document.getElementById("resumen-atraso").textContent =
+      saldoCuotas > 0 ? saldoCuotas : 0;
+  });
 </script>
