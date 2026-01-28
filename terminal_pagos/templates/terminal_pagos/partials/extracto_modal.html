@@ -308,3 +308,26 @@
       }
     });
 </script>
+
+<!-- ================= LIMPIAR MODAL AL CERRAR ================= -->
+<script>
+  const extractoModalEl = document.getElementById("extractoModal");
+
+  extractoModalEl.addEventListener("hidden.bs.modal", () => {
+    // 🧹 eliminar cualquier backdrop huérfano
+    document.querySelectorAll(".modal-backdrop").forEach(b => b.remove());
+
+    // 🧹 liberar scroll
+    document.body.classList.remove("modal-open");
+    document.body.style.removeProperty("padding-right");
+
+    // 🧹 resetear contenido si quieres
+    document.getElementById("extracto-body").innerHTML = `
+      <tr>
+        <td colspan="4" class="text-center text-muted py-4">
+          Selecciona un contrato para ver el extracto
+        </td>
+      </tr>
+    `;
+  });
+</script>
