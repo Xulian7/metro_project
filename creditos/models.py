@@ -57,10 +57,7 @@ class Credito(models.Model):
         ordering = ["-fecha", "-id"]
         verbose_name = "Crédito"
         verbose_name_plural = "Créditos"
-
-    def __str__(self):
-        return f"Crédito #{self.id} - {self.contrato}" # type: ignore
-    
+        
     def recalcular_estado(self, *, save=True):
         
         if self.estado == "Cancelado":
@@ -75,6 +72,10 @@ class Credito(models.Model):
         if save:
             self.save(update_fields=["estado", "saldo"])
 
+    def __str__(self):
+        return f"Crédito #{self.id} - {self.contrato}" # type: ignore
+    
+    
     def puede_eliminarse(self):
         """
         Regla de negocio:
