@@ -565,7 +565,19 @@
 
   $(document).ready(() => {
     $('.select-buscable').select2({ width:'100%', placeholder:'Buscar…', allowClear:true });
-    $('select[name="contrato"]').on('change', recalcularTodos);
+
+    // 🔁 cuando cambia contrato → recalcular y refrescar créditos
+    $('select[name="contrato"]').on('change', () => {
+      recalcularTodos();
+
+      document.querySelectorAll('.item-row').forEach(row => {
+        const tipo = row.querySelector('.tipo-item')?.value;
+        if (tipo === 'abono_credito') {
+          cargarDescripcion(row);
+          recalcularFila(row);
+        }
+      });
+    });
   });
 
   document.getElementById('add-item').addEventListener('click', () => {
@@ -582,16 +594,38 @@
     inicializarItem(container.lastElementChild);
   });
 
-  const datosDescripcion = {
-    tarifa: [{id:'tarifa', text:'Pago de tarifa', valor:0}],
-    almacen: productosAlmacen.map(p => ({id:p.id, text:p.nombre, valor:p.precio_venta})),
-    taller: serviciosTaller.map(s => ({id:s.id, text:s.nombre_servicio, valor:s.valor})),
-    abono_credito: creditosActivos.map(c => ({
-      id: c.id,
-      text: `Crédito #${c.id}  · ${c["contrato__vehiculo__placa"]} - ${c["contrato__cliente__nombre"]}`,
-      valor: c.saldo
-    }))
+  function getContratoSeleccionado() {
+    const sel = document.querySelector('select[name="contrato"]');
+    return sel ? sel.value : null;
+  }
 
+  // 🧠 NUEVO: filtrar créditos por contrato seleccionado
+  function getCreditosPorContrato() {
+    const contratoId = getContratoSeleccionado();
+    if (!contratoId) return [];
+
+    return creditosActivos
+      .filter(c => String(c.contrato__id) === String(contratoId))
+      .map(c => ({
+        id: c.id,
+        text: `Crédito #${c.id} · ${c["contrato__vehiculo__placa"]} - ${c["contrato__cliente__nombre"]}`,
+        valor: c.saldo
+      }));
+  }
+
+  const datosDescripcion = {
+    tarifa: [{ id:'tarifa', text:'Pago de tarifa', valor:0 }],
+    almacen: productosAlmacen.map(p => ({
+      id: p.id,
+      text: p.nombre,
+      valor: p.precio_venta
+    })),
+    taller: serviciosTaller.map(s => ({
+      id: s.id,
+      text: s.nombre_servicio,
+      valor: s.valor
+    }))
+    // ❌ abono_credito NO va aquí
   };
 
   function getTarifaContrato() {
@@ -604,30 +638,31 @@
     const desc = row.querySelector('.descripcion-item');
     const valorInput = row.querySelector('.valor-unitario-item');
 
-    const opciones = datosDescripcion[tipo.value] || [];
+    let opciones = [];
 
-    // ---- reset descripción ----
+    if (tipo.value === 'abono_credito') {
+      opciones = getCreditosPorContrato();
+    } else {
+      opciones = datosDescripcion[tipo.value] || [];
+    }
+
     desc.innerHTML = '';
+
     opciones.forEach(o => {
       const opt = document.createElement('option');
-      if (tipo.value === 'tarifa') {
-        opt.value = 'tarifa';
-      } else {
-        opt.value = `${tipo.value}:${o.id}`;
-      }
+      opt.value = tipo.value === 'tarifa'
+        ? 'tarifa'
+        : `${tipo.value}:${o.id}`;
+
       opt.textContent = o.text;
       opt.dataset.valor = o.valor;
       desc.appendChild(opt);
     });
 
-    // ---- reset valor manual ----
     valorInput.dataset.manual = "0";
     valorInput.value = "";
-
-    // ---- reset subtotal frontend ----
     row.dataset.subtotal = "0";
 
-    // ---- reinicializar select2 ----
     if ($(desc).hasClass("select2-hidden-accessible")) {
       $(desc).select2("destroy");
     }
@@ -639,7 +674,6 @@
     });
   }
 
-
   function recalcularFila(row) {
     const tipo = row.querySelector('.tipo-item').value;
     const cant = parseFloat(row.querySelector('.cantidad-item').value || 0);
@@ -647,12 +681,9 @@
 
     let subtotal = 0;
 
-    // 👇 SI el usuario escribió manualmente un valor
     if (valorInput.dataset.manual === "1") {
-      const manualValue = parseFloat(valorInput.value || 0);
-      subtotal = manualValue;
+      subtotal = parseFloat(valorInput.value || 0);
     } else {
-      // 👇 comportamiento normal
       if (tipo === 'tarifa') {
         subtotal = getTarifaContrato() * cant;
       } else {
@@ -666,7 +697,6 @@
     row.dataset.subtotal = subtotal;
     recalcularTotales();
   }
-
 
   function recalcularTotales() {
     let total = 0;
@@ -682,7 +712,6 @@
     }
   }
 
-
   $('#items-container')
     .on('change', '.tipo-item', function () {
       const row = this.closest('.item-row');
@@ -692,7 +721,6 @@
     .on('input', '.cantidad-item', function () {
       recalcularFila(this.closest('.item-row'));
     })
-    // 👇 NUEVO: detectar edición manual del valor
     .on('input', '.valor-unitario-item', function () {
       const row = this.closest('.item-row');
       this.dataset.manual = "1";
@@ -706,7 +734,6 @@
       recalcularTotales();
     });
 
-
   function inicializarItem(row) {
     cargarDescripcion(row);
   }
@@ -715,6 +742,7 @@
     document.querySelectorAll('.item-row').forEach(recalcularFila);
   }
 </script>
+
 
 <!-- ================= SCRIPT GESTIÓN PAGOS ================= -->
 <script>
