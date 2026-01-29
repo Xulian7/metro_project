@@ -2,6 +2,7 @@ from time import timezone
 from django.db import models
 from arrendamientos.models import Contrato
 from django.utils import timezone
+from django.conf import settings
 
 # =========================
 # FACTURA
@@ -49,6 +50,14 @@ class Factura(models.Model):
         max_digits=12,
         decimal_places=2,
         default=0 # type: ignore
+    )
+    
+    creado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="facturas_creadas",
+        null=True,      # ← clave para migrar sin romper data vieja
+        blank=True
     )
 
     def __str__(self):

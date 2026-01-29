@@ -315,6 +315,7 @@ def crear_factura(request):
     else:
         factura.estado = "borrador"
 
+    factura.creado_por = request.user
     factura.save()
         
     print(
