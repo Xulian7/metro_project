@@ -92,7 +92,7 @@ class ItemFacturaForm(forms.ModelForm):
         from creditos.models import Credito
         creditos = (Credito.objects.filter(estado="Activo", saldo__gt=0).select_related("contrato"))
         for c in creditos:
-            choices.append((f"abono_credito:{c.id}", f"Crédito #{c.id} – Contrato {c.contrato}"))  # type: ignore
+            choices.append((f"abono_credito:{c.id}", f"Crédito #{c.id}"))  # type: ignore
 
 
 ItemFacturaFormSet = inlineformset_factory(
