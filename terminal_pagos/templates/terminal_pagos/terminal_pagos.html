@@ -542,6 +542,7 @@
     });
   </script>
 
+
 </div>
 
 <!-- ================= SCRIPTS EXTERNOS ================= -->
@@ -1026,6 +1027,51 @@
   });
 </script>
 
+<!-- ================= SCRIPT DOBLE CLIC SALDO PENDIENTE ================= -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+
+    const saldoEl = document.getElementById("saldo-pendiente");
+
+    if (!saldoEl) return;
+
+    saldoEl.addEventListener("dblclick", () => {
+
+      // 1️⃣ Obtener saldo numérico (quita $ y separadores)
+      const raw = saldoEl.innerText
+        .replace(/\$/g, "")
+        .replace(/\./g, "")
+        .replace(/,/g, ".")
+        .trim();
+
+      const saldo = parseFloat(raw);
+      if (isNaN(saldo) || saldo <= 0) return;
+
+      // 2️⃣ Buscar el último input de pago visible
+      const pagos = Array.from(
+        document.querySelectorAll(".pago-valor:not(.d-none)")
+      );
+
+      if (!pagos.length) {
+        alert("⚠️ Agrega primero una fila de pago.");
+        return;
+      }
+
+      const input = pagos[pagos.length - 1];
+
+      // 3️⃣ Asignar valor
+      input.value = saldo;
+
+      // 4️⃣ Disparar recalculo
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+
+      // 5️⃣ Feedback visual sutil
+      input.classList.add("border-success");
+      setTimeout(() => input.classList.remove("border-success"), 600);
+    });
+
+  });
+</script>
 
 
 {% endblock %}
