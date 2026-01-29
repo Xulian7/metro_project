@@ -80,15 +80,20 @@ def nueva_transaccion(request):
         "valor"
     )
     
+        
     creditos = Credito.objects.filter(
             estado="Activo",
             saldo__gt=0
         ).select_related(
-            "contrato"
+            "contrato",
+            "contrato__cliente",
+            "contrato__vehiculo",
         ).values(
             "id",
             "saldo",
             "contrato__id",
+            "contrato__cliente__nombre",
+            "contrato__vehiculo__placa",
         )
 
     
