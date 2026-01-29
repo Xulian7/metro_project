@@ -145,7 +145,6 @@ def nueva_transaccion(request):
         }
     )
     
-
 # =========================
 # CREAR FACTURA + ÍTEMS + PAGOS
 # =========================
