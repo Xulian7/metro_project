@@ -588,7 +588,7 @@
     taller: serviciosTaller.map(s => ({id:s.id, text:s.nombre_servicio, valor:s.valor})),
     abono_credito: creditosActivos.map(c => ({
       id: c.id,
-      text: `Crédito #${c.id} · ${c["contrato__cliente__nombre"]} · ${c["contrato__vehiculo__placa"]}`,
+      text: `Crédito #${c.id} · ${c["contrato__vehiculo__placa"]} - ${c["contrato__cliente__nombre_completo"]}`,
       valor: c.saldo
     }))
 
