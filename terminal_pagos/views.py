@@ -734,7 +734,7 @@ def visor_facturas(request):
 def detalle_factura_json(request, factura_id):
     factura = get_object_or_404(
         Factura.objects
-        .select_related("contrato", "contrato__cliente", "contrato__vehiculo")
+        .select_related("contrato", "contrato__cliente", "contrato__vehiculo", "creado_por")
         .prefetch_related(
             "items",
             "pagos__configuracion__medio",
@@ -752,6 +752,11 @@ def detalle_factura_json(request, factura_id):
             "estado_pago": factura.get_estado_pago_display(), # type: ignore
             "total": str(factura.total),
             "total_pagado": str(factura.total_pagado),
+            "creado_por": (
+                factura.creado_por.get_full_name()
+                if factura.creado_por
+                else "—"
+            ),
         },
         "contrato": {
             "id": factura.contrato.id, # type: ignore

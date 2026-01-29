@@ -29,7 +29,12 @@
           <h5 class="mb-0 fw-bold">
             Factura <span id="f-id"></span>
           </h5>
-          <small class="text-muted" id="f-fecha"></small>
+          <small class="text-muted d-block" id="f-fecha"></small>
+          <small class="text-muted d-block">
+            <span class="badge bg-success bg-opacity-10 text-success border">
+              ✔ Registrada por <span id="f-creado-por">—</span>
+            </span>
+          </small>
         </div>
 
         <div class="text-end">
@@ -176,7 +181,7 @@ $(function () {
         document.getElementById("f-pagado").textContent = data.factura.total_pagado;
         document.getElementById("f-estado").textContent = data.factura.estado;
         document.getElementById("f-estado-pago").textContent = data.factura.estado_pago;
-
+        document.getElementById("f-creado-por").textContent = data.factura.creado_por || "—";
         document.getElementById("f-contrato").textContent =
           `#${data.contrato.id} · ${data.contrato.vehiculo} · ${data.contrato.cliente}`;
 
