@@ -754,9 +754,11 @@ def detalle_factura_json(request, factura_id):
             "total_pagado": str(factura.total_pagado),
             "creado_por": (
                 factura.creado_por.get_full_name()
+                or factura.creado_por.username
                 if factura.creado_por
                 else "—"
             ),
+
         },
         "contrato": {
             "id": factura.contrato.id, # type: ignore
