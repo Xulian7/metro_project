@@ -1,5 +1,6 @@
 from django.db import models
 from arrendamientos.models import Contrato
+from decimal import Decimal
 
 
 class Credito(models.Model):
@@ -12,6 +13,7 @@ class Credito(models.Model):
 
     ESTADO_CHOICES = [
         ("Activo", "Activo"),
+        ("Pagado", "Pagado"),
         ("Cancelado", "Cancelado"),
     ]
 
@@ -58,6 +60,20 @@ class Credito(models.Model):
 
     def __str__(self):
         return f"Crédito #{self.id} - {self.contrato}" # type: ignore
+    
+    def recalcular_estado(self, *, save=True):
+        
+        if self.estado == "Cancelado":
+            return  # decisión administrativa, no automática
+
+        if self.saldo <= Decimal("0.00"):
+            self.estado = "Pagado"
+            self.saldo = Decimal("0.00")  # blindaje extra
+        else:
+            self.estado = "Activo"
+
+        if save:
+            self.save(update_fields=["estado", "saldo"])
 
     def puede_eliminarse(self):
         """

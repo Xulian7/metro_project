@@ -172,7 +172,15 @@
           <td class="text-end">${{ credito.monto_total|floatformat:0 }}</td>
           <td class="text-end">${{ credito.saldo|floatformat:0 }}</td>
           <td class="text-center">
-            <span class="badge {% if credito.estado == 'Activo' %}bg-success{% else %}bg-secondary{% endif %}">
+            <span class="badge
+              {% if credito.estado == 'Activo' %}
+                bg-success
+              {% elif credito.estado == 'Pagado' %}
+                bg-primary
+              {% else %}
+                bg-secondary
+              {% endif %}
+            ">
               {{ credito.estado }}
             </span>
           </td>
