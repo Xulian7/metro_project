@@ -56,7 +56,7 @@ class Factura(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         related_name="facturas_creadas",
-        null=True,      # ← clave para migrar sin romper data vieja
+        null=True,     
         blank=True
     )
 
