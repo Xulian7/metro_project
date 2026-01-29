@@ -219,7 +219,38 @@ def crear_factura(request):
             item.producto_almacen = None
             item.descripcion = servicio.nombre_servicio
             print(f"   ↳ Servicio taller ID={servicio.id}") # type: ignore
+            
+        # ---- ABONO A CRÉDITO ----
+        elif item.tipo_item == "abono_credito" and ":" in raw:
+            _, credito_id = raw.split(":", 1)
 
+            try:
+                credito = Credito.objects.select_for_update().get(
+                    id=int(credito_id),
+                    estado="Activo"
+                )
+            except Credito.DoesNotExist:
+                raise ValueError(f"Crédito {credito_id} inválido o inactivo")
+
+            # 🔒 validar saldo
+            if credito.saldo < item.valor_unitario:
+                raise ValueError(
+                    f"El abono (${item.valor_unitario}) excede el saldo del crédito (${credito.saldo})"
+                )
+
+            item.descripcion = f"Abono a crédito #{credito.id}" # type: ignore
+            item.producto_almacen = None
+            item.servicio_taller = None
+            credito.saldo -= item.valor_unitario
+            credito.save()
+
+            print(
+                f"   ↳ Abono aplicado | Crédito #{credito.id} | " # type: ignore
+                f"Nuevo saldo = {credito.saldo}"
+            )
+
+        
+        
         # ---- SUBTOTAL ----
         item.subtotal =  item.valor_unitario
         item.save()
