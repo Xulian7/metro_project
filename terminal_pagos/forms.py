@@ -86,7 +86,6 @@ class ItemFacturaForm(forms.ModelForm):
         for s in servicios:
             choices.append((f"taller:{s.id}", s.nombre_servicio)) # type: ignore
 
-        self.fields["descripcion"].choices = choices
         
         # 4️⃣ ABONOS A CRÉDITO
         from creditos.models import Credito
@@ -102,6 +101,7 @@ class ItemFacturaForm(forms.ModelForm):
                 f"Crédito #{c.id} · {c.contrato.vehiculo.placa} - {c.contrato.cliente.nombre}" # type: ignore
             ))
 
+        self.fields["descripcion"].choices = choices
 
 ItemFacturaFormSet = inlineformset_factory(
     Factura,
