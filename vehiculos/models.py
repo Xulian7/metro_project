@@ -25,6 +25,7 @@ class Vehiculo(models.Model):
     numero_motor = models.CharField(max_length=50, blank=True, null=True)
     numero_chasis = models.CharField(max_length=50, blank=True, null=True)
     actualizacion_soat = models.DateField(blank=True, null=True)
+    tecnomecanica = models.DateField(blank=True, null=True)
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='Vitrina')
     linea_gps = models.CharField(max_length=50, blank=True, null=True)
     estado_obs = models.CharField(

@@ -87,6 +87,7 @@ def vehiculo_update(request):
         vehiculo.numero_chasis = request.POST.get('numero_chasis')
         vehiculo.linea_gps = request.POST.get('linea_gps')
         vehiculo.actualizacion_soat = request.POST.get('actualizacion_soat')
+        vehiculo.tecnomecanica = request.POST.get('tecnomecanica')
         vehiculo.estado = request.POST.get('estado')
         vehiculo.estado_obs = request.POST.get('estado_obs')
         vehiculo.save()
@@ -106,6 +107,7 @@ def vehiculo_update(request):
                 'numero_chasis': vehiculo.numero_chasis,
                 'linea_gps': vehiculo.linea_gps,
                 'actualizacion_soat': str(vehiculo.actualizacion_soat),
+                'tecnomecanica': str(vehiculo.tecnomecanica),
                 'estado': vehiculo.estado,
                 'estado_obs': vehiculo.estado_obs,
             }

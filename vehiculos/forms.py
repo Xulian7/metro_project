@@ -7,7 +7,7 @@ class VehiculoForm(SmartCleanMixin, forms.ModelForm):
         model = Vehiculo
         fields = [
             'placa', 'marca', 'modelo', 'serie','color', 'propietario',
-            'numero_motor', 'numero_chasis', 'linea_gps', 'actualizacion_soat'
+            'numero_motor', 'numero_chasis', 'linea_gps', 'actualizacion_soat', 'tecnomecanica', 'estado', 'estado_obs'
         ]
 
         widgets = {
@@ -21,6 +21,7 @@ class VehiculoForm(SmartCleanMixin, forms.ModelForm):
             'numero_chasis': forms.TextInput(attrs={'class': 'form-control'}),
             'linea_gps': forms.TextInput(attrs={'class': 'form-control'}),
             'actualizacion_soat': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'tecnomecanica': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'estado': forms.Select(attrs={'class': 'form-select'}),
             'estado_obs': forms.Select(attrs={'class': 'form-select'}),
         }

@@ -81,6 +81,10 @@
         <input type="date" name="actualizacion_soat" class="form-control">
       </div>
       <div class="col-md-2">
+        <label class="form-label">Tecnomecánica</label>
+        <input type="date" name="tecnomecanica" class="form-control">
+      </div>
+      <div class="col-md-2">
         <label class="form-label">Estado</label>
         <select name="estado" class="form-select" readonly disabled>
           <option value="Vitrina" selected>Vitrina</option>
@@ -118,6 +122,7 @@
           <th># Chasis</th>
           <th>Línea GPS</th>
           <th>SOAT</th>
+          <th>Tecnomecánica</th>
           <th>Estado</th>
           <th>Obs. Estado</th>
           <th>Acciones</th>
@@ -136,6 +141,7 @@
           <td>{{ v.numero_chasis }}</td>
           <td>{{ v.linea_gps }}</td>
           <td>{{ v.actualizacion_soat|date:"Y-m-d" }}</td>
+          <td>{{ v.tecnomecanica|date:"Y-m-d" }}</td>
           <td>{{ v.estado }}</td>
           <td>{{ v.estado_obs }}</td>
           <td>
@@ -239,6 +245,10 @@
               <input type="date" name="actualizacion_soat" id="modal-soat" class="form-control">
             </div>
             <div class="col-md-4">
+              <label class="form-label">Tecnomecánica</label>
+              <input type="date" name="tecnomecanica" id="modal-tecnomecanica" class="form-control">
+            </div> 
+            <div class="col-md-4">
               <label class="form-label">Estado</label>
               <select name="estado" id="modal-estado" class="form-select">
                 <option value="Vitrina">Vitrina</option>
@@ -285,6 +295,7 @@ document.querySelectorAll('.edit-vehiculo-btn').forEach(btn => {
     document.getElementById('modal-chasis').value = btn.dataset.chasis;
     document.getElementById('modal-linea').value = btn.dataset.linea;
     document.getElementById('modal-soat').value = btn.dataset.soat;
+    document.getElementById('modal-tecnomecanica').value = btn.dataset.tecnomecanica;
     document.getElementById('modal-estado').value = btn.dataset.estado;
 
     const estadoObs = document.getElementById('modal-estado-obs');
