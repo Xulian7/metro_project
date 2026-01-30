@@ -655,14 +655,16 @@
 
     opciones.forEach(o => {
       const opt = document.createElement('option');
-      opt.value = tipo.value === 'tarifa'
-        ? 'tarifa'
-        : `${tipo.value}:${o.id}`;
+
+      // SIEMPRE el id del ítem, no el tipo
+      opt.value = o.id;
 
       opt.textContent = o.text;
       opt.dataset.valor = o.valor;
+
       desc.appendChild(opt);
     });
+
 
     valorInput.dataset.manual = "0";
     valorInput.value = "";
