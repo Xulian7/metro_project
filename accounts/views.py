@@ -17,34 +17,48 @@ class MyLogoutView(LogoutView):
 @login_required
 def home(request):
     vehiculos = Vehiculo.objects.filter(estado='Vitrina')
-
-    # ================================
-    # 🔥 Cálculo del widget SOAT
-    # ================================
     hoy = now().date()
+
     soat_data = []
+    tecno_data = []
 
     for v in Vehiculo.objects.all():
 
+        # ================================
+        # 🚑 SOAT
+        # ================================
         if v.actualizacion_soat:
-            fecha_vencimiento = v.actualizacion_soat + timedelta(days=365)
-            dias = (fecha_vencimiento - hoy).days
+            fecha_vencimiento_soat = v.actualizacion_soat + timedelta(days=365)
+            dias_soat = (fecha_vencimiento_soat - hoy).days
         else:
-            dias = None  # Sin fecha → sin cálculo
+            dias_soat = None
 
         soat_data.append({
             "placa": v.placa,
-            "dias": dias
+            "dias": dias_soat
         })
 
-    # Ordenamos del que vence más pronto al que falta más
-    soat_data = sorted(
-        soat_data,
-        key=lambda x: x["dias"] if x["dias"] is not None else 99999
-    )
+        # ================================
+        # 🔧 TECNOMECÁNICA
+        # ================================
+        if v.tecnomecanica:
+            dias_tecno = (v.tecnomecanica - hoy).days
+        else:
+            dias_tecno = None
+
+        tecno_data.append({
+            "placa": v.placa,
+            "dias": dias_tecno
+        })
+
+    # Ordenar: el que vence primero arriba
+    soat_data.sort(key=lambda x: x["dias"] if x["dias"] is not None else 99999)
+    tecno_data.sort(key=lambda x: x["dias"] if x["dias"] is not None else 99999)
 
     return render(request, 'accounts/home.html', {
         'user': request.user,
         'vehiculos': vehiculos,
-        'soat_data': soat_data  # 👉 Se envía al template
+        'soat_data': soat_data,
+        'tecno_data': tecno_data
     })
+
