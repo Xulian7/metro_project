@@ -6,7 +6,7 @@ class VehiculoForm(SmartCleanMixin, forms.ModelForm):
     class Meta:
         model = Vehiculo
         fields = [
-            'placa', 'marca', 'modelo', 'serie','color', 'propietario',
+            'placa', 'marca', 'modelo', 'serie','color', 'propietario', 'razon_social',
             'numero_motor', 'numero_chasis', 'linea_gps', 'actualizacion_soat', 'tecnomecanica', 'estado', 'estado_obs'
         ]
 
@@ -17,6 +17,7 @@ class VehiculoForm(SmartCleanMixin, forms.ModelForm):
             'serie': forms.TextInput(attrs={'class': 'form-control'}),
             'color': forms.TextInput(attrs={'class': 'form-control'}),
             'propietario': forms.TextInput(attrs={'class': 'form-control'}),
+            'razon_social': forms.TextInput(attrs={'class': 'form-control'}),
             'numero_motor': forms.TextInput(attrs={'class': 'form-control'}),
             'numero_chasis': forms.TextInput(attrs={'class': 'form-control'}),
             'linea_gps': forms.TextInput(attrs={'class': 'form-control'}),

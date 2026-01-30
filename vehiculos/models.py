@@ -22,6 +22,7 @@ class Vehiculo(models.Model):
     serie = models.CharField(max_length=50, blank=True, null=True)
     color = models.CharField(max_length=50, blank=True, null=True)
     propietario = models.CharField(max_length=100)
+    razon_social = models.CharField(max_length=100, blank=True, null=True)
     numero_motor = models.CharField(max_length=50, blank=True, null=True)
     numero_chasis = models.CharField(max_length=50, blank=True, null=True)
     actualizacion_soat = models.DateField(blank=True, null=True)

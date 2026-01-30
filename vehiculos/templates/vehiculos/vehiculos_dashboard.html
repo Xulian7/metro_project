@@ -65,6 +65,15 @@
         </select>
       </div>
       <div class="col-md-2">
+        <label class="form-label">Razón Social</label>
+        <select name="razon_social" class="form-select">
+          <option value="">Seleccione…</option>
+          {% for rs in razones_sociales %}
+            <option value="{{ rs }}">{{ rs }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
         <label class="form-label"># Motor</label>
         <input type="text" name="numero_motor" class="form-control">
       </div>
@@ -118,6 +127,7 @@
           <th>Serie</th>
           <th>Color</th>
           <th>Propietario</th>
+          <th>Razón Social</th>
           <th># Motor</th>
           <th># Chasis</th>
           <th>Línea GPS</th>
@@ -137,6 +147,7 @@
           <td>{{ v.serie }}</td>
           <td>{{ v.color }}</td>
           <td>{{ v.propietario }}</td>
+          <td>{{ v.razon_social }}</td>
           <td>{{ v.numero_motor }}</td>
           <td>{{ v.numero_chasis }}</td>
           <td>{{ v.linea_gps }}</td>
@@ -155,10 +166,12 @@
               data-serie="{{ v.serie }}"
               data-color="{{ v.color }}"
               data-propietario="{{ v.propietario }}"
+              data-razon-social="{{ v.razon_social }}"
               data-motor="{{ v.numero_motor }}"
               data-chasis="{{ v.numero_chasis }}"
               data-linea="{{ v.linea_gps }}"
               data-soat="{{ v.actualizacion_soat|date:'Y-m-d' }}"
+              data-tecnomecanica="{{ v.tecnomecanica|date:'Y-m-d' }}"
               data-estado="{{ v.estado }}"
               data-estado-obs="{{ v.estado_obs }}"
               data-bs-toggle="modal"
@@ -229,6 +242,10 @@
               <input type="text" name="propietario" id="modal-propietario" class="form-control">
             </div>
             <div class="col-md-4">
+              <label class="form-label">Razón Social</label>
+              <input type="text" name="razon_social" id="modal-razon-social" class="form-control">
+            </div>
+            <div class="col-md-4">
               <label class="form-label"># Motor</label>
               <input type="text" name="numero_motor" id="modal-motor" class="form-control">
             </div>
@@ -291,6 +308,7 @@ document.querySelectorAll('.edit-vehiculo-btn').forEach(btn => {
     document.getElementById('modal-serie').value = btn.dataset.serie;
     document.getElementById('modal-color').value = btn.dataset.color;
     document.getElementById('modal-propietario').value = btn.dataset.propietario;
+    document.getElementById('modal-razon-social').value = btn.dataset.razonSocial;
     document.getElementById('modal-motor').value = btn.dataset.motor;
     document.getElementById('modal-chasis').value = btn.dataset.chasis;
     document.getElementById('modal-linea').value = btn.dataset.linea;

@@ -5,6 +5,10 @@ from .models import Vehiculo, Marca
 from .forms import VehiculoForm, MarcaForm
 from clientes.models import Cliente
 from datetime import datetime
+import json
+from django.conf import settings
+from pathlib import Path
+
 # ==========================================================
 # DASHBOARD PRINCIPAL (listar y crear vehículos)
 # ==========================================================
@@ -12,7 +16,7 @@ def vehiculos_dashboard(request):
     vehiculos = Vehiculo.objects.all().order_by('placa')
     form = VehiculoForm()
     inversionistas = Cliente.objects.filter(tipo="Inversionista").order_by("nombre")
-
+    razones_sociales = cargar_razones_sociales()
     # ===========================
     # Catálogo de marcas
     # ===========================
@@ -57,12 +61,12 @@ def vehiculos_dashboard(request):
         'vehiculos': vehiculos,
         'form': form,
         'inversionistas': inversionistas,
+        'razones_sociales': razones_sociales,
         'marcas': marcas,
         'modelos': modelos,
     }
 
     return render(request, "vehiculos/vehiculos_dashboard.html", context)
-
 
 
 # ==========================================================
@@ -83,6 +87,7 @@ def vehiculo_update(request):
         vehiculo.serie = request.POST.get('serie')
         vehiculo.color = request.POST.get('color')
         vehiculo.propietario = request.POST.get('propietario')
+        vehiculo.razon_social = request.POST.get('razon_social')
         vehiculo.numero_motor = request.POST.get('numero_motor')
         vehiculo.numero_chasis = request.POST.get('numero_chasis')
         vehiculo.linea_gps = request.POST.get('linea_gps')
@@ -103,6 +108,7 @@ def vehiculo_update(request):
                 'serie': vehiculo.serie,
                 'color': vehiculo.color,
                 'propietario': vehiculo.propietario,
+                'razon_social': vehiculo.razon_social,
                 'numero_motor': vehiculo.numero_motor,
                 'numero_chasis': vehiculo.numero_chasis,
                 'linea_gps': vehiculo.linea_gps,
@@ -140,8 +146,9 @@ def catalogo_marcas(request):
     }
     return render(request, "vehiculos/catalogo_marcas.html", context)
 
-
-
+# ==========================================================
+# CARGAR SERIES (AJAX)
+# ==========================================================
 def cargar_series(request):
     marca_id = request.GET.get("marca_id")
 
@@ -153,3 +160,12 @@ def cargar_series(request):
     data = [{"id": s.id, "nombre": s.nombre} for s in series] # type: ignore
 
     return JsonResponse({"series": data})
+
+# ==========================================================
+# CARGAR RAZONES SOCIALES DESDE JSON
+# ==========================================================
+def cargar_razones_sociales():
+    ruta = Path(settings.BASE_DIR) / "NITS.json"
+    with open(ruta, encoding="utf-8") as f:
+        data = json.load(f)
+    return data.get("razones_sociales", [])
