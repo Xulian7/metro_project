@@ -56,7 +56,7 @@ def home(request):
         #  Vehículos INACTIVOS
         # ================================
         inactivos = Vehiculo.objects.filter(estado='Inactivo').values(
-            'placa', 'observacion_estado'
+            'placa', 'estado_obs'
         )
 
     # Ordenar: el que vence primero arriba
