@@ -21,6 +21,7 @@ def home(request):
 
     soat_data = []
     tecno_data = []
+    inactivos = []
 
     for v in Vehiculo.objects.all():
 
@@ -50,6 +51,13 @@ def home(request):
             "placa": v.placa,
             "dias": dias_tecno
         })
+        
+        # ================================
+        #  Vehículos INACTIVOS
+        # ================================
+        inactivos = Vehiculo.objects.filter(estado='Inactivo').values(
+            'placa', 'observacion_estado'
+        )
 
     # Ordenar: el que vence primero arriba
     soat_data.sort(key=lambda x: x["dias"] if x["dias"] is not None else 99999)
@@ -59,6 +67,8 @@ def home(request):
         'user': request.user,
         'vehiculos': vehiculos,
         'soat_data': soat_data,
-        'tecno_data': tecno_data
+        'tecno_data': tecno_data,
+        'inactivos': inactivos
+        
     })
 

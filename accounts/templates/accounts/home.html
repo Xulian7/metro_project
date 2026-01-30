@@ -357,6 +357,36 @@
                 </style>
             </div>
 
+            <!-- Widget Vehículos Inactivos -->
+            <div class="widget-box">
+                <div class="widget-header">
+                    <i class="bi bi-exclamation-triangle"></i> Vehículos Inactivos
+                </div>
+
+                {% if inactivos %}
+                    <table class="table table-striped modern-table">
+                        <thead>
+                            <tr>
+                                <th>Placa</th>
+                                <th>Observación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for v in inactivos %}
+                                <tr>
+                                    <td><strong>{{ v.placa }}</strong></td>
+                                    <td>
+                                        {{ v.observacion_estado|default:"Sin observación" }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p style="color:#777;">No hay vehículos inactivos 🎉</p>
+                {% endif %}
+            </div>
+
             <!-- Widget SOAT por vencer -->
             <div class="widget-box">
                 <div class="widget-header">
