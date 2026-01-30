@@ -70,7 +70,7 @@ class Factura(models.Model):
 class ItemFactura(models.Model):
     TIPOS_ITEM = (
         ("tarifa", "Tarifa"),
-        ("multa", "Multa"),
+        ("multa", "Pago de multa"),
         ("otro", "Otro pago"),
         ("almacen", "Ítem de almacén"),
         ("abono_credito", "Abono a crédito"),
