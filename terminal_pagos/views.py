@@ -201,6 +201,13 @@ def crear_factura(request):
             item.producto_almacen = None
             item.servicio_taller = None
             print("   ↳ Tarifa aplicada")
+            
+        # ---- MULTA ----
+        elif item.tipo_item == "multa":
+            item.descripcion = "Pago de multa"
+            item.producto_almacen = None
+            item.servicio_taller = None
+            print("   ↳ Multa aplicada")
 
         # ---- ALMACÉN ----
         elif item.tipo_item == "almacen" and ":" in raw:
