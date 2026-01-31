@@ -249,7 +249,8 @@ def crear_factura(request):
             item.producto_almacen = None
             item.servicio_taller = None
             credito.saldo -= item.valor_unitario
-            credito.save()
+            credito.recalcular_estado()
+        
 
             print(
                 f"   ↳ Abono aplicado | Crédito #{credito.id} | " # type: ignore
