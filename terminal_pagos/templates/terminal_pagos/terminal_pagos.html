@@ -505,17 +505,25 @@
       if (!ok) return false;
 
       // ======================
-      // 4.5️⃣ LIMPIAR ÍTEMS VACÍOS
+      // 4.5️⃣ REINDEXAR FORMSET (CLAVE REAL)
       // ======================
-      document.querySelectorAll(".item-row").forEach(row => {
-        const tipo  = row.querySelector(".tipo-item")?.value;
-        const desc  = row.querySelector(".descripcion-item")?.value;
-        const valor = row.querySelector(".valor-unitario-item")?.value;
+      const itemsContainer = document.getElementById("items-container");
+      const rows = Array.from(itemsContainer.querySelectorAll(".item-row"));
 
-        if (!tipo && !desc && !valor) {
-          row.remove();
-        }
+      rows.forEach((row, index) => {
+        row.querySelectorAll("input, select, textarea").forEach(el => {
+          if (!el.name) return;
+
+          // ejemplo: items-3-cantidad → items-0-cantidad
+          el.name = el.name.replace(/-\d+-/, `-${index}-`);
+          el.id   = el.id?.replace(/-\d+-/, `-${index}-`);
+        });
       });
+
+      // 🔁 TOTAL_FORMS = filas reales
+      const totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');
+      totalForms.value = rows.length;
+
 
       // ======================
       // 4️⃣ SINCRONIZAR CONFIG
