@@ -674,15 +674,17 @@
     opciones.forEach(o => {
       const opt = document.createElement('option');
 
-      // ✅ VALUE COHERENTE CON DJANGO FORM
-      opt.value = `${tipo.value}:${o.id}`;
+      if (tipo.value === "tarifa" || tipo.value === "multa") {
+        opt.value = tipo.value;
+      } else {
+        opt.value = `${tipo.value}:${o.id}`;
+      }
 
       opt.textContent = o.text;
       opt.dataset.valor = o.valor;
 
       desc.appendChild(opt);
     });
-
 
 
     valorInput.dataset.manual = "0";
