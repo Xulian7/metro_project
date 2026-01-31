@@ -475,6 +475,25 @@
       }
 
       // ======================
+      // 2.5️⃣ VALIDAR FECHAS
+      // ======================
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+
+      const fechasInvalidas = Array.from(
+        document.querySelectorAll(".pago-fecha")
+      ).filter(input => {
+        if (!input.value) return false;
+        const fechaPago = new Date(input.value);
+        return fechaPago > hoy;
+      });
+
+      if (fechasInvalidas.length > 0) {
+        alert("❌ No se permiten fechas de pago futuras.");
+        return false;
+      }
+
+      // ======================
       // 3️⃣ CONFIRMACIÓN
       // ======================
       const ok = confirm(
@@ -501,8 +520,7 @@
       // ======================
       form.submit();
     });
- </script>
-
+  </script>
 
   <!-- ================= SCRIPT COPIAR FACTURA ================= -->
   <script>
@@ -750,7 +768,6 @@
   }
 </script>
 
-
 <!-- ================= SCRIPT GESTIÓN PAGOS ================= -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
@@ -791,6 +808,12 @@
       });
       return Array.from(map.values());
     }
+
+    function setMaxFechaHoy(input) {
+      const hoy = new Date().toISOString().split("T")[0];
+      input.max = hoy;
+    }
+
 
     /* =========================
       MEDIOS
@@ -857,6 +880,11 @@
       pagosContainer.insertAdjacentHTML("beforeend", tpl.innerHTML);
       const row = pagosContainer.lastElementChild;
       if (!row) return;
+
+      const fechaInput = row.querySelector(".pago-fecha");
+      if (fechaInput) {
+        setMaxFechaHoy(fechaInput);
+      }
 
       const medioSel = row.querySelector(".pago-medio");
       const canalSel = row.querySelector(".pago-canal");
