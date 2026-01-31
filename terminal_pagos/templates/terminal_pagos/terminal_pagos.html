@@ -516,24 +516,6 @@
       });
 
       // ======================
-      // LIMPIAR ÍTEMS VACÍOS
-      // ======================
-      document.querySelectorAll(".item-row").forEach(row => {
-        const tipo = row.querySelector(".tipo-item")?.value;
-        const desc = row.querySelector(".descripcion-item")?.value;
-        const valor = row.querySelector(".valor-unitario-item")?.value;
-
-        if (!tipo && !desc && !valor) {
-          row.remove();
-        }
-      });
-
-      // 🔁 recalcular TOTAL_FORMS
-      const totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');
-      const rows = document.querySelectorAll(".item-row");
-      totalForms.value = rows.length;
-
-      // ======================
       // 5️⃣ SUBMIT REAL
       // ======================
       form.submit();
@@ -703,6 +685,7 @@
 
       desc.appendChild(opt);
     });
+
 
 
     valorInput.dataset.manual = "0";
