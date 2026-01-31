@@ -674,14 +674,15 @@
     opciones.forEach(o => {
       const opt = document.createElement('option');
 
-      // SIEMPRE el id del ítem, no el tipo
-      opt.value = o.id;
+      // ✅ VALUE COHERENTE CON DJANGO FORM
+      opt.value = `${tipo.value}:${o.id}`;
 
       opt.textContent = o.text;
       opt.dataset.valor = o.valor;
 
       desc.appendChild(opt);
     });
+
 
 
     valorInput.dataset.manual = "0";
