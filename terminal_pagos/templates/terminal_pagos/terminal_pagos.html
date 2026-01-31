@@ -505,6 +505,19 @@
       if (!ok) return false;
 
       // ======================
+      // 4.5️⃣ LIMPIAR ÍTEMS VACÍOS
+      // ======================
+      document.querySelectorAll(".item-row").forEach(row => {
+        const tipo  = row.querySelector(".tipo-item")?.value;
+        const desc  = row.querySelector(".descripcion-item")?.value;
+        const valor = row.querySelector(".valor-unitario-item")?.value;
+
+        if (!tipo && !desc && !valor) {
+          row.remove();
+        }
+      });
+
+      // ======================
       // 4️⃣ SINCRONIZAR CONFIG
       // ======================
       document.querySelectorAll(".pago-row").forEach(row => {
