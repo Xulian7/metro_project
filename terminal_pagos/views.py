@@ -1,38 +1,48 @@
-from django.shortcuts import render, redirect
+# =========================
+# Django
+# =========================
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.db.models import Q, Sum
+from django.utils import timezone
+from django.urls import reverse
 from django.utils.timezone import now
+
+
+# =========================
+# Python stdlib
+# =========================
+from decimal import Decimal, ROUND_HALF_UP
+from datetime import date, timedelta
+import json
+
+# =========================
+# Apps del proyecto
+# =========================
+from arrendamientos.models import Contrato
 from almacen.models import Producto
 from taller.models import Servicio
-from django.db import transaction
-from .models import PagoFactura, ConfiguracionPago, CanalPago
-from .forms import FacturaForm, ItemFacturaFormSet
-from django.db.models import Q
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
-from django.views.decorators.http import require_POST
-from django.urls import reverse
-from decimal import Decimal
-from datetime import date, timedelta
-from arrendamientos.models import Contrato
-from terminal_pagos.models import Factura, ItemFactura
-from django.http import JsonResponse
-from decimal import Decimal, ROUND_HALF_UP
-from django.db.models import Sum
-from terminal_pagos.models import PagoFactura
-from django.shortcuts import render
-from .models import Factura
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from .models import Factura
 from creditos.models import Credito
 
+# =========================
+# Terminal pagos - Models
+# =========================
 from .models import (
     Factura,
+    ItemFactura,
+    PagoFactura,
     Cuenta,
     MedioPago,
     CanalPago,
     ConfiguracionPago,
 )
 
+# =========================
+# Terminal pagos - Forms
+# =========================
 from .forms import (
     FacturaForm,
     ItemFacturaFormSet,
@@ -829,3 +839,51 @@ def detalle_factura_json(request, factura_id):
             for p in factura.pagos.all() # type: ignore
         ]
     })
+
+# =========================
+# ANULAR FACTURA
+# =========================
+@login_required
+@require_POST
+@transaction.atomic
+def anular_factura(request, factura_id):
+    factura = get_object_or_404(Factura, id=factura_id)
+
+    # ===== Validaciones =====
+    if factura.estado == "anulada":
+        return JsonResponse({
+            "ok": False,
+            "error": "La factura ya está anulada"
+        }, status=400)
+
+    # ===== Marcar factura como anulada =====
+    factura.estado = "anulada"
+    factura.estado_pago = "pendiente"
+    factura.anulada_por = request.user
+    factura.fecha_anulacion = timezone.now()
+    factura.motivo_anulacion = "Anulación manual desde visor"
+    factura.total_pagado = Decimal("0.00")
+    factura.save()
+
+    # ===== Compensar pagos existentes =====
+    pagos_originales = factura.pagos.filter(es_compensacion=False) # type: ignore
+
+    for pago in pagos_originales:
+
+        # 1. Mutar referencia (libera reutilización)
+        if pago.referencia:
+            pago.referencia = f"ANUL-{pago.referencia}"
+            pago.save(update_fields=["referencia"])
+
+        # 2. Crear pago negativo compensatorio
+        PagoFactura.objects.create(
+            factura=factura,
+            configuracion=pago.configuracion,
+            canal=pago.canal,
+            valor=pago.valor * Decimal("-1"),
+            fecha_pago=timezone.now().date(),
+            validado=True,
+            es_compensacion=True
+        )
+
+    return JsonResponse({"ok": True})

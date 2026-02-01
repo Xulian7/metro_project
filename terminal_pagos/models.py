@@ -1,8 +1,9 @@
-from time import timezone
 from django.db import models
-from arrendamientos.models import Contrato
-from django.utils import timezone
 from django.conf import settings
+from django.utils import timezone
+from decimal import Decimal
+from arrendamientos.models import Contrato
+
 
 # =========================
 # FACTURA
@@ -34,6 +35,8 @@ class Factura(models.Model):
         default="borrador"
     )
 
+    # Campo mantenido por compatibilidad / UI
+    # Idealmente se recalcula desde servicios
     estado_pago = models.CharField(
         max_length=20,
         choices=ESTADOS_PAGO,
@@ -41,27 +44,45 @@ class Factura(models.Model):
     )
 
     total = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        default=0 # type: ignore
+    max_digits=12,
+    decimal_places=2,
+    default=Decimal("0.00")
     )
 
     total_pagado = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        default=0 # type: ignore
+        default=Decimal("0.00")
     )
-    
+
     creado_por = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         related_name="facturas_creadas",
-        null=True,     
+        null=True,
+        blank=True
+    )
+
+    # ===== Metadatos de anulación =====
+    anulada_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="facturas_anuladas",
+        null=True,
+        blank=True
+    )
+
+    fecha_anulacion = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    motivo_anulacion = models.TextField(
         blank=True
     )
 
     def __str__(self):
-        return f"Factura #{self.id} - {self.fecha.date()}" # type: ignore
+        return f"Factura #{self.id}" # type: ignore
 
 
 # =========================
@@ -126,8 +147,7 @@ class ItemFactura(models.Model):
         blank=True,
         related_name="items_factura"
     )
-    
-    
+
     def __str__(self):
         return f"{self.get_tipo_item_display()} - {self.subtotal}" # type: ignore
 
@@ -164,7 +184,6 @@ class MedioPago(models.Model):
 
 # =========================
 # CANALES DE PAGO
-# (pertenecen al medio)
 # =========================
 class CanalPago(models.Model):
     medio = models.ForeignKey(
@@ -188,8 +207,6 @@ class CanalPago(models.Model):
 
 # =========================
 # CONFIGURACIÓN DE PAGO
-# MEDIO → CUENTA
-# (los canales se heredan)
 # =========================
 class ConfiguracionPago(models.Model):
     medio = models.ForeignKey(
@@ -242,28 +259,34 @@ class PagoFactura(models.Model):
         decimal_places=2
     )
 
+    # Referencia ACTUAL (puede mutar al anular)
     referencia = models.CharField(
         max_length=100,
         unique=True,
         null=True,
         blank=True
     )
-    
-    def save(self, *args, **kwargs):
-        if not self.referencia:
-            self.referencia = None
-        super().save(*args, **kwargs)
+
+    # Referencia ORIGINAL (nunca cambia)
+    referencia_original = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        db_index=True
+    )
 
     fecha_pago = models.DateField(default=timezone.now)
-    
+
     validado = models.BooleanField(default=False)
 
+    # Marca pagos negativos por compensación
+    es_compensacion = models.BooleanField(default=False)
 
-    
+    def save(self, *args, **kwargs):
+        # Captura automática de la referencia original
+        if self.referencia and not self.referencia_original:
+            self.referencia_original = self.referencia
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return (
-            f"Factura {self.factura_id} | " # type: ignore
-            f"{self.configuracion.medio} - {self.canal.nombre} | "
-            f"{self.valor}"
-        )
-
+        return f"Factura {self.factura_id} | {self.valor}" # type: ignore

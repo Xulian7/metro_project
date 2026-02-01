@@ -261,6 +261,61 @@
   </div>
 </div>
 
+<!-- ================= MODAL ANULAR FACTURA ================= -->
+<div class="modal fade" id="modal-anular-factura" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title text-danger">🛑 Anular factura</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-2">
+          Esta acción es <strong>irreversible</strong>.
+          Los pagos serán compensados automáticamente.
+        </p>
+
+        <label class="form-label fw-semibold">
+          Motivo de la anulación
+        </label>
+        <textarea
+          id="motivo-anulacion"
+          class="form-control"
+          rows="3"
+          maxlength="255"
+          placeholder="Ej: Error de digitación, pago aplicado a cliente incorrecto…"
+        ></textarea>
+
+        <small class="text-muted">
+          Máx. 255 caracteres
+        </small>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          data-bs-dismiss="modal">
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-danger btn-sm"
+          id="confirmar-anulacion">
+          Confirmar anulación
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
 <!-- ================= LIBRERÍAS ================= -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -338,12 +393,58 @@
   });
 </script>
 
-<!-- ================= ANULAR FACTURA ================= -->
+<!-- ================= JS ANULAR FACTURA ================= -->
 <script>
+  let facturaAAnular = null;
+
   document.addEventListener("click", function (e) {
-    if (!e.target.closest("#btn-anular-factura")) return;
-    alert("🚧 Under construction\n\nLa anulación de facturas estará disponible próximamente.");
+    const btn = e.target.closest("#btn-anular-factura");
+    if (!btn) return;
+
+    facturaAAnular = btn.dataset.facturaId;
+    document.getElementById("motivo-anulacion").value = "";
+
+    const modal = new bootstrap.Modal(
+      document.getElementById("modal-anular-factura")
+    );
+    modal.show();
   });
+
+  document.getElementById("confirmar-anulacion")
+    .addEventListener("click", function () {
+
+      const motivo = document
+        .getElementById("motivo-anulacion")
+        .value
+        .trim();
+
+      if (!motivo) {
+        alert("Debes ingresar un motivo de anulación.");
+        return;
+      }
+
+      fetch(`/terminal_pagos/facturas/anular/${facturaAAnular}/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ motivo })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.ok) {
+          alert(data.error || "No se pudo anular la factura");
+          return;
+        }
+
+        alert("✅ Factura anulada correctamente");
+        location.reload();
+      })
+      .catch(() => {
+        alert("Error al anular la factura");
+      });
+    });
 </script>
 
 <!-- ================= JS LISTADO FACTURAS ================= -->
