@@ -11,4 +11,7 @@ urlpatterns = [
         views.popover_items_credito,
         name="popover_items_credito"
     ),
+    
+    path("creditos/cancelar/<int:credito_id>/", views.cancelar_credito, name="cancelar_credito"),
+
 ]

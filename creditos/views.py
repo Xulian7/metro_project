@@ -8,6 +8,8 @@ from almacen.models import Producto
 from taller.models import Servicio
 from django.shortcuts import get_object_or_404, render
 from .models import Credito
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 
 
 def crear_credito(request):
@@ -119,7 +121,6 @@ def crear_credito(request):
     )
 
 
-
 def popover_items_credito(request, credito_id):
     credito = get_object_or_404(Credito, id=credito_id)
 
@@ -133,3 +134,19 @@ def popover_items_credito(request, credito_id):
             "items": items,
         }
     )
+
+
+@require_POST
+def cancelar_credito(request, credito_id):
+    credito = get_object_or_404(Credito, id=credito_id)
+
+    if credito.monto_total != credito.saldo:
+        return JsonResponse({
+            "ok": False,
+            "error": "No se puede cancelar: el crédito tiene abonos"
+        }, status=400)
+
+    credito.estado = "Cancelado"
+    credito.save(update_fields=["estado"])
+
+    return JsonResponse({"ok": True})

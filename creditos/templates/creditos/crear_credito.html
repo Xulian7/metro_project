@@ -190,6 +190,8 @@
                 bg-success
               {% elif credito.estado == 'Pagado' %}
                 bg-primary
+              {% elif credito.estado == 'Cancelado' %}
+                bg-warning
               {% else %}
                 bg-secondary
               {% endif %}
@@ -198,7 +200,16 @@
             </span>
           </td>
           <td class="text-center">
-            <button class="btn btn-sm btn-outline-danger" disabled>Eliminar</button>
+            <button
+              class="btn btn-sm btn-outline-warning btn-cancelar-credito"
+              data-id="{{ credito.id }}"
+              {% if credito.monto_total != credito.saldo %}
+                disabled
+                title="No se puede cancelar: tiene abonos"
+              {% endif %}
+            >
+              Cancelar
+            </button>
           </td>
         </tr>
       {% empty %}
@@ -262,7 +273,6 @@ document.addEventListener("DOMContentLoaded", () => {
   filtrar();
 });
 </script>
-
 
 <!-- ================= SCRIPT ================= -->
 <script>
@@ -525,7 +535,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 300);
   }
 </script>
-<!-- ================= END SCRIPT ================= -->
+
+<!-- ================= SCRIPT CANCELAR CRÉDITO ================= -->
+<script>
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest(".btn-cancelar-credito");
+    if (!btn) return;
+
+    const creditoId = btn.dataset.id;
+
+    if (!confirm("¿Cancelar este crédito? No tiene abonos, pero la acción no se puede deshacer.")) {
+      return;
+    }
+
+    fetch(`/creditos/cancelar/${creditoId}/`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (!data.ok) {
+        alert(data.error || "No se pudo cancelar el crédito");
+        return;
+      }
+      location.reload();
+    })
+    .catch(() => {
+      alert("Error al cancelar el crédito");
+    });
+  });
+</script>
 
 
 {% endblock %}
