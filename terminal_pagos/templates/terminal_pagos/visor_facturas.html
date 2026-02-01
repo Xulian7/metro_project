@@ -82,12 +82,17 @@
       <div class="col-md">
         <div class="card border-0 shadow-sm bg-light">
           <div class="card-body py-2 text-end">
-            <button class="btn btn-outline-danger btn-sm" disabled>
-              Anular factura
+            <button
+              id="btn-anular-factura"
+              class="btn btn-outline-danger btn-sm d-none"
+              title="Anular factura (acción irreversible)"
+            >
+              🛑 Anular factura
             </button>
           </div>
         </div>
       </div>
+
 
     </div>
 
@@ -185,6 +190,18 @@ $(function () {
         document.getElementById("f-contrato").textContent =
           `#${data.contrato.id} · ${data.contrato.vehiculo} · ${data.contrato.cliente}`;
 
+        // Botón anular
+        const btnAnular = document.getElementById("btn-anular-factura");
+        // reset por seguridad
+        btnAnular.classList.add("d-none");
+        btnAnular.removeAttribute("data-factura-id");
+
+        // solo mostrar si NO está anulada
+        if (data.factura.estado !== "Anulada") {
+          btnAnular.classList.remove("d-none");
+          btnAnular.dataset.facturaId = data.factura.id;
+        }
+
         // Ítems
         const itemsBody = document.getElementById("items-body");
         itemsBody.innerHTML = "";
@@ -244,5 +261,17 @@ $(function () {
 
 });
 </script>
+
+<!-- ================= ANULAR FACTURA ================= -->
+<script>
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest("#btn-anular-factura");
+    if (!btn) return;
+
+    alert("🚧 Under construction\n\nLa anulación de facturas estará disponible próximamente.");
+  });
+</script>
+
+
 
 {% endblock %}
