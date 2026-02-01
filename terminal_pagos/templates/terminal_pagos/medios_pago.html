@@ -127,115 +127,146 @@
 
 <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
 
+<!-- Filtrar por fechas -->
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
 
-  const btn = document.getElementById("filtrar-fechas");
+    const btn = document.getElementById("filtrar-fechas");
 
-  btn?.addEventListener("click", () => {
-    const desde = document.getElementById("fecha-desde").value;
-    const hasta = document.getElementById("fecha-hasta").value;
+    btn?.addEventListener("click", () => {
+      const desde = document.getElementById("fecha-desde").value;
+      const hasta = document.getElementById("fecha-hasta").value;
 
-    const params = new URLSearchParams();
+      const params = new URLSearchParams();
 
-    if (desde) params.append("desde", desde);
-    if (hasta) params.append("hasta", hasta);
+      if (desde) params.append("desde", desde);
+      if (hasta) params.append("hasta", hasta);
 
-    window.location.search = params.toString();
+      window.location.search = params.toString();
+    });
+
   });
-
-});
 </script>
 
+<!-- Validar medio de pago -->
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
 
-  document.querySelectorAll(".validar-medio").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const pagoId = btn.dataset.pagoId;
+    document.querySelectorAll(".validar-medio").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const pagoId = btn.dataset.pagoId;
 
-      if (!confirm("¿Marcar este pago como VALIDADO?")) return;
+        if (!confirm("¿Marcar este pago como VALIDADO?")) return;
 
-      fetch(`/terminal_pagos/validar-medio/${pagoId}/`, {
-        method: "POST",
-        headers: {
-          "X-CSRFToken": document.getElementById("csrf-token").value
-        }
-      })
-      .then(res => {
-        if (!res.ok) throw new Error("Error en validación");
-        window.location.reload();
-      })
-      .catch(err => {
-        console.error(err);
-        alert("No se pudo validar el pago");
+        fetch(`/terminal_pagos/validar-medio/${pagoId}/`, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": document.getElementById("csrf-token").value
+          }
+        })
+        .then(res => {
+          if (!res.ok) throw new Error("Error en validación");
+          window.location.reload();
+        })
+        .catch(err => {
+          console.error(err);
+          alert("No se pudo validar el pago");
+        });
       });
     });
+
+  });
+</script>
+
+<!-- Filtrar tabla por buscador -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+
+    const buscador = document.getElementById("buscador-pagos");
+    const filas = document.querySelectorAll("#tabla-pagos tr");
+
+    buscador?.addEventListener("input", () => {
+      const texto = buscador.value.toLowerCase();
+
+      filas.forEach(fila => {
+        const contenido = fila.innerText.toLowerCase();
+
+        if (contenido.includes(texto)) {
+          fila.style.display = "";
+        } else {
+          fila.style.display = "none";
+        }
+      });
+    });
+
   });
 
-});
 </script>
 
-
+<!-- Filtrar tabla por no validados y buscador -->
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
 
-  const buscador = document.getElementById("buscador-pagos");
-  const filas = document.querySelectorAll("#tabla-pagos tr");
+    const buscador = document.getElementById("buscador-pagos");
+    const checkbox = document.getElementById("solo-no-validados");
+    const filas = document.querySelectorAll("#tabla-pagos tr");
 
-  buscador?.addEventListener("input", () => {
-    const texto = buscador.value.toLowerCase();
+    function aplicarFiltros() {
+      const texto = buscador.value.toLowerCase();
+      const soloNoValidados = checkbox.checked;
 
-    filas.forEach(fila => {
-      const contenido = fila.innerText.toLowerCase();
+      filas.forEach(fila => {
+        const contenido = fila.innerText.toLowerCase();
+        const esValidado = fila.querySelector(".badge.bg-success") !== null;
 
-      if (contenido.includes(texto)) {
-        fila.style.display = "";
-      } else {
-        fila.style.display = "none";
-      }
-    });
+        let visible = true;
+
+        // filtro texto
+        if (texto && !contenido.includes(texto)) {
+          visible = false;
+        }
+
+        // filtro validados
+        if (soloNoValidados && esValidado) {
+          visible = false;
+        }
+
+        fila.style.display = visible ? "" : "none";
+      });
+    }
+
+    buscador?.addEventListener("input", aplicarFiltros);
+    checkbox?.addEventListener("change", aplicarFiltros);
+
   });
-
-});
-
 </script>
 
+<!-- Ordenar tabla por fecha desc y factura desc -->
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
+    const tbody = document.getElementById("tabla-pagos");
+    if (!tbody) return;
 
-  const buscador = document.getElementById("buscador-pagos");
-  const checkbox = document.getElementById("solo-no-validados");
-  const filas = document.querySelectorAll("#tabla-pagos tr");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
 
-  function aplicarFiltros() {
-    const texto = buscador.value.toLowerCase();
-    const soloNoValidados = checkbox.checked;
+    rows
+      .sort((a, b) => {
+        const fechaA = new Date(a.children[0].innerText);
+        const fechaB = new Date(b.children[0].innerText);
 
-    filas.forEach(fila => {
-      const contenido = fila.innerText.toLowerCase();
-      const esValidado = fila.querySelector(".badge.bg-success") !== null;
+        if (fechaA.getTime() !== fechaB.getTime()) {
+          return fechaB - fechaA; // fecha desc
+        }
 
-      let visible = true;
+        const facturaA = parseInt(a.children[2].innerText.replace("#", "")) || 0;
+        const facturaB = parseInt(b.children[2].innerText.replace("#", "")) || 0;
 
-      // filtro texto
-      if (texto && !contenido.includes(texto)) {
-        visible = false;
-      }
-
-      // filtro validados
-      if (soloNoValidados && esValidado) {
-        visible = false;
-      }
-
-      fila.style.display = visible ? "" : "none";
-    });
-  }
-
-  buscador?.addEventListener("input", aplicarFiltros);
-  checkbox?.addEventListener("change", aplicarFiltros);
-
-});
+        return facturaB - facturaA; // factura desc
+      })
+      .forEach(row => tbody.appendChild(row));
+  });
 </script>
+
+
 
 {% endblock %}
