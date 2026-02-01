@@ -137,7 +137,6 @@
            class="form-control form-control-sm"
            placeholder="Buscar por contrato, descripción o ID…">
   </div>
-
   <div class="col-md-4">
     <div class="form-check mt-1">
       <input class="form-check-input"
@@ -145,6 +144,16 @@
              id="show-pagados">
       <label class="form-check-label" for="show-pagados">
         Mostrar créditos pagados
+      </label>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="form-check mt-1">
+      <input class="form-check-input"
+            type="checkbox"
+            id="show-cancelados">
+      <label class="form-check-label" for="show-cancelados">
+        Mostrar créditos cancelados
       </label>
     </div>
   </div>
@@ -237,41 +246,51 @@
 
 <!-- ================= SCRIPT BÚSQUEDA ================= -->
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
 
-  const searchInput = document.getElementById("credito-search");
-  const showPagados = document.getElementById("show-pagados");
-  const rows = document.querySelectorAll(".credito-row");
+    const searchInput = document.getElementById("credito-search");
+    const showPagados = document.getElementById("show-pagados");
+    const showCancelados = document.getElementById("show-cancelados");
+    const rows = document.querySelectorAll(".credito-row");
 
-  function filtrar() {
-    const q = searchInput.value.toLowerCase().trim();
-    const mostrarPagados = showPagados.checked;
+    function filtrar() {
+      const q = searchInput.value.toLowerCase().trim();
+      const mostrarPagados = showPagados.checked;
+      const mostrarCancelados = showCancelados.checked;
 
-    rows.forEach(row => {
-      const id = row.dataset.id?.toLowerCase() || "";
-      const contrato = row.dataset.contrato?.toLowerCase() || "";
-      const descripcion = row.dataset.descripcion?.toLowerCase() || "";
-      const estado = row.dataset.estado;
+      rows.forEach(row => {
+        const id = row.dataset.id?.toLowerCase() || "";
+        const contrato = row.dataset.contrato?.toLowerCase() || "";
+        const descripcion = row.dataset.descripcion?.toLowerCase() || "";
+        const estado = row.dataset.estado;
 
-      const matchTexto =
-        id.includes(q) ||
-        contrato.includes(q) ||
-        descripcion.includes(q);
+        const matchTexto =
+          id.includes(q) ||
+          contrato.includes(q) ||
+          descripcion.includes(q);
 
-      const matchEstado =
-        mostrarPagados || estado !== "Pagado";
+        let matchEstado = false;
 
-      row.style.display =
-        matchTexto && matchEstado ? "" : "none";
-    });
-  }
+        if (estado === "Activo") {
+          matchEstado = true;
+        } else if (estado === "Pagado") {
+          matchEstado = mostrarPagados;
+        } else if (estado === "Cancelado") {
+          matchEstado = mostrarCancelados;
+        }
 
-  searchInput.addEventListener("input", filtrar);
-  showPagados.addEventListener("change", filtrar);
+        row.style.display =
+          matchTexto && matchEstado ? "" : "none";
+      });
+    }
 
-  // estado inicial
-  filtrar();
-});
+    searchInput.addEventListener("input", filtrar);
+    showPagados.addEventListener("change", filtrar);
+    showCancelados.addEventListener("change", filtrar);
+
+    // estado inicial: solo Activos
+    filtrar();
+  });
 </script>
 
 <!-- ================= SCRIPT ================= -->
