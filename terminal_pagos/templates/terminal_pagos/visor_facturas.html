@@ -237,6 +237,16 @@ $(function () {
 
   $("#factura-select").select2({ width: "100%" });
 
+  document.addEventListener("shown.bs.tab", function (e) {
+    if (e.target.dataset.bsTarget === "#tab-visor") {
+      $("#factura-select").select2("destroy").select2({
+        width: "100%",
+        placeholder: "Buscar factura…",
+        allowClear: true
+      });
+    }
+  });
+
   $("#factura-select").on("change", function () {
     const facturaId = this.value;
     if (!facturaId) return;
