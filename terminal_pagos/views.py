@@ -473,7 +473,8 @@ def medios_pago(request):
             "configuracion__cuenta_destino",
             "canal",
         )
-        .order_by("-fecha_pago")
+        .order_by("-fecha_pago", "-factura__id")
+        
     )
 
     # -------------------------
