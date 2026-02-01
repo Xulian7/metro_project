@@ -176,30 +176,63 @@
     <!-- ========================================================= -->
     <div class="tab-pane fade" id="tab-listado" role="tabpanel">
 
+      <div class="card shadow-sm mb-2">
+        <div class="card-body py-2">
+          <input
+            type="text"
+            id="factura-search"
+            class="form-control form-control-sm"
+            placeholder="Buscar por # factura, placa o cliente…">
+        </div>
+      </div>
+
       <div class="card shadow-sm">
         <div class="card-header fw-semibold">Facturas registradas</div>
         <div class="table-responsive">
           <table class="table table-sm table-striped align-middle mb-0">
             <thead class="table-light">
               <tr>
-                <th>#</th>
+                <th style="width:70px">#</th>
                 <th>Contrato</th>
                 <th>Cliente</th>
-                <th>Fecha</th>
-                <th class="text-end">Total</th>
-                <th class="text-end">Pagado</th>
-                <th class="text-center">Estado</th>
+                <th style="width:110px">Fecha</th>
+                <th class="text-end" style="width:110px">Total</th>
+                <th class="text-end" style="width:110px">Pagado</th>
+                <th class="text-center" style="width:110px">Estado</th>
               </tr>
             </thead>
-            <tbody>
+
+            <tbody id="facturas-tbody">
               {% for f in facturas %}
-                <tr>
-                  <td>#{{ f.id }}</td>
-                  <td>{{ f.contrato.vehiculo.placa }}</td>
+                <tr class="factura-row"
+                    data-id="{{ f.id }}"
+                    data-contrato="{{ f.contrato.vehiculo.placa }}"
+                    data-cliente="{{ f.contrato.cliente.nombre }}"
+                    data-estado="{{ f.estado }}"
+                    style="cursor:pointer">
+
+                  <td class="fw-semibold">#{{ f.id }}</td>
+
+                  <td>
+                    <span class="text-monospace">
+                      {{ f.contrato.vehiculo.placa }}
+                    </span>
+                  </td>
+
                   <td>{{ f.contrato.cliente.nombre }}</td>
-                  <td>{{ f.fecha|date:"d/m/Y" }}</td>
-                  <td class="text-end">${{ f.total|floatformat:0 }}</td>
-                  <td class="text-end">${{ f.total_pagado|floatformat:0 }}</td>
+
+                  <td class="text-muted">
+                    {{ f.fecha|date:"d/m/Y" }}
+                  </td>
+
+                  <td class="text-end fw-semibold">
+                    ${{ f.total|floatformat:0 }}
+                  </td>
+
+                  <td class="text-end">
+                    ${{ f.total_pagado|floatformat:0 }}
+                  </td>
+
                   <td class="text-center">
                     <span class="badge
                       {% if f.estado == 'Activa' %}bg-success
@@ -208,6 +241,7 @@
                       {{ f.estado }}
                     </span>
                   </td>
+
                 </tr>
               {% empty %}
                 <tr>
@@ -218,6 +252,7 @@
               {% endfor %}
             </tbody>
           </table>
+
         </div>
       </div>
 
@@ -233,82 +268,122 @@
 
 <!-- ================= JS VISOR ================= -->
 <script>
-$(function () {
+  $(function () {
 
-  $("#factura-select").select2({ width: "100%" });
+    $("#factura-select").select2({ width: "100%" });
 
-  document.addEventListener("shown.bs.tab", function (e) {
-    if (e.target.dataset.bsTarget === "#tab-visor") {
-      $("#factura-select").select2("destroy").select2({
-        width: "100%",
-        placeholder: "Buscar factura…",
-        allowClear: true
-      });
-    }
+    document.addEventListener("shown.bs.tab", function (e) {
+      if (e.target.dataset.bsTarget === "#tab-visor") {
+        $("#factura-select").select2("destroy").select2({
+          width: "100%",
+          placeholder: "Buscar factura…",
+          allowClear: true
+        });
+      }
+    });
+
+    $("#factura-select").on("change", function () {
+      const facturaId = this.value;
+      if (!facturaId) return;
+
+      fetch(`/terminal_pagos/visor-facturas/detalle/${facturaId}/`)
+        .then(res => res.json())
+        .then(data => {
+
+          document.getElementById("factura-panel").classList.remove("d-none");
+
+          document.getElementById("f-id").textContent = `#${data.factura.id}`;
+          document.getElementById("f-fecha").textContent = data.factura.fecha;
+          document.getElementById("f-total").textContent = data.factura.total;
+          document.getElementById("f-pagado").textContent = data.factura.total_pagado;
+          document.getElementById("f-estado").textContent = data.factura.estado;
+          document.getElementById("f-estado-pago").textContent = data.factura.estado_pago;
+          document.getElementById("f-creado-por").textContent = data.factura.creado_por || "—";
+          document.getElementById("f-contrato").textContent =
+            `#${data.contrato.id} · ${data.contrato.vehiculo} · ${data.contrato.cliente}`;
+
+          const btn = document.getElementById("btn-anular-factura");
+          btn.classList.add("d-none");
+
+          if (data.factura.estado !== "Anulada") {
+            btn.classList.remove("d-none");
+            btn.dataset.facturaId = data.factura.id;
+          }
+
+          const itemsBody = document.getElementById("items-body");
+          itemsBody.innerHTML = data.items.length
+            ? data.items.map(i => `
+              <tr>
+                <td>${i.tipo}</td>
+                <td>${i.descripcion || "—"}</td>
+                <td class="text-end">${i.cantidad}</td>
+                <td class="text-end">$${i.subtotal}</td>
+              </tr>`).join("")
+            : `<tr><td colspan="4" class="text-center text-muted py-3">Sin ítems</td></tr>`;
+
+          const pagosBody = document.getElementById("pagos-body");
+          pagosBody.innerHTML = data.pagos.length
+            ? data.pagos.map(p => `
+              <tr>
+                <td>${p.medio}</td>
+                <td>${p.canal}</td>
+                <td>${p.cuenta}</td>
+                <td>${p.fecha}</td>
+                <td class="text-end">$${p.valor}</td>
+              </tr>`).join("")
+            : `<tr><td colspan="5" class="text-center text-muted py-3">Sin pagos</td></tr>`;
+        });
+    });
+
   });
-
-  $("#factura-select").on("change", function () {
-    const facturaId = this.value;
-    if (!facturaId) return;
-
-    fetch(`/terminal_pagos/visor-facturas/detalle/${facturaId}/`)
-      .then(res => res.json())
-      .then(data => {
-
-        document.getElementById("factura-panel").classList.remove("d-none");
-
-        document.getElementById("f-id").textContent = `#${data.factura.id}`;
-        document.getElementById("f-fecha").textContent = data.factura.fecha;
-        document.getElementById("f-total").textContent = data.factura.total;
-        document.getElementById("f-pagado").textContent = data.factura.total_pagado;
-        document.getElementById("f-estado").textContent = data.factura.estado;
-        document.getElementById("f-estado-pago").textContent = data.factura.estado_pago;
-        document.getElementById("f-creado-por").textContent = data.factura.creado_por || "—";
-        document.getElementById("f-contrato").textContent =
-          `#${data.contrato.id} · ${data.contrato.vehiculo} · ${data.contrato.cliente}`;
-
-        const btn = document.getElementById("btn-anular-factura");
-        btn.classList.add("d-none");
-
-        if (data.factura.estado !== "Anulada") {
-          btn.classList.remove("d-none");
-          btn.dataset.facturaId = data.factura.id;
-        }
-
-        const itemsBody = document.getElementById("items-body");
-        itemsBody.innerHTML = data.items.length
-          ? data.items.map(i => `
-            <tr>
-              <td>${i.tipo}</td>
-              <td>${i.descripcion || "—"}</td>
-              <td class="text-end">${i.cantidad}</td>
-              <td class="text-end">$${i.subtotal}</td>
-            </tr>`).join("")
-          : `<tr><td colspan="4" class="text-center text-muted py-3">Sin ítems</td></tr>`;
-
-        const pagosBody = document.getElementById("pagos-body");
-        pagosBody.innerHTML = data.pagos.length
-          ? data.pagos.map(p => `
-            <tr>
-              <td>${p.medio}</td>
-              <td>${p.canal}</td>
-              <td>${p.cuenta}</td>
-              <td>${p.fecha}</td>
-              <td class="text-end">$${p.valor}</td>
-            </tr>`).join("")
-          : `<tr><td colspan="5" class="text-center text-muted py-3">Sin pagos</td></tr>`;
-      });
-  });
-
-});
 </script>
 
 <!-- ================= ANULAR FACTURA ================= -->
 <script>
-document.addEventListener("click", function (e) {
-  if (!e.target.closest("#btn-anular-factura")) return;
-  alert("🚧 Under construction\n\nLa anulación de facturas estará disponible próximamente.");
-});
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest("#btn-anular-factura")) return;
+    alert("🚧 Under construction\n\nLa anulación de facturas estará disponible próximamente.");
+  });
 </script>
+
+<!-- ================= JS LISTADO FACTURAS ================= -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+
+    const searchInput = document.getElementById("factura-search");
+    const tbody = document.querySelector("#tab-listado tbody");
+
+    if (!tbody) return;
+
+    let rows = Array.from(tbody.querySelectorAll(".factura-row"));
+
+    /* ===== ORDENAR POR # FACTURA (DESC) ===== */
+    rows
+      .sort((a, b) => {
+        return parseInt(b.dataset.id) - parseInt(a.dataset.id);
+      })
+      .forEach(row => tbody.appendChild(row));
+
+    /* ===== BUSCADOR ===== */
+    searchInput?.addEventListener("input", () => {
+      const q = searchInput.value.toLowerCase().trim();
+
+      rows.forEach(row => {
+        const id = row.dataset.id || "";
+        const placa = row.dataset.placa?.toLowerCase() || "";
+        const cliente = row.dataset.cliente?.toLowerCase() || "";
+
+        const match =
+          id.includes(q) ||
+          placa.includes(q) ||
+          cliente.includes(q);
+
+        row.style.display = match ? "" : "none";
+      });
+    });
+
+  });
+</script>
+
 
 {% endblock %}
