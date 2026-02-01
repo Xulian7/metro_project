@@ -642,11 +642,13 @@ def extracto_contrato(request, contrato_id):
         ItemFactura.objects
         .filter(
             factura__contrato=contrato,
+            factura__estado="confirmada",   # 🔥 CLAVE
             tipo_item="tarifa"
         )
         .select_related("factura")
         .order_by("factura__fecha")
     )
+
 
     idx_fecha = 0
 
