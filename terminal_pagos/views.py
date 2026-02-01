@@ -557,11 +557,13 @@ def resumen_contratos(request):
             ItemFactura.objects
             .filter(
                 tipo_item="tarifa",
-                factura__contrato=contrato
+                factura__contrato=contrato,
+                factura__estado="confirmada",
             )
             .aggregate(total=Sum("subtotal"))["total"]
             or Decimal("0")
         )
+
 
         cuotas_pagadas = (
             total_pagado / contrato.tarifa
