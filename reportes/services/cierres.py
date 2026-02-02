@@ -4,21 +4,18 @@ from terminal_pagos.models import PagoFactura
 
 def totales_por_medio(operador, inicio, fin):
     """
-    Devuelve totales del sistema por MEDIO DE PAGO
-    para un operador en un periodo dado.
+    Devuelve totales agrupados SOLO por medio de pago
+    para facturas creadas por el operador activo
+    dentro del periodo [inicio, fin]
     """
 
-    pagos = (
+    qs = (
         PagoFactura.objects
         .filter(
             factura__creado_por=operador,
             factura__estado="confirmada",
-            fecha_pago__gt=inicio,
-            fecha_pago__lte=fin,
-            es_compensacion=False,
-        )
-        .select_related(
-            "configuracion__medio"
+            factura__fecha__gte=inicio,
+            factura__fecha__lt=fin,
         )
         .values(
             "configuracion__medio_id",
@@ -30,15 +27,16 @@ def totales_por_medio(operador, inicio, fin):
         .order_by("configuracion__medio__nombre")
     )
 
-    # Normalizar estructura
+    # 🔁 Normalizamos claves para el template
     return [
         {
-            "medio_id": p["configuracion__medio_id"],
-            "medio": p["configuracion__medio__nombre"],
-            "total": p["total"] or 0,
+            "medio_id": row["configuracion__medio_id"],
+            "medio__nombre": row["configuracion__medio__nombre"],
+            "total": row["total"] or 0,
         }
-        for p in pagos
+        for row in qs
     ]
+
 
 from django.utils import timezone
 from terminal_pagos.models import PagoFactura
