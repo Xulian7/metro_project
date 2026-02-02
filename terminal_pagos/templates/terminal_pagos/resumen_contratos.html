@@ -533,16 +533,18 @@ document.addEventListener("DOMContentLoaded", () => {
 <script>
   document.addEventListener("DOMContentLoaded", () => {
 
-    const rows = document.querySelectorAll("#tabla-contratos tr");
+    const rows = Array.from(document.querySelectorAll("#tabla-contratos tr"));
     const inputBuscar = document.getElementById("buscador-contratos");
     const inputMin = document.getElementById("cuotas-min");
     const inputMax = document.getElementById("cuotas-max");
     const btnReset = document.getElementById("reset-cuotas");
 
-    // 📊 detectar rango real de cuotas
-    const cuotas = Array.from(rows)
-      .map(r => Number(r.querySelector("[data-cuotas-saldo]")?.dataset.cuotasSaldo))
+    // 📊 obtener cuotas vencidas reales
+    const cuotas = rows
+      .map(r => parseFloat(r.querySelector("[data-cuotas]")?.dataset.cuotas))
       .filter(v => !isNaN(v));
+
+    if (!cuotas.length) return;
 
     const minCuotas = Math.min(...cuotas);
     const maxCuotas = Math.max(...cuotas);
@@ -552,17 +554,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function aplicarFiltros() {
       const q = inputBuscar.value.toLowerCase();
-      const min = Number(inputMin.value);
-      const max = Number(inputMax.value);
+      const min = parseFloat(inputMin.value);
+      const max = parseFloat(inputMax.value);
 
       rows.forEach(row => {
         const texto = row.innerText.toLowerCase();
-        const saldoCuotas = Number(
-          row.querySelector("[data-cuotas-saldo]")?.dataset.cuotasSaldo
+        const cuotasRow = parseFloat(
+          row.querySelector("[data-cuotas]")?.dataset.cuotas
         );
 
         const matchTexto = texto.includes(q);
-        const matchCuotas = saldoCuotas >= min && saldoCuotas <= max;
+        const matchCuotas =
+          !isNaN(cuotasRow) &&
+          cuotasRow >= min &&
+          cuotasRow <= max;
 
         row.style.display = (matchTexto && matchCuotas) ? "" : "none";
       });
@@ -581,6 +586,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   });
 </script>
+
 
 
 
