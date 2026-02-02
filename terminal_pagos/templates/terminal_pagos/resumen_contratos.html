@@ -76,7 +76,7 @@
           <th data-sort="number" class="sortable text-center">Cuotas vencidas</th>
           <th class="text-center">Pagos tarifa</th>
           <th class="text-center">Saldo</th>
-          <th class="text-center">Avance</th>
+          <th data-sort="avance" class="sortable text-center">Avance</th>
           <th class="text-end">Acciones</th>
 
         </tr>
@@ -171,7 +171,7 @@
           </td>
 
           <!-- Avance % -->
-          <td class="text-center">
+          <td class="text-center" data-avance="{{ row.avance_pct }}">
             <div class="fw-semibold">
               {{ row.avance_pct }}%
             </div>
@@ -352,17 +352,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
         rows.sort((a, b) => {
 
-          // 🗓️ INICIO
+          //  INICIO
           if (type === "date") {
             const A = new Date(a.children[colIndex].dataset.fecha);
             const B = new Date(b.children[colIndex].dataset.fecha);
             return asc ? A - B : B - A;
           }
 
-          // 🔢 CUOTAS VENCIDAS
+          //  CUOTAS VENCIDAS
           if (type === "number") {
             const A = parseFloat(a.children[colIndex].dataset.cuotas);
             const B = parseFloat(b.children[colIndex].dataset.cuotas);
+            return asc ? A - B : B - A;
+          }
+
+          // AVANCE %
+          if (type === "avance") {
+            const A = parseFloat(a.children[colIndex].dataset.avance || 0);
+            const B = parseFloat(b.children[colIndex].dataset.avance || 0);
             return asc ? A - B : B - A;
           }
 
