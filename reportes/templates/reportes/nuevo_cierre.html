@@ -6,8 +6,12 @@
 
   <!-- ================= HEADER ================= -->
   <h4 class="fw-bold mb-1">
-    Cierre de caja · {{ request.user.username }}
+    Cierre de caja
   </h4>
+
+  <p class="text-muted mb-2">
+    Operador: <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+  </p>
 
   <p class="text-muted mb-4">
     Periodo: {{ inicio }} → {{ fin }}
@@ -21,8 +25,7 @@
       <table class="table table-sm table-striped align-middle">
         <thead class="table-light">
           <tr>
-            <th>Medio</th>
-            <th>Cuenta</th>
+            <th>Medio de pago</th>
             <th class="text-end">Sistema</th>
             <th class="text-end">Arqueo</th>
             <th class="text-end">Diferencia</th>
@@ -35,15 +38,10 @@
 
             <!-- Medio -->
             <td>
-              {{ t.configuracion__medio__nombre }}
+              {{ t.medio__nombre }}
             </td>
 
-            <!-- Cuenta -->
-            <td>
-              {{ t.configuracion__cuenta_destino__nombre }}
-            </td>
-
-            <!-- Total sistema -->
+            <!-- Sistema -->
             <td class="text-end">
               ${{ t.total|intcomma }}
               <input type="hidden"
@@ -67,10 +65,10 @@
               —
             </td>
 
-            <!-- Configuración (CLAVE REAL) -->
+            <!-- Medio ID -->
             <input type="hidden"
-                   name="configuracion_{{ forloop.counter }}"
-                   value="{{ t.configuracion_id }}">
+                   name="medio_{{ forloop.counter }}"
+                   value="{{ t.medio_id }}">
 
           </tr>
           {% endfor %}
@@ -86,7 +84,7 @@
       <textarea name="observacion"
                 class="form-control"
                 rows="2"
-                placeholder="Opcional: notas del cierre, faltantes, incidencias…"></textarea>
+                placeholder="Notas del cierre, faltantes, incidencias…"></textarea>
     </div>
 
     <!-- ================= ACCIÓN ================= -->
@@ -108,9 +106,7 @@
       const arqueo = parseFloat(input.value || 0);
       const diff = arqueo - sistema;
 
-      const cell = input
-        .closest("tr")
-        .querySelector(".diferencia-cell");
+      const cell = input.closest("tr").querySelector(".diferencia-cell");
 
       cell.textContent = diff.toLocaleString("es-CO", {
         style: "currency",
@@ -137,7 +133,7 @@
 
       for (const i of inputs) {
         if (i.value === "") {
-          alert("⚠️ Debes completar el arqueo de todos los medios antes de guardar.");
+          alert("⚠️ Debes completar el arqueo de todos los medios.");
           e.preventDefault();
           return;
         }
