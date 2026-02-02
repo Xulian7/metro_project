@@ -237,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const tr = document.createElement("tr");
 
             tr.innerHTML = `
-              <td>${f.fecha_pactada}</td>
+              <td class="text-center">${f.fecha_pactada}</td>
 
               <td class="text-end">
                 $${Number(f.valor_pactado).toLocaleString("es-CO")}
