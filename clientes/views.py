@@ -4,6 +4,7 @@ from django.contrib import messages
 from .models import Cliente
 from .forms import ClienteForm
 from django.db import IntegrityError
+from django.contrib.auth.decorators import permission_required
 
 
 # ==========================================================
@@ -53,6 +54,7 @@ def clientes_dashboard(request):
 # ==========================================================
 # ACTUALIZAR CLIENTE (AJAX / MODAL)
 # ==========================================================
+@permission_required('clientes.change_cliente', raise_exception=True)
 def cliente_update(request):
     if request.method != 'POST':
         return HttpResponseBadRequest('Método no permitido.')
