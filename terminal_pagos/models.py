@@ -262,7 +262,6 @@ class PagoFactura(models.Model):
     # Referencia ACTUAL (puede mutar al anular)
     referencia = models.CharField(
         max_length=100,
-        unique=True,
         null=True,
         blank=True
     )
@@ -283,10 +282,15 @@ class PagoFactura(models.Model):
     es_compensacion = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        # Captura automática de la referencia original
+        # Normalizar referencia vacía → NULL
+        if self.referencia is not None and self.referencia.strip() == "":
+            self.referencia = None
+
         if self.referencia and not self.referencia_original:
             self.referencia_original = self.referencia
+
         super().save(*args, **kwargs)
+
 
     def __str__(self):
         return f"Factura {self.factura_id} | {self.valor}" # type: ignore
