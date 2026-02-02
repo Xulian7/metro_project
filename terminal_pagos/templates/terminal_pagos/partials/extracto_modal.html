@@ -59,6 +59,19 @@
               </div>
             </div>
 
+            <!-- FRECUENCIA -->
+            <div class="col-md">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-body py-3">
+                  <small class="text-muted text-uppercase">Frecuencia</small>
+                  <div id="resumen-frecuencia"
+                      class="fw-bold fs-5 mt-1">
+                    —
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- TARIFAS PAGADAS -->
             <div class="col-md">
               <div class="card border-0 shadow-sm h-100 bg-success bg-opacity-10">
@@ -230,7 +243,7 @@
   }
 </script>
 
-<!-- ================= ACTUALIZAR RESUMEN MODAL ================= -->
+<!-- ================= CARGAR EXTRACTO EN MODAL ================= -->
 <script>
   document.addEventListener("click", function (e) {
     const btn = e.target.closest(".btn-extracto");
@@ -242,6 +255,7 @@
     const pagadas = btn.dataset.cuotasPagadas;
     const vencidas = btn.dataset.cuotasVencidas;
     const saldoCuotas = parseFloat(btn.dataset.saldoCuotas || 0);
+    const frecuencia = btn.dataset.frecuencia;
 
     // ===== pintar contrato =====
     document.getElementById("resumen-contrato").textContent = contrato;
@@ -249,6 +263,10 @@
     // ===== antigüedad =====
     document.getElementById("resumen-antiguedad").innerHTML =
       `${dias} <small class="text-muted">días</small>`;
+
+    // ✅ FRECUENCIA
+    document.getElementById("resumen-frecuencia").textContent =
+      frecuencia || "—";
 
     // ===== tarifas pagadas =====
     document.getElementById("resumen-pagadas").textContent =
@@ -258,11 +276,12 @@
     document.getElementById("resumen-vencidas").textContent =
       `${vencidas} cuotas`;
 
-    // ===== días de atraso (regla simple) =====
+    // ===== días de atraso =====
     document.getElementById("resumen-atraso").textContent =
       saldoCuotas > 0 ? saldoCuotas : 0;
   });
 </script>
+
 
 <!-- ================= CAPTURA DE EXTRACTO COMO IMAGEN ================= -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>

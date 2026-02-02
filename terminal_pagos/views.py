@@ -625,7 +625,11 @@ def extracto_contrato(request, contrato_id):
         "Mensual": 30,
     }.get(contrato.frecuencia_pago, 30)
 
-    while actual <= hoy:
+
+    # generar hasta hoy + 2 ciclos
+    limite = hoy + timedelta(days=delta * 2)
+    
+    while actual <= limite:
         fechas.append({
             "fecha_pactada": actual,
             "valor_pactado": tarifa,
@@ -686,6 +690,7 @@ def extracto_contrato(request, contrato_id):
         "contrato": {
             "id": contrato.id, # type: ignore
             "label": str(contrato),
+            "frecuencia": contrato.get_frecuencia_pago_display(), # type: ignore
         },
         "filas": [
             {
