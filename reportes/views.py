@@ -104,3 +104,15 @@ def nuevo_cierre(request):
             "ultimos_cierres": ultimos_cierres,
         }
     )
+
+from django.shortcuts import render, get_object_or_404
+from reportes.models import CierreCaja
+
+def detalle_cierre(request, cierre_id):
+    cierre = get_object_or_404(CierreCaja, id=cierre_id)
+
+    return render(
+        request,
+        "reportes/detalle_cierre.html",
+        {"cierre": cierre}
+    )

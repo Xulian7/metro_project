@@ -1,0 +1,21 @@
+{% extends "accounts/home.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="card p-4 shadow-sm">
+  <h4 class="fw-bold mb-3">
+    Cierre #{{ cierre.id }}
+  </h4>
+
+  <p>
+    Operador: <strong>{{ cierre.operador.username }}</strong><br>
+    Periodo: {{ cierre.fecha_inicio }} → {{ cierre.fecha_fin }}
+  </p>
+
+  <p class="fw-semibold">
+    Total sistema: ${{ cierre.total_sistema|intcomma }}<br>
+    Total arqueo:  ${{ cierre.total_arqueo|intcomma }}<br>
+    Diferencia:    ${{ cierre.diferencia|intcomma }}
+  </p>
+</div>
+{% endblock %}
