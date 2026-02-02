@@ -1,16 +1,11 @@
 from decimal import Decimal
-
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
 from reportes.models import CierreCaja, CierreCajaDetalle
-from reportes.services.cierres import (
-    obtener_periodo_operador,
-    totales_por_medio,
-)
-
-from terminal_pagos.models import ConfiguracionPago
+from reportes.services.cierres import obtener_periodo_operador, totales_por_medio
+from terminal_pagos.models import MedioPago
 
 
 @login_required
@@ -25,15 +20,8 @@ def nuevo_cierre(request):
     inicio, fin = obtener_periodo_operador(operador)
 
     # =========================
-    # 2️⃣ TOTALES DEL SISTEMA
+    # 2️⃣ TOTALES POR MEDIO
     # =========================
-    # Cada fila:
-    # {
-    #   "configuracion_id": int,
-    #   "medio": str,
-    #   "cuenta": str,
-    #   "total": Decimal
-    # }
     totales = totales_por_medio(operador, inicio, fin)
 
     if request.method == "POST":
@@ -48,33 +36,30 @@ def nuevo_cierre(request):
             operador=operador,
             fecha_inicio=inicio,
             fecha_fin=timezone.now(),
-            total_sistema=Decimal("0"),
-            total_arqueo=Decimal("0"),
-            diferencia=Decimal("0"),
             observacion=request.POST.get("observacion", "").strip(),
         )
 
         # =========================
-        # 4️⃣ DETALLE POR CONFIGURACIÓN
+        # 4️⃣ DETALLE POR MEDIO
         # =========================
         for i, fila in enumerate(totales, start=1):
 
-            sistema = Decimal(fila["total"])
+            sistema = Decimal(fila["total"] or 0)
 
             arqueo = Decimal(
                 request.POST.get(f"arqueo_{i}", "0") or "0"
             )
 
-            configuracion = get_object_or_404(
-                ConfiguracionPago,
-                id=fila["configuracion_id"]
+            medio = get_object_or_404(
+                MedioPago,
+                id=fila["medio_id"]
             )
 
             diferencia = arqueo - sistema
 
             CierreCajaDetalle.objects.create(
                 cierre=cierre,
-                configuracion=configuracion,
+                medio=medio,
                 total_sistema=sistema,
                 total_arqueo=arqueo,
                 diferencia=diferencia,
@@ -91,16 +76,13 @@ def nuevo_cierre(request):
         cierre.diferencia = total_arqueo - total_sistema
         cierre.save()
 
-        # =========================
-        # 6️⃣ REDIRECCIÓN
-        # =========================
         return redirect(
             "reportes:detalle_cierre",
             cierre_id=cierre.id # type: ignore
         )
 
     # =========================
-    # 7️⃣ GET → FORMULARIO
+    # 6️⃣ FORMULARIO
     # =========================
     return render(
         request,

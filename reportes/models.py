@@ -36,19 +36,12 @@ class CierreCajaDetalle(models.Model):
         on_delete=models.CASCADE,
         related_name="detalles"
     )
-    
-    configuracion = models.ForeignKey(
-    ConfiguracionPago,
-    on_delete=models.PROTECT
-)
 
-
-    medio = models.CharField(max_length=50)
-    cuenta = models.CharField(max_length=100)
+    medio = models.ForeignKey(
+        "terminal_pagos.MedioPago",
+        on_delete=models.PROTECT
+    )
 
     total_sistema = models.DecimalField(max_digits=12, decimal_places=2)
     total_arqueo = models.DecimalField(max_digits=12, decimal_places=2)
     diferencia = models.DecimalField(max_digits=12, decimal_places=2)
-
-    def __str__(self):
-        return f"{self.medio} - {self.cuenta}"
