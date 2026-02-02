@@ -579,6 +579,20 @@ def resumen_contratos(request):
         saldo_dinero = (
             saldo_cuotas * contrato.tarifa
         ).quantize(Decimal("1"), rounding=ROUND_HALF_UP)
+        
+        # -------------------------
+        # KPI AVANCE DE CUMPLIMIENTO
+        # -------------------------
+        if cuotas_vencidas > 0:
+            avance = (cuotas_pagadas / cuotas_vencidas)
+        else:
+            avance = Decimal("1.0")
+
+        avance = max(Decimal("0"), min(avance, Decimal("1.0")))
+
+        avance_pct = (avance * 100).quantize(
+            Decimal("1"), rounding=ROUND_HALF_UP
+        )
 
         filas.append({
             "contrato": contrato,
@@ -590,7 +604,8 @@ def resumen_contratos(request):
             "cuotas_pagadas": cuotas_pagadas,
             "total_pagado": total_pagado,
             "saldo_cuotas": saldo_cuotas,
-            "saldo_dinero": saldo_dinero,  # 👈 NUEVO
+            "saldo_dinero": saldo_dinero,
+            "avance_pct": avance_pct,
         })
 
     return render(
