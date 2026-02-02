@@ -11,58 +11,61 @@
     </h5>
   </div>
 
-  <!-- 🔍 BUSCADOR &  EXPORTAR -->
-  <div class="row mb-3">
-    <div class="col-md-4">
-      <input
-        type="text"
-        id="buscador-contratos"
-        class="form-control"
-        placeholder="Buscar por contrato, cliente o placa">
-    </div>
+  <!--  BUSCADOR · FILTRO · EXPORTAR -->
+<div class="row g-3 align-items-end mb-3">
 
-    <div class="col-md-8 text-end">
-      <button id="export-excel"
-              class="btn btn-outline-success btn-sm">
-        📊 Exportar a Excel
-      </button>
+  <!-- Buscador -->
+  <div class="col-md-4">
+    <label class="form-label small mb-1">Buscar</label>
+    <input
+      type="text"
+      id="buscador-contratos"
+      class="form-control"
+      placeholder="Contrato, cliente o placa">
   </div>
 
-  <!-- FILTRO SALDO -->
-  <div class="row mb-3 align-items-end">
-    <div class="col-md-4">
-      <input
-        type="text"
-        id="buscador-contratos"
-        class="form-control"
-        placeholder="Buscar por contrato, cliente o placa">
-    </div>
-
-    <div class="col-md-3">
-      <label class="form-label small mb-1">Cuotas mínimas adeudadas</label>
-      <input type="number"
-            step="0.1"
-            id="cuotas-min"
-            class="form-control form-control-sm">
-    </div>
-
-    <div class="col-md-3">
-      <label class="form-label small mb-1">Cuotas máximas adeudadas</label>
-      <input type="number"
-            step="0.1"
-            id="cuotas-max"
-            class="form-control form-control-sm">
-    </div>
-
-    <div class="col-md-2 text-end">
-      <button class="btn btn-sm btn-outline-secondary"
-              id="reset-cuotas">
-        Limpiar
-      </button>
-    </div>
+  <!-- Cuotas mínimas -->
+  <div class="col-md-2">
+    <label class="form-label small mb-1">Cuotas mín.</label>
+    <input
+      type="number"
+      step="0.1"
+      id="cuotas-min"
+      class="form-control form-control-sm">
   </div>
 
-  <!-- 📋 TABLA -->
+  <!-- Cuotas máximas -->
+  <div class="col-md-2">
+    <label class="form-label small mb-1">Cuotas máx.</label>
+    <input
+      type="number"
+      step="0.1"
+      id="cuotas-max"
+      class="form-control form-control-sm">
+  </div>
+
+  <!-- Limpiar filtros -->
+  <div class="col-md-2">
+    <button
+      class="btn btn-outline-secondary btn-sm w-100"
+      id="reset-cuotas">
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Exportar -->
+  <div class="col-md-2 text-end">
+    <button
+      id="export-excel"
+      class="btn btn-outline-success btn-sm w-100">
+      📊 Exportar
+    </button>
+  </div>
+
+</div>
+
+
+  <!--  TABLA -->
   <div class="table-responsive">
     <table class="table table-sm table-striped align-middle">
       <thead class="table-light">
