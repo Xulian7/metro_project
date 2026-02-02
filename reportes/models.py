@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from terminal_pagos.models import ConfiguracionPago
+
 
 class CierreCaja(models.Model):
     operador = models.ForeignKey(
@@ -34,6 +36,12 @@ class CierreCajaDetalle(models.Model):
         on_delete=models.CASCADE,
         related_name="detalles"
     )
+    
+    configuracion = models.ForeignKey(
+    ConfiguracionPago,
+    on_delete=models.PROTECT
+)
+
 
     medio = models.CharField(max_length=50)
     cuenta = models.CharField(max_length=100)

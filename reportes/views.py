@@ -1,17 +1,39 @@
-from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import render
-from .services.cierres import obtener_periodo_operador, totales_por_medio
 from decimal import Decimal
-from django.shortcuts import redirect
+
+from django.contrib.auth.decorators import login_required, permission_required
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
+
 from reportes.models import CierreCaja, CierreCajaDetalle
+from reportes.services.cierres import (
+    obtener_periodo_operador,
+    totales_por_medio,
+)
+
+from terminal_pagos.models import ConfiguracionPago
+
 
 @login_required
 @permission_required("reportes.add_cierrecaja", raise_exception=True)
 def nuevo_cierre(request):
 
     operador = request.user
+
+    # =========================
+    # 1️⃣ PERIODO DEL CIERRE
+    # =========================
     inicio, fin = obtener_periodo_operador(operador)
+
+    # =========================
+    # 2️⃣ TOTALES DEL SISTEMA
+    # =========================
+    # Cada fila:
+    # {
+    #   "configuracion_id": int,
+    #   "medio": str,
+    #   "cuenta": str,
+    #   "total": Decimal
+    # }
     totales = totales_por_medio(operador, inicio, fin)
 
     if request.method == "POST":
@@ -19,46 +41,73 @@ def nuevo_cierre(request):
         total_sistema = Decimal("0")
         total_arqueo = Decimal("0")
 
+        # =========================
+        # 3️⃣ CREAR CIERRE
+        # =========================
         cierre = CierreCaja.objects.create(
             operador=operador,
             fecha_inicio=inicio,
             fecha_fin=timezone.now(),
-            total_sistema=0,
-            total_arqueo=0,
-            diferencia=0,
-            observacion=request.POST.get("observacion", ""),
+            total_sistema=Decimal("0"),
+            total_arqueo=Decimal("0"),
+            diferencia=Decimal("0"),
+            observacion=request.POST.get("observacion", "").strip(),
         )
 
-        for i, _ in enumerate(totales, start=1):
-            sistema = Decimal(request.POST.get(f"sistema_{i}", "0"))
-            arqueo = Decimal(request.POST.get(f"arqueo_{i}", "0"))
+        # =========================
+        # 4️⃣ DETALLE POR CONFIGURACIÓN
+        # =========================
+        for i, fila in enumerate(totales, start=1):
 
-            medio = request.POST.get(f"medio_{i}")
-            cuenta = request.POST.get(f"cuenta_{i}")
+            sistema = Decimal(fila["total"])
 
-            diff = arqueo - sistema
+            arqueo = Decimal(
+                request.POST.get(f"arqueo_{i}", "0") or "0"
+            )
+
+            configuracion = get_object_or_404(
+                ConfiguracionPago,
+                id=fila["configuracion_id"]
+            )
+
+            diferencia = arqueo - sistema
 
             CierreCajaDetalle.objects.create(
                 cierre=cierre,
-                medio=medio,
-                cuenta=cuenta,
+                configuracion=configuracion,
                 total_sistema=sistema,
                 total_arqueo=arqueo,
-                diferencia=diff,
+                diferencia=diferencia,
             )
 
             total_sistema += sistema
             total_arqueo += arqueo
 
+        # =========================
+        # 5️⃣ TOTALES GENERALES
+        # =========================
         cierre.total_sistema = total_sistema
         cierre.total_arqueo = total_arqueo
         cierre.diferencia = total_arqueo - total_sistema
         cierre.save()
 
-        return redirect("reportes:detalle_cierre", cierre.id) # type: ignore
+        # =========================
+        # 6️⃣ REDIRECCIÓN
+        # =========================
+        return redirect(
+            "reportes:detalle_cierre",
+            cierre_id=cierre.id # type: ignore
+        )
 
-    return render(request, "reportes/nuevo_cierre.html", {
-        "inicio": inicio,
-        "fin": fin,
-        "totales": totales,
-    })
+    # =========================
+    # 7️⃣ GET → FORMULARIO
+    # =========================
+    return render(
+        request,
+        "reportes/nuevo_cierre.html",
+        {
+            "inicio": inicio,
+            "fin": fin,
+            "totales": totales,
+        }
+    )
