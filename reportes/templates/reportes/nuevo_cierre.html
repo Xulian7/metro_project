@@ -10,7 +10,10 @@
   </h4>
 
   <p class="text-muted mb-2">
-    Operador: <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+    Operador:
+    <strong>
+      {{ request.user.get_full_name|default:request.user.username }}
+    </strong>
   </p>
 
   <p class="text-muted mb-4">
@@ -95,6 +98,80 @@
     </div>
 
   </form>
+
+  <!-- ================================================= -->
+  <!-- ========== HISTÓRICO DE CIERRES ================= -->
+  <!-- ================================================= -->
+  <hr class="my-4">
+
+  <h5 class="fw-bold mb-3">
+    Últimos cierres del operador
+  </h5>
+
+  {% if ultimos_cierres %}
+  <div class="table-responsive">
+    <table class="table table-sm table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Periodo</th>
+          <th class="text-end">Sistema</th>
+          <th class="text-end">Arqueo</th>
+          <th class="text-end">Diferencia</th>
+          <th class="text-center">Estado</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for c in ultimos_cierres %}
+        <tr>
+          <td>#{{ c.id }}</td>
+
+          <td class="small text-muted">
+            {{ c.fecha_inicio|date:"d/m/Y H:i" }}<br>
+            {{ c.fecha_fin|date:"d/m/Y H:i" }}
+          </td>
+
+          <td class="text-end">
+            ${{ c.total_sistema|intcomma }}
+          </td>
+
+          <td class="text-end">
+            ${{ c.total_arqueo|intcomma }}
+          </td>
+
+          <td class="text-end fw-semibold
+            {% if c.diferencia == 0 %}
+              text-success
+            {% elif c.diferencia < 0 %}
+              text-danger
+            {% else %}
+              text-primary
+            {% endif %}
+          ">
+            ${{ c.diferencia|intcomma }}
+          </td>
+
+          <td class="text-center">
+            {% if c.diferencia == 0 %}
+              <span class="badge bg-success">Cuadrado</span>
+            {% elif c.diferencia < 0 %}
+              <span class="badge bg-danger">Faltante</span>
+            {% else %}
+              <span class="badge bg-primary">Sobrante</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p class="text-muted fst-italic">
+      No hay cierres registrados para este operador.
+    </p>
+  {% endif %}
+
 </div>
 
 <!-- ================= SCRIPT DIFERENCIAS ================= -->

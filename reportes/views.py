@@ -23,6 +23,13 @@ def nuevo_cierre(request):
     # 2️⃣ TOTALES POR MEDIO
     # =========================
     totales = totales_por_medio(operador, inicio, fin)
+    
+    # últimos 10 cierres del operador
+    ultimos_cierres = (
+        CierreCaja.objects
+        .filter(operador=operador)
+        .order_by("-fecha_fin")[:10]
+    )
 
     if request.method == "POST":
 
@@ -91,5 +98,6 @@ def nuevo_cierre(request):
             "inicio": inicio,
             "fin": fin,
             "totales": totales,
+            "ultimos_cierres": ultimos_cierres,
         }
     )
