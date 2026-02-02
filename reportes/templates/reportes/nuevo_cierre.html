@@ -1,0 +1,106 @@
+{% extends "accounts/home.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="card p-4 shadow-sm">
+
+  <h4 class="fw-bold mb-3">
+    Cierre de caja · {{ request.user.username }}
+  </h4>
+
+  <p class="text-muted mb-4">
+    Periodo: {{ inicio }} → {{ fin }}
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="table-responsive">
+      <table class="table table-sm table-striped align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Medio</th>
+            <th>Cuenta</th>
+            <th class="text-end">Sistema</th>
+            <th class="text-end">Arqueo</th>
+            <th class="text-end">Diferencia</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for t in totales %}
+          <tr>
+            <td>{{ t.configuracion__medio__nombre }}</td>
+            <td>{{ t.configuracion__cuenta_destino__nombre }}</td>
+
+            <td class="text-end">
+              ${{ t.total|intcomma }}
+              <input type="hidden"
+                     name="sistema_{{ forloop.counter }}"
+                     value="{{ t.total }}">
+            </td>
+
+            <td class="text-end">
+              <input type="number"
+                     step="0.01"
+                     class="form-control form-control-sm arqueo-input text-end"
+                     name="arqueo_{{ forloop.counter }}"
+                     data-sistema="{{ t.total }}"
+                     required>
+            </td>
+
+            <td class="text-end fw-semibold diferencia-cell">
+              $0
+            </td>
+
+            <input type="hidden"
+                   name="medio_{{ forloop.counter }}"
+                   value="{{ t.configuracion__medio__nombre }}">
+            <input type="hidden"
+                   name="cuenta_{{ forloop.counter }}"
+                   value="{{ t.configuracion__cuenta_destino__nombre }}">
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <hr>
+
+    <div class="mb-3">
+      <label class="form-label">Observación</label>
+      <textarea name="observacion"
+                class="form-control"
+                rows="2"></textarea>
+    </div>
+
+    <div class="text-end">
+      <button class="btn btn-primary">
+        Guardar cierre
+      </button>
+    </div>
+
+  </form>
+</div>
+{% endblock %}
+
+
+<script>
+    document.querySelectorAll(".arqueo-input").forEach(input => {
+    input.addEventListener("input", () => {
+        const sistema = parseFloat(input.dataset.sistema || 0);
+        const arqueo = parseFloat(input.value || 0);
+        const diff = arqueo - sistema;
+
+        const cell = input.closest("tr").querySelector(".diferencia-cell");
+        cell.textContent = diff.toLocaleString("es-CO", {
+        style: "currency",
+        currency: "COP"
+        });
+
+        cell.className = "text-end fw-semibold diferencia-cell " +
+        (diff === 0 ? "text-success" : diff < 0 ? "text-danger" : "text-primary");
+    });
+    });
+</script>
+

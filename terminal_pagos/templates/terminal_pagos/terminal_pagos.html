@@ -49,7 +49,7 @@
 
     <!-- BOTONES ACCIÓN -->
     <div class="col-md-4 d-flex align-items-end gap-2">
-  
+
       <!-- Guardar -->
       <button type="submit"
               class="btn btn-primary flex-fill">
@@ -63,7 +63,15 @@
         📄 Ver facturas
       </a>
 
+      <!-- Cierre -->
+      <a href="{% url 'reportes:nuevo_cierre' %}"
+        class="btn btn-outline-warning flex-fill"
+        title="Cierre de caja del operador">
+        🧾 Cierre
+      </a>
+
     </div>
+
 
     <!-- ÍTEMS -->
     <div class="col-12 mt-4 d-flex justify-content-between align-items-center">
