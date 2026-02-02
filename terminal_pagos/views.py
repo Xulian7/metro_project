@@ -613,10 +613,9 @@ def extracto_contrato(request, contrato_id):
     hoy = date.today()
 
     # -------------------------
-    # 1. Generar fechas pactadas
+    # 1. Generar fechas pactadas (CORREGIDO)
     # -------------------------
     fechas = []
-    actual = inicio
 
     delta = {
         "Diario": 1,
@@ -625,10 +624,12 @@ def extracto_contrato(request, contrato_id):
         "Mensual": 30,
     }.get(contrato.frecuencia_pago, 30)
 
+    # primera cuota = inicio + ciclo
+    actual = contrato.fecha_inicio + timedelta(days=delta)
 
-    # generar hasta hoy + 2 ciclos
+    # generamos hasta HOY + 2 ciclos (ver más abajo)
     limite = hoy + timedelta(days=delta * 2)
-    
+
     while actual <= limite:
         fechas.append({
             "fecha_pactada": actual,
@@ -638,6 +639,7 @@ def extracto_contrato(request, contrato_id):
             "factura_id": None,
         })
         actual += timedelta(days=delta)
+
 
     # -------------------------
     # 2. Obtener ladrillos (items tarifa)
