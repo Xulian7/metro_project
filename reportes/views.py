@@ -43,6 +43,9 @@ def nuevo_cierre(request):
             operador=operador,
             fecha_inicio=inicio,
             fecha_fin=timezone.now(),
+            total_sistema=Decimal("0"),
+            total_arqueo=Decimal("0"),
+            diferencia=Decimal("0"),
             observacion=request.POST.get("observacion", "").strip(),
         )
 
