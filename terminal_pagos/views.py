@@ -10,6 +10,7 @@ from django.db.models import Q, Sum
 from django.utils import timezone
 from django.urls import reverse
 from django.utils.timezone import now
+from django.contrib import messages
 
 # =========================
 # Python stdlib
@@ -236,17 +237,28 @@ def crear_factura(request):
 
             pendiente = contrato.cuota_inicial - total_pagado_inicial
 
-            if pendiente <= 0:
-                raise ValueError(
-                    f"La cuota inicial del contrato ya fue cubierta "
+            # =========================
+            # CUOTA INICIAL YA CUBIERTA
+            # =========================
+            if pendiente <= Decimal("0"):
+                messages.info(
+                    request,
+                    f"ℹ️ La cuota inicial del contrato ya fue cubierta "
                     f"(${contrato.cuota_inicial})."
                 )
+                return redirect("terminal_pagos:nueva_transaccion")
 
+            # =========================
+            # PAGO EXCEDE EL PENDIENTE
+            # =========================
             if item.valor_unitario > pendiente:
-                raise ValueError(
-                    f"El pago inicial (${item.valor_unitario}) "
-                    f"excede el pendiente (${pendiente})."
+                messages.warning(
+                    request,
+                    f"⚠️ El pago inicial (${item.valor_unitario}) "
+                    f"excede el valor pendiente (${pendiente})."
                 )
+                return redirect("terminal_pagos:nueva_transaccion")
+
 
             item.descripcion = "Pago inicial"
             item.producto_almacen = None
