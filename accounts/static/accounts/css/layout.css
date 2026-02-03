@@ -750,4 +750,15 @@ border-radius: 8px;
   display: block;
 }
 
+.sidebar-divider {
+  height: 1px;
+  margin: 14px 12px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(0, 0, 0, 0.08),
+    transparent
+  );
+}
+
 /* === Fin layout.css === */

@@ -116,3 +116,92 @@ def detalle_cierre(request, cierre_id):
         "reportes/detalle_cierre.html",
         {"cierre": cierre}
     )
+
+
+from datetime import date
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import Sum, Count
+from django.shortcuts import render
+
+from terminal_pagos.models import ItemFactura, PagoFactura
+
+
+@login_required
+@permission_required("reportes.view_reportes", raise_exception=True)
+def dashboard_reportes(request):
+
+    # =========================
+    # 1️⃣ RANGO DE FECHAS
+    # =========================
+    inicio = request.GET.get("inicio") or date.today().replace(day=1)
+    fin = request.GET.get("fin") or date.today()
+
+    # =========================
+    # 2️⃣ ITEMS POR TIPO
+    # =========================
+    items = (
+        ItemFactura.objects
+        .filter(
+            factura__estado="confirmada",
+            factura__fecha__date__range=[inicio, fin]
+        )
+        .values("tipo_item")
+        .annotate(
+            cantidad=Count("id"),
+            total=Sum("subtotal")
+        )
+        .order_by("tipo_item")
+    )
+
+    # =========================
+    # 3️⃣ PAGOS POR MEDIO
+    # =========================
+    pagos = (
+        PagoFactura.objects
+        .filter(
+            factura__estado="confirmada",
+            fecha_pago__range=[inicio, fin],
+            es_compensacion=False
+        )
+        .values(
+            "configuracion__medio__nombre"
+        )
+        .annotate(
+            total=Sum("valor")
+        )
+        .order_by("configuracion__medio__nombre")
+    )
+
+    # =========================
+    # 4️⃣ TOTALES POR CUENTA
+    # =========================
+    cuentas = (
+        PagoFactura.objects
+        .filter(
+            factura__estado="confirmada",
+            fecha_pago__range=[inicio, fin],
+            es_compensacion=False
+        )
+        .values(
+            "configuracion__cuenta_destino__nombre"
+        )
+        .annotate(
+            total=Sum("valor")
+        )
+        .order_by("configuracion__cuenta_destino__nombre")
+    )
+
+    # =========================
+    # 5️⃣ RENDER
+    # =========================
+    return render(
+        request,
+        "reportes/dashboard_reportes.html",
+        {
+            "inicio": inicio,
+            "fin": fin,
+            "items": items,
+            "pagos": pagos,
+            "cuentas": cuentas,
+        }
+    )

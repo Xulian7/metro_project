@@ -10,4 +10,10 @@ urlpatterns = [
         views.detalle_cierre,
         name="detalle_cierre"
     ),
+    
+    path(
+        "dashboard/",
+        views.dashboard_reportes,
+        name="dashboard_reportes"
+    ),
 ]

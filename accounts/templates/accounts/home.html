@@ -67,20 +67,24 @@
     <div class="app-shell">
       <!-- Sidebar -->
       <aside id="sidebar" class="sidebar">
-        <div class="brand">
-          <div class="brand d-flex justify-content-center align-items-start py-3">
-              <a href="{% url 'home' %}">
-                <img
-                  src="{% static 'accounts/empresa-2.png' %}"
-                  alt="Placas Logo"
-                  class="brand-logo"
-                  style="cursor: pointer;"
-                />
-              </a>
-          </div>
+        <!-- ================= BRAND ================= -->
+        <div class="brand d-flex justify-content-center align-items-start py-3">
+          <a href="{% url 'home' %}">
+            <img
+              src="{% static 'accounts/empresa-2.png' %}"
+              alt="Placas Logo"
+              class="brand-logo"
+              style="cursor:pointer;"
+            />
+          </a>
         </div>
 
         <div class="nav-section">
+
+          <!-- ================================================= -->
+          <!-- 🔹 BLOQUE 1 · OPERACIÓN BASE -->
+          <!-- ================================================= -->
+
           <!-- Clientes -->
           <div class="nav-item">
             <a class="nav-link parent-link" data-parent="clientes">
@@ -89,7 +93,7 @@
             </a>
             <div class="sublist" data-parent="clientes">
               <a href="{% url 'clientes_dashboard' %}" class="nav-link child-link">
-                Gestión de Clientes
+                Gestión de clientes
               </a>
             </div>
           </div>
@@ -101,8 +105,12 @@
               <span class="text-label">Vehículos</span>
             </a>
             <div class="sublist" data-parent="vehiculos">
-              <a href="{% url 'vehiculos_dashboard' %}" class="nav-link child-link">Gestión</a>
-              <a href="{% url 'catalogo_marcas' %}" class="nav-link child-link">Marcas</a>
+              <a href="{% url 'vehiculos_dashboard' %}" class="nav-link child-link">
+                Gestión
+              </a>
+              <a href="{% url 'catalogo_marcas' %}" class="nav-link child-link">
+                Marcas
+              </a>
             </div>
           </div>
 
@@ -119,32 +127,11 @@
             </div>
           </div>
 
-          <!-- Terminal de pagos -->
-          <div class="nav-item">
-              <a class="nav-link parent-link" data-parent="pagos">
-                  <span class="icon"><i class="bi bi-credit-card-2-front-fill"></i></span>
-                  <span class="text-label">Terminal de pagos</span>
-              </a>
-              <div class="sublist" data-parent="pagos">
-                  <a href="{% url 'terminal_pagos:nueva_transaccion' %}" class="nav-link child-link">
-                      Nueva transacción
-                  </a>
-                  
-                  <a href="{% url 'terminal_pagos:catalogos_pago' %}" class="nav-link child-link">
-                      Catálogos de pago
-                  </a>
+          <div class="sidebar-divider"></div>
 
-                  <a href="{% url 'terminal_pagos:medios_pago' %}" class="nav-link child-link">
-                      Reporte medios
-                  </a>
-
-                  <a href="{% url 'terminal_pagos:resumen_contratos' %}" class="nav-link child-link">
-                      Listado atrasos
-                  </a>
-
-              </div>
-          </div>
-
+          <!-- ================================================= -->
+          <!-- 🔹 BLOQUE 2 · FINANCIERO -->
+          <!-- ================================================= -->
 
           <!-- Créditos -->
           <div class="nav-item">
@@ -154,11 +141,56 @@
             </a>
             <div class="sublist" data-parent="creditos">
               <a href="{% url 'creditos:crear_credito' %}" class="nav-link child-link">
-                Gestion créditos
+                Gestión de créditos
               </a>
             </div>
           </div>
 
+          <!-- Terminal de pagos -->
+          <div class="nav-item">
+            <a class="nav-link parent-link" data-parent="pagos">
+              <span class="icon"><i class="bi bi-credit-card-2-front-fill"></i></span>
+              <span class="text-label">Terminal de pagos</span>
+            </a>
+            <div class="sublist" data-parent="pagos">
+
+              <a href="{% url 'terminal_pagos:nueva_transaccion' %}" class="nav-link child-link">
+                Nueva transacción
+              </a>
+
+              <a href="{% url 'terminal_pagos:catalogos_pago' %}" class="nav-link child-link">
+                Catálogos de pago
+              </a>
+
+              <a href="{% url 'terminal_pagos:medios_pago' %}" class="nav-link child-link">
+                Reporte de medios
+              </a>
+
+              <a href="{% url 'terminal_pagos:resumen_contratos' %}" class="nav-link child-link">
+                Listado de atrasos
+              </a>
+
+            </div>
+          </div>
+
+          <!-- Reportes -->
+          <div class="nav-item">
+            <a class="nav-link parent-link" data-parent="reportes">
+              <span class="icon"><i class="bi bi-graph-up"></i></span>
+              <span class="text-label">Reportes</span>
+            </a>
+            <div class="sublist" data-parent="reportes">
+              <a href="{% url 'reportes:dashboard_reportes' %}" class="nav-link child-link">
+                Dashboard
+              </a>
+            </div>
+          </div>
+
+          <div class="sidebar-divider"></div>
+
+          <!-- ================================================= -->
+          <!-- 🔹 BLOQUE 3 · OPERATIVO -->
+          <!-- ================================================= -->
 
           <!-- Almacén -->
           <div class="nav-item">
@@ -167,11 +199,9 @@
               <span class="text-label">Almacén</span>
             </a>
             <div class="sublist" data-parent="almacen">
-              <a
-                href="{% url 'almacen_dashboard' %}"
-                class="nav-link child-link"
-                >Gestión</a
-              >
+              <a href="{% url 'almacen_dashboard' %}" class="nav-link child-link">
+                Gestión
+              </a>
             </div>
           </div>
 
@@ -188,24 +218,9 @@
             </div>
           </div>
 
-          <!-- Empeños -->
-          <div class="nav-item">
-              <a class="nav-link parent-link" data-parent="empeños">
-                  <span class="icon">
-                      <i class="bi bi-cash"></i>
-                  </span>
-                  <span class="text-label">Empeños</span>
-              </a>
-              <div class="sublist" data-parent="empeños">
-                  <a href="Terminal.html" class="nav-link child-link">
-                      Nuevo Empeño
-                  </a>
-              </div>
-          </div>
-
-          
         </div>
       </aside>
+
 
       <!-- Main -->
       <main class="content">
