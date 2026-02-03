@@ -219,16 +219,22 @@ def dashboard_reportes(request):
         )
         .select_related(
             "factura",
-            "factura__contrato"
+            "factura__contrato",
+            "factura__contrato__cliente",
+            "factura__contrato__vehiculo",
         )
         .values(
             "factura__fecha",
+            "factura__id",
             "factura__contrato__id",
+            "factura__contrato__cliente__nombre",
+            "factura__contrato__vehiculo__placa",
             "descripcion",
-            "subtotal"
+            "subtotal",
         )
         .order_by("factura__fecha")
     )
+
 
     # =========================
     # 6️⃣ DETALLE ALMACÉN & TALLER
