@@ -709,7 +709,7 @@
     opciones.forEach(o => {
       const opt = document.createElement('option');
 
-      if (tipo.value === "tarifa" || tipo.value === "multa") {
+      if (["tarifa", "multa", "pago_inicial"].includes(tipo.value)) {
         opt.value = tipo.value;
       } else {
         opt.value = `${tipo.value}:${o.id}`;
@@ -720,6 +720,7 @@
 
       desc.appendChild(opt);
     });
+
 
 
 
