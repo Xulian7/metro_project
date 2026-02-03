@@ -373,7 +373,7 @@
           document.getElementById('modal-cliente').value = btn.dataset.clienteNombre;
           document.getElementById('modal-vehiculo').value = btn.dataset.vehiculoPlaca;
           document.getElementById('modal-fecha').value = btn.dataset.fecha;
-          document.getElementById('modal-tarifa').value = btn.dataset.tarifa;
+          document.getElementById('modal-tarifa').value = parseFloat(btn.dataset.tarifa || 0);
           document.getElementById('modal-frecuencia').value = btn.dataset.frecuencia;
           document.getElementById('modal-dias').value = btn.dataset.dias;
           document.getElementById('modal-visitador').value = btn.dataset.visitador;
