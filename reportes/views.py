@@ -118,32 +118,55 @@ def detalle_cierre(request, cierre_id):
     )
 
 
-from datetime import date
+from datetime import datetime
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Sum, Count
 from django.shortcuts import render
+from django.utils import timezone
 
-from terminal_pagos.models import ItemFactura, PagoFactura
+from terminal_pagos.models import (
+    ItemFactura,
+    PagoFactura,
+)
 
 
 @login_required
 @permission_required("reportes.view_reportes", raise_exception=True)
 def dashboard_reportes(request):
+    """
+    Dashboard de reportes operativos:
+    - Ítems (resumen por tipo)
+    - Medios de pago
+    - Cuentas destino
+    - Multas detalladas
+    - Detalle de ítems de almacén y taller
+    """
 
     # =========================
     # 1️⃣ RANGO DE FECHAS
     # =========================
-    inicio = request.GET.get("inicio") or date.today().replace(day=1)
-    fin = request.GET.get("fin") or date.today()
+    hoy = timezone.localdate()
+
+    inicio_str = request.GET.get("inicio")
+    fin_str = request.GET.get("fin")
+
+    inicio = (
+        datetime.strptime(inicio_str, "%Y-%m-%d").date()
+        if inicio_str else hoy
+    )
+
+    fin = (
+        datetime.strptime(fin_str, "%Y-%m-%d").date()
+        if fin_str else hoy
+    )
 
     # =========================
-    # 2️⃣ ITEMS POR TIPO
+    # 2️⃣ ITEMS (RESUMEN)
     # =========================
     items = (
         ItemFactura.objects
         .filter(
-            factura__estado="confirmada",
-            factura__fecha__date__range=[inicio, fin]
+            factura__fecha__date__range=(inicio, fin)
         )
         .values("tipo_item")
         .annotate(
@@ -159,13 +182,10 @@ def dashboard_reportes(request):
     pagos = (
         PagoFactura.objects
         .filter(
-            factura__estado="confirmada",
-            fecha_pago__range=[inicio, fin],
+            factura__fecha__date__range=(inicio, fin),
             es_compensacion=False
         )
-        .values(
-            "configuracion__medio__nombre"
-        )
+        .values("configuracion__medio__nombre")
         .annotate(
             total=Sum("valor")
         )
@@ -178,13 +198,10 @@ def dashboard_reportes(request):
     cuentas = (
         PagoFactura.objects
         .filter(
-            factura__estado="confirmada",
-            fecha_pago__range=[inicio, fin],
+            factura__fecha__date__range=(inicio, fin),
             es_compensacion=False
         )
-        .values(
-            "configuracion__cuenta_destino__nombre"
-        )
+        .values("configuracion__cuenta_destino__nombre")
         .annotate(
             total=Sum("valor")
         )
@@ -192,7 +209,49 @@ def dashboard_reportes(request):
     )
 
     # =========================
-    # 5️⃣ RENDER
+    # 5️⃣ MULTAS DETALLADAS
+    # =========================
+    multas = (
+        ItemFactura.objects
+        .filter(
+            tipo_item="multa",
+            factura__fecha__date__range=(inicio, fin)
+        )
+        .select_related(
+            "factura",
+            "factura__contrato"
+        )
+        .values(
+            "factura__fecha",
+            "factura__contrato__id",
+            "descripcion",
+            "subtotal"
+        )
+        .order_by("factura__fecha")
+    )
+
+    # =========================
+    # 6️⃣ DETALLE ALMACÉN & TALLER
+    # =========================
+    detalle_items = (
+        ItemFactura.objects
+        .filter(
+            tipo_item__in=["almacen", "taller"],
+            factura__fecha__date__range=(inicio, fin)
+        )
+        .select_related("factura")
+        .values(
+            "factura__fecha",
+            "tipo_item",
+            "descripcion",
+            "cantidad",
+            "subtotal"
+        )
+        .order_by("factura__fecha", "tipo_item")
+    )
+
+    # =========================
+    # 7️⃣ RENDER
     # =========================
     return render(
         request,
@@ -203,5 +262,7 @@ def dashboard_reportes(request):
             "items": items,
             "pagos": pagos,
             "cuentas": cuentas,
+            "multas": multas,
+            "detalle_items": detalle_items,
         }
     )
