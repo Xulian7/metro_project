@@ -11,7 +11,6 @@ from django.utils import timezone
 from django.urls import reverse
 from django.utils.timezone import now
 
-
 # =========================
 # Python stdlib
 # =========================
@@ -218,6 +217,47 @@ def crear_factura(request):
             item.producto_almacen = None
             item.servicio_taller = None
             print("   ↳ Multa aplicada")
+            
+        # ---- PAGO INICIAL ----
+        elif item.tipo_item == "pago_inicial":
+
+            contrato = factura.contrato
+
+            total_pagado_inicial = (
+                ItemFactura.objects
+                .filter(
+                    tipo_item="pago_inicial",
+                    factura__contrato=contrato,
+                    factura__estado="confirmada"
+                )
+                .aggregate(total=Sum("subtotal"))["total"]
+                or Decimal("0.00")
+            )
+
+            pendiente = contrato.cuota_inicial - total_pagado_inicial
+
+            if pendiente <= 0:
+                raise ValueError(
+                    f"La cuota inicial del contrato ya fue cubierta "
+                    f"(${contrato.cuota_inicial})."
+                )
+
+            if item.valor_unitario > pendiente:
+                raise ValueError(
+                    f"El pago inicial (${item.valor_unitario}) "
+                    f"excede el pendiente (${pendiente})."
+                )
+
+            item.descripcion = "Pago inicial"
+            item.producto_almacen = None
+            item.servicio_taller = None
+
+            print(
+                f"   ↳ Pago inicial | "
+                f"Pendiente antes={pendiente} | "
+                f"Aplicado={item.valor_unitario}"
+            )
+
 
         # ---- ALMACÉN ----
         elif item.tipo_item == "almacen" and ":" in raw:

@@ -85,12 +85,15 @@ class Factura(models.Model):
         return f"Factura #{self.id}" # type: ignore
 
 
+
 # =========================
 # ITEMS DE FACTURA
 # =========================
 class ItemFactura(models.Model):
+
     TIPOS_ITEM = (
         ("tarifa", "Tarifa"),
+        ("pago_inicial", "Pago inicial"),
         ("multa", "Pago de multa"),
         ("otro", "Otro pago"),
         ("almacen", "Ítem de almacén"),
@@ -99,7 +102,7 @@ class ItemFactura(models.Model):
     )
 
     factura = models.ForeignKey(
-        Factura,
+        "terminal_pagos.Factura",
         related_name="items",
         on_delete=models.CASCADE
     )
@@ -126,6 +129,8 @@ class ItemFactura(models.Model):
         decimal_places=2
     )
 
+    # ========= RELACIONES OPCIONALES =========
+
     producto_almacen = models.ForeignKey(
         "almacen.Producto",
         on_delete=models.SET_NULL,
@@ -150,6 +155,7 @@ class ItemFactura(models.Model):
 
     def __str__(self):
         return f"{self.get_tipo_item_display()} - {self.subtotal}" # type: ignore
+
 
 
 # =========================

@@ -663,7 +663,7 @@
 
   const datosDescripcion = {
     tarifa: [{ id:'tarifa', text:'Pago de tarifa', valor:0 }],
-
+    pago_inicial: [{ id:'pago_inicial', text:'Pago inicial', valor:0 }],
     multa: [{ id:'multa', text:'Pago de multa', valor:0 }],
     
     almacen: productosAlmacen.map(p => ({
@@ -691,6 +691,12 @@
     const valorInput = row.querySelector('.valor-unitario-item');
 
     let opciones = [];
+
+    if (tipo.value === 'pago_inicial' && !getContratoSeleccionado()) {
+      alert(" Debes seleccionar un contrato antes de agregar un pago inicial.");
+      tipo.value = '';
+      return;
+    }
 
     if (tipo.value === 'abono_credito') {
       opciones = getCreditosPorContrato();

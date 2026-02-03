@@ -57,10 +57,15 @@ class FacturaForm(forms.ModelForm):
 
 
 # =========================
-# ITEMS DE FACTURA
+# ITEMS DE FACTURA FORM
 # =========================
 class ItemFacturaForm(forms.ModelForm):
-    descripcion = forms.ChoiceField(choices=[], required=True)
+
+    descripcion = forms.ChoiceField(
+        choices=[],
+        required=True,
+        label="Descripción"
+    )
 
     class Meta:
         model = ItemFactura
@@ -71,39 +76,66 @@ class ItemFacturaForm(forms.ModelForm):
 
         choices = []
 
-        # 1️⃣ TARIFA (valor fijo)
-        choices.append(("tarifa", "Pago de tarifa"))
-        choices.append(("multa", "Pago de multa"))  # Nueva opción de multa
+        # =========================
+        # 1️⃣ CONCEPTOS FIJOS
+        # =========================
+        choices.extend([
+            ("tarifa", "Pago de tarifa"),
+            ("pago_inicial", "Pago inicial"),
+            ("multa", "Pago de multa"),
+        ])
 
+        # =========================
         # 2️⃣ PRODUCTOS DE ALMACÉN
+        # =========================
         from almacen.models import Producto
-        productos = Producto.objects.all()
-        for p in productos:
-            choices.append((f"almacen:{p.id}", p.nombre)) # type: ignore
 
+        for p in Producto.objects.all():
+            choices.append((
+                f"almacen:{p.id}", # type: ignore
+                p.nombre
+            ))
+
+        # =========================
         # 3️⃣ SERVICIOS DE TALLER
+        # =========================
         from taller.models import Servicio
-        servicios = Servicio.objects.all()
-        for s in servicios:
-            choices.append((f"taller:{s.id}", s.nombre_servicio)) # type: ignore
 
-        
+        for s in Servicio.objects.all():
+            choices.append((
+                f"taller:{s.id}", # type: ignore
+                s.nombre_servicio
+            ))
+
+        # =========================
         # 4️⃣ ABONOS A CRÉDITO
+        # =========================
         from creditos.models import Credito
+
         creditos = (
             Credito.objects
             .filter(estado="Activo", saldo__gt=0)
-            .select_related("contrato", "contrato__cliente", "contrato__vehiculo")
+            .select_related(
+                "contrato",
+                "contrato__cliente",
+                "contrato__vehiculo"
+            )
         )
 
         for c in creditos:
             choices.append((
                 f"abono_credito:{c.id}", # type: ignore
-                f"Crédito #{c.id} · {c.contrato.vehiculo.placa} - {c.contrato.cliente.nombre}" # type: ignore
+                f"Crédito #{c.id} · " # type: ignore
+                f"{c.contrato.vehiculo.placa} - "
+                f"{c.contrato.cliente.nombre}"
             ))
 
         self.fields["descripcion"].choices = choices
 
+
+# =========================
+# FORMSET
+# =========================
 ItemFacturaFormSet = inlineformset_factory(
     Factura,
     ItemFactura,

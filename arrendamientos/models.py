@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 from clientes.models import Cliente
 from vehiculos.models import Vehiculo
@@ -33,6 +34,12 @@ class Contrato(models.Model):
 
     cuota_inicial = models.DecimalField(max_digits=12, decimal_places=2)
     tarifa = models.DecimalField(max_digits=12, decimal_places=2)
+    
+    cuota_inicial_pagada = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=Decimal("0.00")
+    )
 
     # ⬇️ ESTE CAMPO SE VUELVE DERIVADO, NO SEMÁNTICO
     dias_contrato = models.PositiveIntegerField(
