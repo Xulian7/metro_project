@@ -11,8 +11,8 @@ class Contrato(models.Model):
     ]
 
     FRECUENCIA_PAGO_CHOICES = [
-        ('Diario_6', 'Diario (6 días)'),
         ('Diario_7', 'Diario (7 días)'),
+        ('Diario_6', 'Diario (6 días)'),
         ('Diario_5', 'Diario (5 días)'),
         ('Semanal', 'Semanal'),
         ('Quincenal', 'Quincenal'),
