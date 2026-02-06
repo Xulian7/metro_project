@@ -117,27 +117,13 @@
             ${{ row.tarifa|intcomma }}
           </td>
 
+          <!-- Frecuencia -->
           <!-- Frecuencia de pago -->
           <td class="text-center">
-            {% if row.contrato.frecuencia_pago == "Diario" %}
-              <span class="badge bg-danger">Diario</span>
-
-            {% elif row.contrato.frecuencia_pago == "Semanal" %}
-              <span class="badge bg-primary">Semanal</span>
-
-            {% elif row.contrato.frecuencia_pago == "Quincenal" %}
-              <span class="badge bg-warning text-dark">Quincenal</span>
-
-            {% elif row.contrato.frecuencia_pago == "Mensual" %}
-              <span class="badge bg-success">Mensual</span>
-
-            {% else %}
-              <span class="badge bg-secondary">
-                {{ row.contrato.get_frecuencia_pago_display }}
-              </span>
-            {% endif %}
+            <span class="badge bg-secondary">
+              {{ row.contrato.get_frecuencia_pago_display }}
+            </span>
           </td>
-
 
           <!-- Cuotas vencidas -->
           <td class="text-center fw-semibold"

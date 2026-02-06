@@ -564,6 +564,7 @@ def validar_pago(request, pago_id):
     print("✅ Pago validado")
     return HttpResponse(status=204)
 
+
 # =========================
 # RESUMEN DE CONTRATOS
 # =========================
@@ -576,6 +577,13 @@ def resumen_contratos(request):
         .select_related("cliente", "vehiculo")
         .filter(estado="Activo")
     )
+
+    # 🔥 Fuente única de verdad
+    DIAS_COBRO_SEMANA = {
+        "Diario_7": 7,
+        "Diario_6": 6,
+        "Diario_5": 5,
+    }
 
     for contrato in contratos:
         if not contrato.fecha_inicio or not contrato.tarifa:
@@ -591,16 +599,27 @@ def resumen_contratos(request):
         # -------------------------
         # CUOTAS VENCIDAS
         # -------------------------
-        dias_por_cuota = {
-            "Diario": 1,
-            "Semanal": 7,
-            "Quincenal": 15,
-            "Mensual": 30,
-        }.get(contrato.frecuencia_pago, 30)
+        if contrato.frecuencia_pago.startswith("Diario"):
+            dias_cobrables = DIAS_COBRO_SEMANA.get(
+                contrato.frecuencia_pago, 7
+            )
 
-        cuotas_vencidas = Decimal(
-            dias_transcurridos / dias_por_cuota
-        ).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
+            semanas = Decimal(dias_transcurridos) / Decimal(7)
+
+            cuotas_vencidas = (semanas * dias_cobrables).quantize(
+                Decimal("0.1"), rounding=ROUND_HALF_UP
+            )
+
+        else:
+            dias_por_cuota = {
+                "Semanal": 7,
+                "Quincenal": 15,
+                "Mensual": 30,
+            }.get(contrato.frecuencia_pago, 30)
+
+            cuotas_vencidas = Decimal(
+                dias_transcurridos / dias_por_cuota
+            ).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
 
         # -------------------------
         # PAGOS EN TARIFA
@@ -616,7 +635,6 @@ def resumen_contratos(request):
             or Decimal("0")
         )
 
-
         cuotas_pagadas = (
             total_pagado / contrato.tarifa
         ).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
@@ -631,12 +649,12 @@ def resumen_contratos(request):
         saldo_dinero = (
             saldo_cuotas * contrato.tarifa
         ).quantize(Decimal("1"), rounding=ROUND_HALF_UP)
-        
+
         # -------------------------
         # KPI AVANCE DE CUMPLIMIENTO
         # -------------------------
         if cuotas_vencidas > 0:
-            avance = (cuotas_pagadas / cuotas_vencidas)
+            avance = cuotas_pagadas / cuotas_vencidas
         else:
             avance = Decimal("1.0")
 
@@ -668,6 +686,7 @@ def resumen_contratos(request):
             "hoy": hoy,
         }
     )
+
 
 # =========================
 # EXTRACTO DE CONTRATO
