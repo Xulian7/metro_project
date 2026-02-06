@@ -578,11 +578,17 @@ def resumen_contratos(request):
         .filter(estado="Activo")
     )
 
-    # 🔥 Fuente única de verdad
+    # 🔥 Reglas de negocio
     DIAS_COBRO_SEMANA = {
         "Diario_7": 7,
         "Diario_6": 6,
         "Diario_5": 5,
+    }
+
+    PERIODO_DIAS = {
+        "Semanal": 7,
+        "Quincenal": 15,
+        "Mensual": 30,
     }
 
     for contrato in contratos:
@@ -600,25 +606,29 @@ def resumen_contratos(request):
         # CUOTAS VENCIDAS
         # -------------------------
         if contrato.frecuencia_pago.startswith("Diario"):
-            dias_cobrables = DIAS_COBRO_SEMANA.get(
+            # 🟢 Diario → días reales, sin decimales
+            dias_max_semana = DIAS_COBRO_SEMANA.get(
                 contrato.frecuencia_pago, 7
             )
 
-            semanas = Decimal(dias_transcurridos) / Decimal(7)
+            semanas_completas = dias_transcurridos // 7
+            dias_restantes = dias_transcurridos % 7
 
-            cuotas_vencidas = (semanas * dias_cobrables).quantize(
-                Decimal("0.1"), rounding=ROUND_HALF_UP
+            cuotas_vencidas = (
+                semanas_completas * dias_max_semana
+                + min(dias_restantes, dias_max_semana)
             )
 
-        else:
-            dias_por_cuota = {
-                "Semanal": 7,
-                "Quincenal": 15,
-                "Mensual": 30,
-            }.get(contrato.frecuencia_pago, 30)
+            cuotas_vencidas = Decimal(cuotas_vencidas)
 
-            cuotas_vencidas = Decimal(
-                dias_transcurridos / dias_por_cuota
+        else:
+            # 🔵 No diario → avance proporcional, con decimales
+            dias_por_periodo = PERIODO_DIAS.get(
+                contrato.frecuencia_pago, 30
+            )
+
+            cuotas_vencidas = (
+                Decimal(dias_transcurridos) / Decimal(dias_por_periodo)
             ).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
 
         # -------------------------
